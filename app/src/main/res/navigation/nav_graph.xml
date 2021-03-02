@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/HomeFragment">
+
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="de.walhalla.app.fragments.home.Fragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/DonateFragment"
+        android:name="de.walhalla.app.fragments.donate.Fragment"
+        android:label="@string/menu_donate"
+        tools:layout="@layout/fragment_donate">
+
+        <action
+            android:id="@+id/action_toHomeFragment"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ProgramFragment"
+        android:name="de.walhalla.app.fragments.program.Fragment"
+        android:label="@string/menu_program"
+        tools:layout="@layout/fragment">
+
+        <action
+            android:id="@+id/action_toHomeFragment"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/MessagesFragment"
+        android:name="de.walhalla.app.fragments.news.Fragment"
+        android:label="@string/menu_messages"
+        tools:layout="@layout/fragment">
+
+        <action
+            android:id="@+id/action_toHomeFragment"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chargenFragment"
+        android:name="de.walhalla.app.fragments.chargen.Fragment"
+        android:label="ChargenFragment">
+        <action
+            android:id="@+id/action_chargenFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="de.walhalla.app.fragments.profile.Fragment"
+        android:label="ProfileFragment">
+        <action
+            android:id="@+id/action_profileFragment_to_HomeFragment"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+</navigation>

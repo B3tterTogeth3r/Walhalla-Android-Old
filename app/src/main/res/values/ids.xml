@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="maps_fragment" type="id" />
+    <item name="program_edit" type="id" />
+    <item name="program_save_in_calendar" type="id" />
+    <item name="program_delete" type="id" />
+    <item name="chargen_edit" type="id" />
+    <item name="chargen_add" type="id" />
+    <item name="chargen_title" type="id" />
+    <item name="chargen_close" type="id" />
+    <item name="profile_firstName" type="id" />
+    <item name="profile_id" type="id" />
+    <item name="profile_lastName" type="id" />
+    <item name="profile_address" type="id" />
+    <item name="profile_address_2" type="id" />
+    <item name="profile_mobile" type="id" />
+    <item name="profile_mail" type="id" />
+    <item name="profile_dob" type="id" />
+    <item name="profile_pob" type="id" />
+    <item name="profile_joined" type="id" />
+    <item name="profile_picture_path" type="id" />
+    <item name="profile_balance" type="id" />
+    <item name="profile_rank" type="id" />
+    <item name="profile_address_city" type="id" />
+    <item name="done" type="id" />
+    <item name="close" type="id" />
+    <item name="delete" type="id" />
+    <item name="edit" type="id" />
+    <item name="add" type="id" />
+    <item name="messages_title" type="id" />
+    <item name="send" type="id" />
+    <item name="beer_title" type="id" />
+    <item name="beer_price" type="id" />
+    <item name="beer_add" type="id" />
+    <item name="beer_invoice" type="id" />
+    <item name="beer_payment" type="id" />
+    <item name="found_person" type="id" />
+</resources>
