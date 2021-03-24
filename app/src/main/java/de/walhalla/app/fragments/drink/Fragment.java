@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import de.walhalla.app.App;
 import de.walhalla.app.R;
@@ -27,7 +28,6 @@ public class Fragment extends CustomFragment {
     protected static final float scale = App.getContext().getResources()
             .getDisplayMetrics().density;
     protected static final int defaultMargin = (int) scale * 15;
-    protected static TextView title;
     protected static ImageButton price, invoice, payment;
     protected static TableLayout.LayoutParams params = new TableLayout.LayoutParams(
             TableRow.LayoutParams.MATCH_PARENT, //width
@@ -43,6 +43,9 @@ public class Fragment extends CustomFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment, container, false);
         Fragment.f = this;
+        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_beer);
+        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
+
         LinearLayout layout = view.findViewById(R.id.fragment_container);
         layout.removeAllViewsInLayout();
 

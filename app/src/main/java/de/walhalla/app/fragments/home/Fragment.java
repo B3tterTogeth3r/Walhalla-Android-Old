@@ -11,30 +11,32 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import de.walhalla.app.App;
 import de.walhalla.app.R;
 import de.walhalla.app.fragments.CustomFragment;
-import de.walhalla.app.models.Event;
+import de.walhalla.app.fragments.Diashow;
 import de.walhalla.app.utils.Variables;
 
 public class Fragment extends CustomFragment {
     private static final String TAG = "HomeFragment";
-    LinearLayout greeting, notes;
-    RelativeLayout signRow;
-    TextView student_x, phil_x;
-    ArrayList<Event> events = new ArrayList<>();
+    private LinearLayout greeting, notes;
+    private RelativeLayout signRow;
+    private TextView student_x, phil_x;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.app_name);
+        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
 
         greeting = view.findViewById(R.id.home_layout_greetings);
         notes = view.findViewById(R.id.home_layout_notes);
@@ -42,13 +44,24 @@ public class Fragment extends CustomFragment {
         student_x = view.findViewById(R.id.charge_x);
         phil_x = view.findViewById(R.id.philister_x);
 
+        //initiate diashow
+        RelativeLayout diashow = view.findViewById(R.id.home_diashow);
+        diashow.removeAllViewsInLayout();
+        diashow.addView(new Diashow(getContext()).show("home"));
         if (App.getCurrentSemester() != null) {
             displayCurrentGreeting(App.getCurrentSemester().getID());
         }
+        //TODO else fill layout with the welcome text still in the strings
 
         return view;
     }
 
+    /**
+     * Download the greeting from the first page of the print program to display it. <br/>
+     * Only the current greeting will be displayed.
+     *
+     * @param id the value of the semester from which the greeting is to be downloaded.
+     */
     @SuppressWarnings("unchecked")
     private void displayCurrentGreeting(int id) {
         Variables.Firebase.FIRESTORE
@@ -77,6 +90,11 @@ public class Fragment extends CustomFragment {
                 });
     }
 
+    /**
+     * Sets the current notes of the Semester.
+     *
+     * @param text The List with all notes.
+     */
     private void loadNotes(@NotNull List<Object> text) {
         int size = text.size();
         notes.removeAllViewsInLayout();
@@ -95,6 +113,12 @@ public class Fragment extends CustomFragment {
         }
     }
 
+    /**
+     * Sets the greeting of the selected semester. The first row
+     * is the salutation, the last row the closing formula
+     *
+     * @param text The list with all the paragraphs of the greeting
+     */
     @SuppressWarnings("unchecked")
     private void loadGreeting(@NotNull List<Object> text) {
         int size = text.size();
@@ -119,10 +143,5 @@ public class Fragment extends CustomFragment {
         student_x.setText(sign.get("Aktivensenior"));
         phil_x.setText(sign.get("Philistersenior"));
         greeting.addView(signRow);
-    }
-
-    @Override
-    public void onAuthChange() {
-
     }
 }

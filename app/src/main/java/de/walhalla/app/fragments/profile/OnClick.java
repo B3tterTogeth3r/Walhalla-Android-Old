@@ -48,16 +48,16 @@ public class OnClick implements View.OnClickListener {
     public void onClick(@NotNull View v) {
         switch (v.getId()) {
             case R.id.profile_general_information_name:
-                DialogChange.display("name", fragmentManager);
+                DialogChange.display("name");
                 break;
             case R.id.profile_general_information_DoB:
                 selectBirthday().show();
                 break;
             case R.id.profile_general_information_PoB:
-                DialogChange.display("pob", fragmentManager);
+                DialogChange.display("pob");
                 break;
             case R.id.profile_general_information_major:
-                DialogChange.display("major", fragmentManager);
+                DialogChange.display("major");
                 break;
             case R.id.profile_general_information_password:
                 Toast.makeText(context, App.getContext().getString(R.string.toast_still_in_dev), Toast.LENGTH_SHORT).show();
@@ -68,10 +68,10 @@ public class OnClick implements View.OnClickListener {
                 //DialogChange.display("mail",fragmentManager);
                 break;
             case R.id.profile_contact_information_mobile:
-                DialogChange.display("mobile", fragmentManager);
+                DialogChange.display("mobile");
                 break;
             case R.id.profile_contact_information_address:
-                DialogChange.display("address", fragmentManager);
+                DialogChange.display("address");
                 break;
             case R.id.profile_fraternity_information_rank:
                 downloadRank();

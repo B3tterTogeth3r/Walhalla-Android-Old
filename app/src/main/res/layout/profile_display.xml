@@ -9,282 +9,280 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <TextView
-            style="@style/SettingsTVTitle"
-            android:layout_gravity="center"
-            android:gravity="center_horizontal"
-            android:padding="8dp"
-            android:text="@string/profile_personal_data" />
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/profile_general_information"
-            style="@style/SettingsBox">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/profile_general_information_title"
-                style="@style/SettingsTVTitle"
-                android:text="@string/profile_general_information" />
-
-            <TextView
-                android:id="@+id/profile_general_information_subtitle"
-                style="@style/SettingsTVSub"
-                android:text="@string/profile_general_information_description" />
-
-            <RelativeLayout
-                android:id="@+id/profile_general_information_name"
-                style="@style/SettingsTVStartEnd">
+            <LinearLayout
+                android:id="@+id/profile_general_information"
+                style="@style/Settings">
 
                 <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_name" />
+                    android:id="@+id/profile_general_information_title"
+                    style="@style/Settings.TV.Title"
+                    android:text="@string/profile_general_information" />
 
                 <TextView
-                    android:id="@+id/profile_general_information_name_user"
-                    style="@style/SettingsRowContent"
-                    android:layout_marginEnd="30dp"
-                    android:text="@string/profile_name" />
+                    android:id="@+id/profile_general_information_subtitle"
+                    style="@style/Settings.TV.Sub"
+                    android:text="@string/profile_general_information_description" />
 
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
+                <RelativeLayout
+                    android:id="@+id/profile_general_information_name"
+                    style="@style/Settings.TV.StartEnd">
 
-            </RelativeLayout>
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_name" />
 
-            <RelativeLayout
-                android:id="@+id/profile_general_information_DoB"
-                style="@style/SettingsTV">
+                    <TextView
+                        android:id="@+id/profile_general_information_name_user"
+                        style="@style/Settings.Row.Content"
+                        android:layout_marginEnd="30dp"
+                        android:text="@string/profile_name" />
+
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_general_information_DoB"
+                    style="@style/Settings.TV">
+
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_dob" />
+
+                    <TextView
+                        android:id="@+id/profile_general_information_DoB_user"
+                        style="@style/Settings.Row.Content"
+                        android:text="@string/profile_dob" />
+
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_general_information_PoB"
+                    style="@style/Settings.TV.StartEnd">
+
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_pob" />
+
+                    <TextView
+                        android:id="@+id/profile_general_information_PoB_user"
+                        style="@style/Settings.Row.Content"
+                        android:text="@string/profile_pob" />
+
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_general_information_major"
+                    style="@style/Settings.TV">
+
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_major_2" />
+
+                    <TextView
+                        android:id="@+id/profile_general_information_major_user"
+                        style="@style/Settings.Row.Content"
+                        android:text="@string/profile_major_2" />
+
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_general_information_password"
+                    style="@style/Settings.TV.StartEnd"
+                    android:text="@string/login_password">
+
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/login_password" />
+
+                    <TextView
+                        android:id="@+id/profile_general_information_password_user"
+                        style="@style/Settings.Row.Content"
+                        android:text="@string/login_password" />
+
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/profile_contact_information"
+                style="@style/Settings">
 
                 <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_dob" />
+                    style="@style/Settings.TV.Title"
+                    android:text="@string/profile_contact_information_title" />
 
                 <TextView
-                    android:id="@+id/profile_general_information_DoB_user"
-                    style="@style/SettingsRowContent"
-                    android:text="@string/profile_dob" />
+                    android:id="@+id/profile_contact_information_subtitle"
+                    style="@style/Settings.TV.Sub"
+                    android:text="@string/profile_general_information_description" />
 
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
+                <RelativeLayout
+                    android:id="@+id/profile_contact_information_mail"
+                    style="@style/Settings.TV.StartEnd">
 
-            </RelativeLayout>
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_e_mail" />
 
-            <RelativeLayout
-                android:id="@+id/profile_general_information_PoB"
-                style="@style/SettingsTVStartEnd">
+                    <TextView
+                        android:id="@+id/profile_contact_information_mail_user"
+                        style="@style/Settings.Row.Content"
+                        android:layout_marginEnd="30dp"
+                        android:text="@string/profile_e_mail" />
+
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_contact_information_mobile"
+                    style="@style/Settings.TV">
+
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_phone" />
+
+                    <TextView
+                        android:id="@+id/profile_contact_information_mobile_user"
+                        style="@style/Settings.Row.Content"
+                        android:text="@string/profile_phone" />
+
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/profile_contact_information_address"
+                    style="@style/Settings.TV.StartEnd">
+
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_address" />
+
+                    <TextView
+                        android:id="@+id/profile_contact_information_address_user"
+                        style="@style/Settings.Row.Content"
+                        android:text="@string/profile_address" />
+
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/profile_fraternity_information"
+                style="@style/Settings">
 
                 <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_pob" />
+                    style="@style/Settings.TV.Title"
+                    android:text="@string/profile_fraternity_information_title" />
 
-                <TextView
-                    android:id="@+id/profile_general_information_PoB_user"
-                    style="@style/SettingsRowContent"
-                    android:text="@string/profile_pob" />
+                <RelativeLayout
+                    android:id="@+id/profile_fraternity_information_rank"
+                    style="@style/Settings.TV.StartEnd">
 
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_rank" />
 
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/profile_fraternity_information_rank_user"
+                        style="@style/Settings.Row.Content"
+                        android:layout_marginEnd="30dp"
+                        android:text="@string/profile_rank" />
 
-            <RelativeLayout
-                android:id="@+id/profile_general_information_major"
-                style="@style/SettingsTV">
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
 
-                <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_major_2" />
+                </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/profile_general_information_major_user"
-                    style="@style/SettingsRowContent"
-                    android:text="@string/profile_major_2" />
+                <RelativeLayout
+                    android:id="@+id/profile_fraternity_information_joined"
+                    style="@style/Settings.TV">
 
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_joined" />
 
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/profile_fraternity_information_joined_user"
+                        style="@style/Settings.Row.Content"
+                        android:text="@string/profile_joined" />
 
-            <RelativeLayout
-                android:id="@+id/profile_general_information_password"
-                style="@style/SettingsTVStartEnd"
-                android:text="@string/login_password">
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
 
-                <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/login_password" />
+                </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/profile_general_information_password_user"
-                    style="@style/SettingsRowContent"
-                    android:text="@string/login_password" />
+                <RelativeLayout
+                    android:id="@+id/profile_fraternity_information_picture"
+                    style="@style/Settings.TV.StartEnd">
 
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/profile_picture" />
 
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/profile_fraternity_information_picture_user"
+                        style="@style/Settings.Row.Content"
+                        android:text="@string/profile_picture_edit_add" />
 
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+                </RelativeLayout>
+
+            </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/profile_contact_information"
-            style="@style/SettingsBox">
-
-            <TextView
-                style="@style/SettingsTVTitle"
-                android:text="@string/profile_contact_information_title" />
-
-            <TextView
-                android:id="@+id/profile_contact_information_subtitle"
-                style="@style/SettingsTVSub"
-                android:text="@string/profile_general_information_description" />
-
-            <RelativeLayout
-                android:id="@+id/profile_contact_information_mail"
-                style="@style/SettingsTVStartEnd">
-
-                <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_e_mail" />
-
-                <TextView
-                    android:id="@+id/profile_contact_information_mail_user"
-                    style="@style/SettingsRowContent"
-                    android:layout_marginEnd="30dp"
-                    android:text="@string/profile_e_mail" />
-
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/profile_contact_information_mobile"
-                style="@style/SettingsTV">
-
-                <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_phone" />
-
-                <TextView
-                    android:id="@+id/profile_contact_information_mobile_user"
-                    style="@style/SettingsRowContent"
-                    android:text="@string/profile_phone" />
-
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/profile_contact_information_address"
-                style="@style/SettingsTVStartEnd">
-
-                <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_address" />
-
-                <TextView
-                    android:id="@+id/profile_contact_information_address_user"
-                    style="@style/SettingsRowContent"
-                    android:text="@string/profile_address" />
-
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
-
-            </RelativeLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/profile_fraternity_information"
-            style="@style/SettingsBox">
-
-            <TextView
-                style="@style/SettingsTVTitle"
-                android:text="@string/profile_fraternity_information_title" />
-
-            <RelativeLayout
-                android:id="@+id/profile_fraternity_information_rank"
-                style="@style/SettingsTVStartEnd">
-
-                <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_rank" />
-
-                <TextView
-                    android:id="@+id/profile_fraternity_information_rank_user"
-                    style="@style/SettingsRowContent"
-                    android:layout_marginEnd="30dp"
-                    android:text="@string/profile_rank" />
-
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/profile_fraternity_information_joined"
-                style="@style/SettingsTV">
-
-                <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_joined" />
-
-                <TextView
-                    android:id="@+id/profile_fraternity_information_joined_user"
-                    style="@style/SettingsRowContent"
-                    android:text="@string/profile_joined" />
-
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/profile_fraternity_information_picture"
-                style="@style/SettingsTVStartEnd">
-
-                <TextView
-                    style="@style/SettingsRowTitle"
-                    android:text="@string/profile_picture" />
-
-                <TextView
-                    android:id="@+id/profile_fraternity_information_picture_user"
-                    style="@style/SettingsRowContent"
-                    android:text="@string/profile_picture_edit_add" />
-
-                <ImageView
-                    style="@style/SettingsRowImage"
-                    android:contentDescription="@string/description"
-                    android:src="@drawable/ic_arrow_right" />
-            </RelativeLayout>
-
-        </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 
     <TextView
         android:id="@+id/profile_uid"
@@ -293,6 +291,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
         android:alpha="0.15"
-        android:text="vqNnyCp22HZfas8iVbQvPcWHYqc2"
+        android:text="@string/uid"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 </RelativeLayout>

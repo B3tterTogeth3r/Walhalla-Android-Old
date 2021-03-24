@@ -8,12 +8,28 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:159729181477:android:c6637091451777ead770cc",
+        "mobilesdk_app_id": "1:159729181477:android:1a6e147ddc9e91e4d770cc",
         "android_client_info": {
-          "package_name": "com.example.walhalla"
+          "package_name": "de.walhalla.app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "159729181477-4gdllcosbn0ohmcq7om8oasdfukhm14o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.walhalla.app",
+            "certificate_hash": "b777cefb75264ef5475b551259187c1600609e1f"
+          }
+        },
+        {
+          "client_id": "159729181477-pp5gamdboqul4elupsi3trf1n061likj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.walhalla.app",
+            "certificate_hash": "dc4c15e231b170419c737c838b85f7b37e530c5c"
+          }
+        },
         {
           "client_id": "159729181477-mujqia53vv7252erkt6r9up3c0u3pjgq.apps.googleusercontent.com",
           "client_type": 3
@@ -24,36 +40,10 @@
           "current_key": "AIzaSyBkZmfoEvjUrG1ujh_MLMsaVuSxdpv1_Wg"
         },
         {
+          "current_key": "AIzaSyBizQ6xIBQTUyK-sLeOdy5Yt4n-M4bksFI"
+        },
+        {
           "current_key": "AIzaSyDIBCTplA_JPq_isnfQLab0jyHu6yi4wLI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "159729181477-mujqia53vv7252erkt6r9up3c0u3pjgq.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:159729181477:android:1a6e147ddc9e91e4d770cc",
-        "android_client_info": {
-          "package_name": "de.walhalla.app"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "159729181477-mujqia53vv7252erkt6r9up3c0u3pjgq.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBkZmfoEvjUrG1ujh_MLMsaVuSxdpv1_Wg"
         },
         {
           "current_key": "AIzaSyDIBCTplA_JPq_isnfQLab0jyHu6yi4wLI"
@@ -86,6 +76,12 @@
       "api_key": [
         {
           "current_key": "AIzaSyBkZmfoEvjUrG1ujh_MLMsaVuSxdpv1_Wg"
+        },
+        {
+          "current_key": "AIzaSyBizQ6xIBQTUyK-sLeOdy5Yt4n-M4bksFI"
+        },
+        {
+          "current_key": "AIzaSyDIBCTplA_JPq_isnfQLab0jyHu6yi4wLI"
         },
         {
           "current_key": "AIzaSyDIBCTplA_JPq_isnfQLab0jyHu6yi4wLI"

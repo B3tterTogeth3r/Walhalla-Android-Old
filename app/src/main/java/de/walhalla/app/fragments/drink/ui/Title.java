@@ -13,6 +13,7 @@ import de.walhalla.app.fragments.drink.Fragment;
 
 public class Title extends Fragment {
     public Title() {
+        //TODO add the "add" button into the Toolbar
     }
 
     @NotNull
@@ -27,29 +28,25 @@ public class Title extends Fragment {
                 1.0f
         ));
 
-        title = new TextView(f.getContext());
         price = new ImageButton(f.getContext());
         invoice = new ImageButton(f.getContext());
         payment = new ImageButton(f.getContext());
 
-        title.setId(R.id.beer_title);
         price.setId(R.id.beer_price);
         invoice.setId(R.id.beer_invoice);
         payment.setId(R.id.beer_payment);
 
-        topRow.addView(title);
         topRow.addView(payment);
         topRow.addView(invoice);
         topRow.addView(price);
 
-        title.setTextSize((int) (10 * scale + 0.75f));
         price.setImageResource(R.drawable.ic_euro);
         invoice.setImageResource(R.drawable.ic_request_quote);
         payment.setImageResource(R.drawable.ic_payment);
 
         price.setBackgroundColor(f.getResources().getColor(R.color.background, null));
         invoice.setBackgroundColor(f.getResources().getColor(R.color.background, null));
-        payment.setBackgroundColor(f.getResources().getColor(R.color.background, null));
+        payment.setBackgroundColor(f.getResources().getColor(R.color.background, null));/*
 
         RelativeLayout.LayoutParams titleParams = (RelativeLayout.LayoutParams) title.getLayoutParams();
         titleParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -71,7 +68,7 @@ public class Title extends Fragment {
         paymentParams.setMargins(defaultMargin, defaultMargin, defaultMargin, defaultMargin);
         payment.setLayoutParams(paymentParams);
 
-        title.setText(R.string.menu_beer);
+        title.setText(R.string.menu_beer);*/
 
         return titleTL;
     }

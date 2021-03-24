@@ -5,18 +5,25 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import de.walhalla.app.App;
 import de.walhalla.app.R;
 import de.walhalla.app.firebase.CustomAuthListener;
 import de.walhalla.app.utils.Variables;
 
 public abstract class CustomFragment extends Fragment implements CustomAuthListener.sendMain {
 
-    private final String TAG = "CustomFragment";
     public static CustomAuthListener.sendMain authChange;
+    private final String TAG = "CustomFragment";
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -47,5 +54,14 @@ public abstract class CustomFragment extends Fragment implements CustomAuthListe
     @Override
     public void onAuthChange() {
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        try {
+            Diashow.listener.stopDiashow();
+        } catch (Exception ignored) {
+        }
     }
 }

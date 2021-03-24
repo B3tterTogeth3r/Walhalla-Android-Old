@@ -28,7 +28,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -42,6 +41,7 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 import de.walhalla.app.App;
+import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
 import de.walhalla.app.User;
 import de.walhalla.app.models.Event;
@@ -54,7 +54,7 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
     protected static final float scale = App.getContext().getResources().getDisplayMetrics().density;
     private static final String TAG = "Details of Program-Event";
     public static Dialog DIALOG;
-    protected static Marker marker;
+    private static Details detailsDialog;
     private final Event event;
     private Toolbar toolbar;
 
@@ -63,7 +63,7 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
     }
 
     public static void display(FragmentManager fragmentManager, Event event) {
-        Details detailsDialog = new Details(event);
+        Details.detailsDialog = new Details(event);
         detailsDialog.show(fragmentManager, TAG);
     }
 
@@ -72,8 +72,6 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
         super.onCreateView(inflater, containter, savedInstanceState);
         View view = inflater.inflate(R.layout.program_details, containter, false);
 
-
-        LinearLayout linearLayout = view.findViewById(R.id.program_details_layout);
         toolbar = view.findViewById(R.id.program_details_close);
 
         return view;
@@ -87,7 +85,6 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
 
         toolbar.setNavigationOnClickListener(v -> dismiss());
         toolbar.setTitle(R.string.program_details);
-        //TODO Change them back when login is functional again
         if (User.isLogIn() && User.hasCharge()) {
             toolbar.inflateMenu(R.menu.program_dialog_charge);
         } else {
@@ -103,9 +100,7 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
                         break;
                     case R.id.action_edit:
                         Log.i(TAG, "edit");
-                        //Edit.display(getChildFragmentManager(), event);
-                        Edit dialog = new Edit(event);
-                        dialog.show(getChildFragmentManager(), TAG);
+                        Edit.display(getChildFragmentManager(), event, detailsDialog);
                         break;
                     case R.id.action_delete:
                         Log.i(TAG, "delete");
@@ -226,7 +221,6 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NotNull GoogleMap googleMap) {
         LatLng place;
-        final MarkerOptions markerOptions = new MarkerOptions();
         googleMap.setMaxZoomPreference(15);
         googleMap.setMinZoomPreference(15);
 
@@ -242,6 +236,7 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
     }
 
     protected void saveToCalendar(@NotNull Event toSave) {
+        //TODO E: The time is mostly the current one...
         Intent intent = new Intent(Intent.ACTION_INSERT);
         TimeZone tz = TimeZone.getTimeZone("Europe/Berlin");
 
@@ -298,17 +293,28 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
                     dialog.dismiss();
                     Toast.makeText(getContext(), R.string.abort, Toast.LENGTH_LONG).show();
                 })
-                .setPositiveButton(R.string.send, (dialog, which) -> {
-                    //TODO DELETE Event
-                    /*Variables.Firebase.Reference.EVENT.child(String.valueOf(event.getId())).setValue(null)
-                            .addOnSuccessListener(aVoid ->
-                                    Snackbar.make(MainActivity.parentLayout, R.string.program_dialog_delete_successful, Snackbar.LENGTH_LONG).show()
-                            )
-                            .addOnFailureListener(e -> {
-                                uploadError();
-                                dismiss();
-                            });*/
-                });
+                .setPositiveButton(R.string.send, (dialog, which) -> Variables.Firebase.FIRESTORE
+                        .collection("Semester")
+                        .document(String.valueOf(App.getChosenSemester().getID()))
+                        .collection("Event")
+                        .document(event.getId())
+                        .delete()
+                        .addOnSuccessListener(aVoid -> {
+                            if(detailsDialog != null){
+                                detailsDialog.dismiss();
+                            }
+                            Snackbar.make(MainActivity.parentLayout, R.string.program_dialog_delete_successful, Snackbar.LENGTH_LONG).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            uploadError();
+                            dismiss();
+                            try {
+                                detailsDialog.dismiss();
+                            } catch (Exception exception) {
+                                Log.d(TAG, "Dismissing the details dialog didn't work", exception);
+                            }
+                            Snackbar.make(MainActivity.parentLayout, R.string.error_delete_event, Snackbar.LENGTH_LONG).show();
+                        }));
         builder.create().show();
     }
 

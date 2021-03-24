@@ -14,22 +14,13 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class Event implements Cloneable {
-    public static final String ADDITION = "addition";
-    public static final String BUDGET = "budget";
-    public static final String COLLAR = "collar";
-    public static final String DESCRIPTION = "description";
     public static final String END = "end";
-    public static final String HELP = "help";
-    public static final String LOCATION_COORDINATES = "location_coordinates";
-    public static final String LOCATION_NAME = "location_name";
-    public static final String MEETING = "meeting";
-    public static final String PUNCTUALITY = "punctuality";
     public static final String START = "start";
-    public static final String TITLE = "title";
 
     private Map<String, Object> addition = null;
     private Map<String, Object> budget = new HashMap<>();
-    private Map<String, Object> help = null;
+    private Map<String, Object> help = null; //Object are arrays with the name of the task the person is helping
+    @Exclude
     private String id = "";
     private String collar = "";
     private String description = "";
@@ -40,6 +31,8 @@ public class Event implements Cloneable {
     private Timestamp end = new Timestamp(Calendar.getInstance().getTime());
     private GeoPoint location_coordinates = new GeoPoint(49.784389, 9.924648);
     private boolean meeting = false;
+    private boolean draft = false;
+    private boolean internal = false;
 
     public Event() {
         budget.put("after", 0);
@@ -47,15 +40,15 @@ public class Event implements Cloneable {
         budget.put("current", 0);
     }
 
-    public Event(Map<String, Object> addition, Map<String, Object> budget, Map<String, Object> help, String collar, String description, String location_name, String punctuality, String title, Timestamp start, Timestamp end, GeoPoint location_coordinates, boolean meeting) {
-        this.budget.put("after", 0);
-        this.budget.put("before", 0);
-        this.budget.put("current", 0);
+    public Event(Map<String, Object> addition, @NotNull Map<String, Object> budget, Map<String, Object> help, String id, String collar, String description, String location_name, String punctuality, String title, Timestamp start, Timestamp end, GeoPoint location_coordinates, boolean meeting, boolean draft, boolean internal) {
+        budget.put("after", 0);
+        budget.put("before", 0);
+        budget.put("current", 0);
 
-        this.id = "";
         this.addition = addition;
         this.budget = budget;
         this.help = help;
+        this.id = id;
         this.collar = collar;
         this.description = description;
         this.location_name = location_name;
@@ -65,14 +58,34 @@ public class Event implements Cloneable {
         this.end = end;
         this.location_coordinates = location_coordinates;
         this.meeting = meeting;
+        this.draft = draft;
+        this.internal = internal;
     }
 
+    @Exclude
     public String getId() {
         return id;
     }
 
+    @Exclude
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isDraft() {
+        return draft;
+    }
+
+    public void setDraft(boolean draft) {
+        this.draft = draft;
+    }
+
+    public boolean isInternal() {
+        return internal;
+    }
+
+    public void setInternal(boolean internal) {
+        this.internal = internal;
     }
 
     @Nullable
@@ -173,6 +186,21 @@ public class Event implements Cloneable {
         this.meeting = meeting;
     }
 
+    @Exclude
+    public int getDayOfYearStart() {
+        Calendar start = Calendar.getInstance();
+        start.setTime(getStart().toDate());
+        return start.get(Calendar.DAY_OF_YEAR);
+    }
+
+    @Exclude
+    public int getMonth() {
+        Calendar start = Calendar.getInstance();
+        start.setTime(getEnd().toDate());
+        return start.get(Calendar.MONTH);
+    }
+
+    @Exclude
     @NotNull
     public Object clone() throws
             CloneNotSupportedException {
@@ -181,21 +209,22 @@ public class Event implements Cloneable {
 
     @Exclude
     public Map<String, Object> toMap() {
-        Map<String, Object> data = new HashMap<>();
-        data.put(ADDITION, getAddition());
-        data.put(BUDGET, getBudget());
-        data.put(HELP, getHelp());
-        data.put(COLLAR, getCollar());
-        data.put(DESCRIPTION, getDescription());
-        data.put(LOCATION_NAME, getLocation_name());
-        data.put(PUNCTUALITY, getPunctuality());
-        data.put(TITLE, getTitle());
-        data.put(START, getStart());
-        data.put(END, getEnd());
-        data.put(LOCATION_COORDINATES, getLocation_coordinates());
-        data.put(MEETING, isMeeting());
+        Map<String, Object> map = new HashMap<>();
+        map.put("addition", getAddition());
+        map.put("budget", getBudget());
+        map.put("collar", getCollar());
+        map.put("description", getDescription());
+        map.put("end", getEnd());
+        map.put("help", getHelp());
+        map.put("location_coordinates", getLocation_coordinates());
+        map.put("location_name", getLocation_name());
+        map.put("meeting", isMeeting());
+        map.put("punctuality", getPunctuality());
+        map.put("start", getStart());
+        map.put("title", getTitle());
+        map.put("draft", isDraft());
+        map.put("internal", isInternal());
 
-        return data;
+        return map;
     }
-
 }

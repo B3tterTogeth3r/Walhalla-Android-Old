@@ -1,0 +1,161 @@
+package de.walhalla.app.fragments;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+import com.google.firebase.firestore.DocumentReference;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import de.walhalla.app.MainActivity;
+import de.walhalla.app.R;
+import de.walhalla.app.utils.Variables;
+
+@SuppressLint("InflateParams")
+public class Sites {
+    private final static String TAG = "Sites";
+
+    public Sites() {
+    }
+
+    public static void createArea(Context context, LinearLayout parentLayout, @NotNull Map<String, Object> content) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        LinearLayout layout = new LinearLayout(context, null, R.style.History_Layout);
+        layout.removeAllViewsInLayout();
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        int size = content.size();
+        for (int i = 0; i < size; i++) {
+            try {
+                //Saved text is only a String
+                String text = (String) (content.get(String.valueOf(i)));
+                TextView line = (TextView) inflater.inflate(R.layout.text_view_history_text, null);
+                line.setText(text);
+                layout.addView(line);
+            } catch (Exception e) {
+                try {
+                    //Saved text is a document reference to a list of pictures
+                    final DocumentReference ref = (DocumentReference) (content.get(String.valueOf(i)));
+                    Log.d(TAG, ref.getPath());
+                    synchronized (new Object()) {
+                        //Import diashow with the images etc
+                        final RelativeLayout diashow = new Diashow(context).show(ref);
+                        layout.addView(diashow);
+                    }
+                } catch (Exception er) {
+                    //Saved value is a map for further design instructions
+                    Map<String, Object> different = (Map<String, Object>) content.get(String.valueOf(i));
+                    try {
+                        String text = (String) different.get("title");
+                        Log.d(TAG, text);
+                        TextView line = (TextView) inflater.inflate(R.layout.text_view_history_title, null);
+                        line.setText(text);
+                        layout.addView(line);
+                    } catch (Exception ignored) {
+                        try {
+                            String text = (String) different.get("subtitle1");
+                            Log.d(TAG, text);
+                            TextView line = (TextView) inflater.inflate(R.layout.text_view_history_subtitle, null);
+                            line.setText(text);
+                            layout.addView(line);
+                        } catch (Exception ignored2) {
+                            try {
+                                String text = (String) different.get("subtitle2");
+                                Log.d(TAG, text);
+                                TextView line = (TextView) inflater.inflate(R.layout.text_view_history_subtitle2, null);
+                                line.setText(text);
+                                layout.addView(line);
+                            } catch (Exception ignored3) {
+                                try {
+                                    String text = (String) different.get("button");
+                                    Log.d(TAG, text);
+                                    Button line = (Button) inflater.inflate(R.layout.text_view_history_button, null);
+                                    line.setText(text);
+                                    line.setOnClickListener(v -> {
+                                        //Open browser with the set link
+                                        try {
+                                            String url = (String) different.get("link");
+                                            MainActivity.listener.browser(url);
+                                        } catch (Exception ignored1) {
+                                            //No link, so Email to
+                                            MainActivity.listener.email();
+                                        }
+                                    });
+                                    layout.addView(line);
+                                } catch (Exception ignored4) {
+                                    try {
+                                        HorizontalScrollView sc = (HorizontalScrollView) inflater.inflate(R.layout.text_view_history_table, null);
+                                        TableLayout line = sc.findViewById(R.id.table);
+                                        line.removeAllViewsInLayout();
+                                        Map<String, Object> table = (Map<String, Object>) different.get("table");
+                                        //Add TableRows, starting with the row title, than sorted by number
+                                        TableRow titleRow = new TableRow(context);
+                                        titleRow.removeAllViews();
+                                        ArrayList<String> row = (ArrayList<String>) table.get("title");
+                                        int rowSize = row.size();
+                                        for (int j = 0; j < rowSize; j++) {
+                                            TextView textView = (TextView) inflater.inflate(R.layout.text_view_history_subtitle2, null);
+                                            int padding = (int) Variables.SCALE * 2;
+                                            textView.setPadding(0, padding, 20, (padding * 2));
+                                            textView.setText(row.get(j));
+                                            titleRow.addView(textView);
+                                        }
+                                        line.addView(titleRow);
+                                        table.remove("title");
+                                        List<String> sortedKeysStr = new ArrayList<>(table.keySet());
+                                        List<Integer> sortedKeys = new ArrayList<>();
+                                        for (int l = 0; l < sortedKeysStr.size(); l++) {
+                                            sortedKeys.add(Integer.parseInt(sortedKeysStr.get(l)));
+                                        }
+                                        Collections.sort(sortedKeys);
+                                        int sizeTable = sortedKeys.size();
+                                        for (int j = 0; j < sizeTable; j++) {//Map.Entry<String, Object> oneRow : table.entrySet()) {
+                                            //Map<String, Object> oneRow = (Map<String, Object>);
+                                            TableRow contentRow = (TableRow) inflater.inflate(R.layout.text_view_history_table_row, null);
+                                            contentRow.removeAllViews();
+                                            row = (ArrayList<String>) table.get(sortedKeys.get(j).toString());
+                                            rowSize = row.size();
+                                            for (int k = 0; k < rowSize; k++) {
+                                                TextView textView = (TextView) inflater.inflate(R.layout.text_view_history_text, null);
+                                                int padding = (int) Variables.SCALE * 2;
+                                                textView.setPadding(0, padding, 20, (padding * 2));
+                                                textView.setText(row.get(k));
+                                                contentRow.addView(textView);
+                                            }
+                                            line.addView(contentRow);
+                                        }
+                                        layout.addView(sc);
+                                    } catch (@SuppressWarnings("CatchMayIgnoreException") Exception ignored5) {
+                                        Log.d(TAG, "While formatting the table an error occurred.", ignored5);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        parentLayout.addView(layout);
+    }
+
+    public interface start {
+        void browser(String url);
+
+        void email();
+    }
+}

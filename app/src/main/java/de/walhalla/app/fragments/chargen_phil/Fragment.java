@@ -11,10 +11,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -99,15 +99,11 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener, 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment, container, false);
         Fragment.f = this;
+        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_chargen_phil);
+        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
 
         //Button chooseSemester = new Button(getContext());
         RelativeLayout header = new RelativeLayout(getContext());
-
-        TextView titleTV = new TextView(getContext());
-        titleTV.setTextSize((int) (10 * scale + 0.75f));
-        titleTV.setText(R.string.menu_chargen_phil);
-        header.addView(titleTV);
-        titleTV.setId(R.id.chargen_title);
 
         add = new ImageButton(getContext());
         header.addView(add);

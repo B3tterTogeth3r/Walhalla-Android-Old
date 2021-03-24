@@ -18,11 +18,10 @@ public class Add extends Fragment {
     @NotNull
     public static TableLayout load() {
         TableLayout tableLayout = new TableLayout(f.getContext());
-        title = new EditText(f.getContext());
+
         content = new EditText(f.getContext());
         ShowImg = new ImageButton(f.getContext());
 
-        title.setHint(R.string.title);
         content.setHint(R.string.description);
         content.setMinHeight((int) scale * 2);
 
@@ -30,7 +29,6 @@ public class Add extends Fragment {
         ShowImg.setImageResource(R.drawable.wappen_2017);
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) scale * 250);
-        tableLayout.addView(title);
         tableLayout.addView(content);
         tableLayout.addView(ShowImg, params);
 

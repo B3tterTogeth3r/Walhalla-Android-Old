@@ -35,4 +35,9 @@
     <item name="beer_invoice" type="id" />
     <item name="beer_payment" type="id" />
     <item name="found_person" type="id" />
+    <item name="diashow_image" type="id" />
+    <item name="diashow_previous" type="id" />
+    <item name="diashow_next" type="id" />
+    <item name="diashow_description" type="id" />
+    <item name="table" type="id" />
 </resources>

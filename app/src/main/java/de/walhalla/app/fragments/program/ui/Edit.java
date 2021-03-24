@@ -1,9 +1,12 @@
 package de.walhalla.app.fragments.program.ui;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -20,7 +24,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -31,8 +37,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 
 import org.jetbrains.annotations.NotNull;
@@ -40,36 +48,47 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import de.walhalla.app.App;
+import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
 import de.walhalla.app.User;
-import de.walhalla.app.dialog.CouleurTimePickerDialog;
+import de.walhalla.app.dialog.AccountPlanningDialog;
+import de.walhalla.app.dialog.ChangeSemesterDialog;
 import de.walhalla.app.dialog.ErrorDialog;
-import de.walhalla.app.dialog.NumberPickerDialog;
+import de.walhalla.app.dialog.JobPickerDialog;
+import de.walhalla.app.dialog.PunctualityDialog;
+import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.interfaces.CouleurTimePickerListener;
-import de.walhalla.app.interfaces.NumberpickerCompleteListener;
-import de.walhalla.app.models.AllEvents;
+import de.walhalla.app.interfaces.NumberPickerCompleteListener;
 import de.walhalla.app.models.Event;
 import de.walhalla.app.models.Helper;
+import de.walhalla.app.models.Semester;
 import de.walhalla.app.utils.Find;
 import de.walhalla.app.utils.Variables;
 
 @SuppressLint("StaticFieldLeak")
 public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnClickListener,
-        CouleurTimePickerListener, NumberpickerCompleteListener {
+        CouleurTimePickerListener, NumberPickerCompleteListener, ChosenSemesterListener {
     protected static final float scale = App.getContext().getResources().getDisplayMetrics().density;
     private static final String TAG = "Details of Program-Event";
     protected static Marker marker;
+    private static Details detailsDialog;
     private final Event event;
+    private final String whichOne;
     private Toolbar toolbar;
     private EditText title, description;
-    private Button timeStart, timeEnd, accounting;
+    private Button timeStart, timeEnd, accounting, semester, tasks;
     private TextView accBefore, accAfter;
-    private String result, whichOne;
+    private String result;
+    private CheckBox meeting, startAdh;
+    private FrameLayout frameLayout;
+    private Map<String, Object> accountingElements;
 
     public Edit(Event event) {
         //Edit an existing event
@@ -80,12 +99,12 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
     public Edit() {
         //Add a new Event
         this.whichOne = Variables.ADD;
-        Calendar c = Calendar.getInstance();
         this.event = new Event();
     }
 
-    public static void display(FragmentManager fragmentManager, @Nullable Event event) {
+    public static void display(FragmentManager fragmentManager, @Nullable Event event, Details detailsDialog) {
         Edit editDialog;
+        Edit.detailsDialog = detailsDialog;
         if (event == null) {
             editDialog = new Edit();
         } else {
@@ -99,8 +118,6 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         super.onCreateView(inflater, containter, savedInstanceState);
         View view = inflater.inflate(R.layout.program_edit, containter, false);
 
-
-        LinearLayout linearLayout = view.findViewById(R.id.program_details_layout);
         toolbar = view.findViewById(R.id.program_details_close);
 
         return view;
@@ -109,19 +126,38 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         LinearLayout linearLayout = view.findViewById(R.id.program_details_layout);
 
-        toolbar.setNavigationOnClickListener(v -> dismiss());
+        toolbar.setNavigationOnClickListener(v -> {
+            //Show a dialog with question to whether save it as a draft or just dismiss; only if whichOne == ADD
+            if (whichOne.equals(Variables.ADD)) {
+                AlertDialog.Builder draftSaver = new AlertDialog.Builder(getContext());
+                draftSaver.setTitle(R.string.abort)
+                        .setMessage(R.string.program_abort_sure)
+                        .setPositiveButton(R.string.yes, (dialog, which) -> sendDraft())
+                        .setNegativeButton(R.string.no, (dialog, which) -> dialogDismiss());
+                draftSaver.show();
+            }
+        });
         toolbar.setTitle(R.string.program_details);
-        toolbar.inflateMenu(R.menu.send_only);
+        Drawable unwrapped = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_menu_add);
+        Drawable wrapped = DrawableCompat.wrap(unwrapped);
+        DrawableCompat.setTint(wrapped, Color.WHITE);
+        toolbar.setOverflowIcon(wrapped);
+        toolbar.inflateMenu(R.menu.program_add_send);
 
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_send) {
-                Log.i(TAG, "Send got clicked");
-                send(whichOne);
+                Log.i(TAG, "Event is going to be public");
+                sendPublic();
+            } else if (item.getItemId() == R.id.action_send_private) {
+                Log.i(TAG, "Event is going to be still in private mode");
+                sendPrivate();
+            } else if (item.getItemId() == R.id.action_draft) {
+                Log.i(TAG, "Event is going to be still in draft mode");
+                sendDraft();
             } else {
-                dismiss();
+                dialogDismiss();
             }
             return true;
         });
@@ -133,16 +169,31 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         accounting = view.findViewById(R.id.program_edit_accounting);
         accBefore = view.findViewById(R.id.program_edit_acc_before);
         accAfter = view.findViewById(R.id.program_edit_acc_after);
+        TextView accCurr = view.findViewById(R.id.program_edit_acc_current);
+        semester = view.findViewById(R.id.program_semester);
+        meeting = view.findViewById(R.id.program_meeting);
+        startAdh = view.findViewById(R.id.program_start_place);
+        tasks = view.findViewById(R.id.program_edit_tasks);
 
         timeStart.setOnClickListener(this);
         timeEnd.setOnClickListener(this);
         accounting.setOnClickListener(this);
+        semester.setOnClickListener(this);
+        meeting.setOnClickListener(this);
+        tasks.setOnClickListener(this);
 
-        FrameLayout frameLayout = new FrameLayout(requireContext());
+        if (whichOne.equals(Variables.ADD)) {
+            startAdh.setOnClickListener(this);
+        } else {
+            startAdh.setEnabled(false);
+            startAdh.setClickable(false);
+        }
+
+        frameLayout = new FrameLayout(requireContext());
         frameLayout.setId(R.id.maps_fragment);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) scale * 400);
         linearLayout.addView(frameLayout, params);
-
+        //TODO Make the parent fragment not scrollable while this one is touched
         FragmentManager fm = getChildFragmentManager();
         SupportMapFragment supportMapFragment = SupportMapFragment.newInstance();
         fm.beginTransaction().replace(frameLayout.getId(), supportMapFragment).commit();
@@ -155,7 +206,9 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
 
         //Fill fields with the content
         title.setText(event.getTitle());
+        title.setHint(R.string.title);
         description.setText(event.getDescription());
+        description.setHint(R.string.description);
         Calendar c = Calendar.getInstance();
         c.setTime(event.getStart().toDate());
         float hourFl = c.get(Calendar.HOUR_OF_DAY), minuteFl = c.get(Calendar.MINUTE);
@@ -172,7 +225,7 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         }
         String helper = c.get(Calendar.DAY_OF_MONTH) + "." +
                 Variables.MONTHS[c.get(Calendar.MONTH)] + "." +
-                c.get(Calendar.YEAR) + " " + hour + ":" + minute +
+                c.get(Calendar.YEAR) + " " + hour + ":" + minute + " " +
                 getResources().getString(R.string.clock);
         timeStart.setText(helper);
 
@@ -191,29 +244,21 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         }
         helper = c.get(Calendar.DAY_OF_MONTH) + "." +
                 Variables.MONTHS[c.get(Calendar.MONTH)] + "." +
-                c.get(Calendar.YEAR) + " " + hour + ":" + minute +
+                c.get(Calendar.YEAR) + " " + hour + ":" + minute + " " +
                 getResources().getString(R.string.clock);
         timeEnd.setText(helper);
 
-        //TODO accounting.setText(event.getPlan());
-        //TODO Add the two checkboxes
-/*
-            ArrayList<AllEvents> eventsArrayList = Database.getAllEventsArrayList();
-            new AllEvents();
-            AllEvents allEvents;
-            for (int i = 0; i < eventsArrayList.size(); i++) {
-                if (eventsArrayList.get(i).getName().equals(event.getPlan())) {
-                    allEvents = eventsArrayList.get(i);
-                    float helperFL = (float) allEvents.getBefore();
-                    helper = "€ " + String.format(Variables.LOCALE, "%,2f", helperFL);
-                    accBefore.setText(helper);
-                    helperFL = (float) allEvents.getAfter();
-                    helper = "€ " + String.format(Variables.LOCALE, "%,2f", helperFL);
-                    accAfter.setText(helper);
-                }
-            }
+        try {
+            Map<String, Object> budget = event.getBudget();
+            accAfter.setText((String) budget.get("after"));
+            accBefore.setText((String) budget.get("before"));
+            accCurr.setText((String) budget.get("current"));
+        } catch (Exception ignored) {
+        }
 
-            /* Bottom with Helper */
+        startAdh.setChecked(whichOne.equals(Variables.ADD));
+
+        /* Bottom with Helper */
         if (User.isLogIn()) {
             ArrayList<Helper> helperArrayList = new ArrayList<>();//TODO Find.help4event(event);
             if (!helperArrayList.isEmpty()) {
@@ -246,99 +291,216 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
 
     }
 
-    private void send(String whichOne) {
+    private void sendDraft() {
+        event.setDraft(true);
+        event.setInternal(false);
+        upload();
+    }
 
-        //check for mistakes and if there are none, add it to the local and online database.
-        event.setLocation_coordinates(new GeoPoint(marker.getPosition().latitude, marker.getPosition().longitude));
-        LatLng latLng = marker.getPosition();
-        Geocoder geocoder = new Geocoder(getContext());
-        event.setTitle(String.valueOf(title.getText()));
-        event.setDescription(String.valueOf(description.getText()));
+    private void sendPrivate() {
+        event.setDraft(false);
+        event.setInternal(true);
+        upload();
+    }
 
+    private void sendPublic() {
+        event.setDraft(false);
+        event.setInternal(false);
+        upload();
+    }
+
+    private void upload() {
         try {
-            if (Geocoder.isPresent()) {
-                List<Address> addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                for (int i = 0; i < addressList.size(); i++) {
-                    String result = addressList.get(i).getThoroughfare() + " "
-                            + addressList.get(i).getSubThoroughfare() + ", "
-                            + addressList.get(i).getPostalCode() + " "
-                            + addressList.get(i).getLocality();
-                    event.setLocation_name(result);
-                    event.setLocation_coordinates(new GeoPoint(latLng.latitude, latLng.longitude));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int index = 0;
-        if (!whichOne.equals(Variables.DELETE)) {
-            Event upload = new Event();
-            boolean error = false;
-            if (whichOne.equals(Variables.ADD)) {
+            //check for mistakes and if there are none, add it to the local and online database.
+            event.setLocation_coordinates(new GeoPoint(marker.getPosition().latitude, marker.getPosition().longitude));
+            LatLng latLng = marker.getPosition();
+            Geocoder geocoder = new Geocoder(getContext());
+            event.setTitle(String.valueOf(title.getText()));
+            event.setDescription(String.valueOf(description.getText()));
 
-                //Upload toUpload to the online database and add it to the local ArrayList
-                try {
-                    //TODO index = Database.getEventArrayList().get(Database.getEventArrayList().size() - 1).getId();
-                    //event.setId(index);
-                    if (event.getStart() == null ||
-                            event.getEnd() == null ||
-                            //TODO event.getPunkt() == null ||
-                            event.getCollar() == null ||
-                            event.getTitle() == null) {
+            try {
+                if (Geocoder.isPresent()) {
+                    List<Address> addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                    for (int i = 0; i < addressList.size(); i++) {
+                        String result = addressList.get(i).getThoroughfare() + " "
+                                + addressList.get(i).getSubThoroughfare() + ", "
+                                + addressList.get(i).getPostalCode() + " "
+                                + addressList.get(i).getLocality();
+                        event.setLocation_name(result);
+                        event.setLocation_coordinates(new GeoPoint(latLng.latitude, latLng.longitude));
+                    }
+                }
+            } catch (IOException e) {
+                Log.d(TAG, "Couldn't find an address at the selected position", e);
+            }
+            if (!whichOne.equals(Variables.DELETE)) {
+                Event upload = new Event();
+                boolean error = false;
+                if (whichOne.equals(Variables.ADD)) {
+                    //Upload toUpload to the online database and add it to the local ArrayList
+                    try {
+                        if (event.getStart() == null ||
+                                event.getEnd() == null ||
+                                event.getPunctuality() == null ||
+                                event.getCollar() == null ||
+                                event.getTitle() == null) {
+                            error = true;
+                        }
+                        if (event.getLocation_name() == null)
+                            event.setLocation_name(Variables.Walhalla.NAME);
+                        if (event.getLocation_coordinates() == null)
+                            event.setLocation_coordinates(Variables.Walhalla.ADH_LOCATION);
+                        upload = (Event) event.clone();
+                    } catch (Exception e) {
                         error = true;
                     }
-                    if (event.getLocation_name() == null)
-                        event.setLocation_name(Variables.Walhalla.NAME);
-                    if (event.getLocation_coordinates() == null)
-                        event.setLocation_coordinates(Variables.Walhalla.ADH_LOCATION);
-                    upload = event;
-                } catch (Exception e) {
+                    //Upload them to the firebase realtime database
+                }
+                if (whichOne.equals(Variables.EDIT)) {
+                    try {
+                        upload = (Event) event.clone();
+                    } catch (Exception e) {
+                        error = true;
+                    }
+                    //Upload them to the firebase realtime database
+                }
+                if (!error) {
+                    int sem_id = App.getChosenSemester().getID();
+                    //Upload
+                    if (whichOne.equals(Variables.ADD)) {
+                        Variables.Firebase.FIRESTORE.collection("Semester")
+                                .document(String.valueOf(sem_id))
+                                .collection("Event")
+                                .add(upload)
+                                .addOnFailureListener(e -> uploadError())
+                                .addOnSuccessListener(aVoid -> uploadSuccess());
+                    }
+                    //Edit
+                    else if (whichOne.equals(Variables.EDIT)) {
+                        Variables.Firebase.FIRESTORE.collection("Semester")
+                                .document(String.valueOf(sem_id))
+                                .collection("Event")
+                                .document(upload.getId())
+                                .update(upload.toMap())
+                                .addOnFailureListener(e -> uploadError())
+                                .addOnSuccessListener(aVoid -> uploadSuccess());
+                    }
+                } else {
                     uploadError();
                 }
-                //Upload them to the firebase realtime database
-            }
-            if (whichOne.equals(Variables.EDIT)) {
-                //TODO index = event.getId();
-                upload = event;
-                //Upload them to the firebase realtime database
-            }
-            if (!error) {
-                /*Variables.Firebase.Reference.EVENT.child(String.valueOf(index)).child("start").setValue(upload.getStart());
-                Variables.Firebase.Reference.EVENT.child(String.valueOf(index)).child("end").setValue(upload.getEnd());
-                Variables.Firebase.Reference.EVENT.child(String.valueOf(index)).child("punkt").setValue(upload.getPunkt());
-                Variables.Firebase.Reference.EVENT.child(String.valueOf(index)).child("collar").setValue(upload.getCollar());
-                Variables.Firebase.Reference.EVENT.child(String.valueOf(index)).child("title").setValue(upload.getTitle());
-                Variables.Firebase.Reference.EVENT.child(String.valueOf(index)).child("description").setValue(upload.getDescription());
-                Variables.Firebase.Reference.EVENT.child(String.valueOf(index)).child("plan").setValue(upload.getPlan());
-                Variables.Firebase.Reference.EVENT.child(String.valueOf(index)).child("locationName").setValue(upload.getLocationName());
-                Variables.Firebase.Reference.EVENT.child(String.valueOf(index)).child("locationCoordinates").setValue(upload.getLocationCoordinatesString())
-                        .addOnFailureListener(e -> uploadError())
-                        .addOnSuccessListener(aVoid -> {
-                            Snackbar.make(MainActivity.parentLayout, R.string.upload_complete, Snackbar.LENGTH_LONG).show();
-                            Details.DIALOG.dismiss();
-                            dismiss();
-                        });*/
             } else {
-                uploadError();
+                dialogDismiss();
             }
-        } else {
-            dismiss();
+        } catch (Exception exception) {
+            Log.d(TAG, "Upload:error", exception);
         }
+    }
+
+    private void uploadSuccess() {
+        //TODO create a sub collection inside the event with an empty document, if isMeeting() = true
+        Snackbar.make(MainActivity.parentLayout, R.string.upload_complete, Snackbar.LENGTH_LONG).show();
+        dialogDismiss();
+    }
+
+    private void uploadError() {
+        Snackbar.make(requireView(), R.string.error_upload, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.close, v -> {
+                })
+                .setActionTextColor(App.getContext().getResources().getColor(R.color.colorPrimaryDark, null))
+                .show();
+    }
+
+    private void dialogDismiss() {
+        if (detailsDialog != null) {
+            detailsDialog.dismiss();
+        }
+        dismiss();
     }
 
     @Override
     public void onClick(View v) {
-        if (v == timeStart) {
-            date(Event.START);
-        } else if (v == timeEnd) {
-            date(Event.END);
-        } else if (v == accounting) {
-            NumberPickerDialog numberPickerDialog = new NumberPickerDialog(getContext(), "ProgramDialog", this);
-            numberPickerDialog.show();
+        try {
+            if (v == timeStart) {
+                date(Event.START);
+            } else if (v == timeEnd) {
+                date(Event.END);
+            } else if (v == accounting) {
+                accounting();
+            }
+            //Button to select the belonging semester got clicked
+            else if (v == semester) {
+                ChangeSemesterDialog changeSem = new ChangeSemesterDialog(this);
+                changeSem.show(getParentFragmentManager(), null);
+            }
+            //The Checkbox meeting got selected
+            else if (v == meeting) {
+                event.setMeeting(meeting.isChecked());
+            }
+            //The start of the event may be different from the default start
+            else if (v == startAdh) {
+                //Display the map if the Checkbox isn't checked anymore.
+                if (startAdh.isChecked() && whichOne.equals(Variables.ADD)) {
+                    frameLayout.setVisibility(View.GONE);
+                } else {
+                    frameLayout.setVisibility(View.VISIBLE);
+                }
+            }
+            //Show the dialog to choose a task to then assign people to
+            else if (v == tasks) {
+                assignTasks();
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "In program.edit something went wrong.", e);
         }
     }
 
-    protected void date(String kind) {
+    private void assignTasks() {
+        Variables.Firebase.FIRESTORE
+                .collection("Kind")
+                .document("Helper")
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        //create dialog and sort list inside
+                        //noinspection ConstantConditions
+                        JobPickerDialog.load(getContext(), event.getHelp(), documentSnapshot.getData(), this);
+                    }
+                });
+    }
+
+    /**
+     * Download the possible ways of accounting and display a numberPicker dialog
+     * with them inside. The user chooses one and the result gets saved in the event
+     */
+    private void accounting() {
+        Variables.Firebase.FIRESTORE
+                .collection("Kind")
+                .document("accounting")
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        try {
+                            accountingElements.clear();
+                        } catch (Exception ignored) {
+                        }
+                        accountingElements = documentSnapshot.getData();
+                        List<String> names = new ArrayList<>(accountingElements.keySet());
+                        Collections.sort(names);
+                        if (names.size() != 0) {
+                            new AccountPlanningDialog(getContext(), names, Edit.this).show();
+                        } else {
+                            Log.d(TAG, "names.size ==0");
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Start date picker with android theme
+     *
+     * @param kind Save the picked date in the corresponding place
+     */
+    protected void date(@NotNull String kind) {
         //Get Current Date
         final Calendar c = Calendar.getInstance();
         if (kind.equals(Event.START)) {
@@ -346,7 +508,6 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         } else if (kind.equals(Event.END)) {
             c.setTime(event.getEnd().toDate());
         }
-
 
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH);
@@ -359,12 +520,12 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
                     if (Integer.parseInt(day) < 10) {
                         day = "0" + day;
                     }
-                    result = day + "." + Variables.MONTHS[monthOfYear] + " " + year;
+                    result = day + ". " + Variables.MONTHS[monthOfYear] + " " + year;
                     if (kind.equals(Event.START)) {
-                        timeStart.setText(result);
+                        timeStart.setText(R.string.program_edit_time_start);
                         event.setStart(new Timestamp(c.getTime()));
                     } else if (kind.equals(Event.END)) {
-                        timeEnd.setText(result);
+                        timeEnd.setText(R.string.program_dialog_time_end);
                         event.setEnd(new Timestamp(c.getTime()));
                     }
                     time(kind);
@@ -372,7 +533,12 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         datePickerDialog.show();
     }
 
-    protected void time(String kind) {
+    /**
+     * Start time picker with android theme
+     *
+     * @param kind Save the picked date in the corresponding place
+     */
+    protected void time(@NotNull String kind) {
         //Get Current Time
         final Calendar c = Calendar.getInstance();
         if (kind.equals(Event.START)) {
@@ -389,7 +555,6 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
                     String resultTime;
                     if (minute < 10) {
                         resultTime = hourOfDay + ":" + "0" + minute;
-
                     } else {
                         resultTime = hourOfDay + ":" + minute;
                     }
@@ -400,19 +565,15 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
                         cDate.set(Calendar.MINUTE, minute);
                         cDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
                         event.setStart(new Timestamp(cDate.getTime()));
-                        result = timeStart.getText() + " " + resultTime;
-                        //Open picker for none/ct/st, io/o/ho and "none/anschließend/ganztägig/gleicher Tag/Info"
-                        Dialog dialog = new CouleurTimePickerDialog(requireContext(), this);
-                        dialog.show();
-                        dialog.setOnDismissListener(dialog1 -> timeStart.setText(result));
+                        result = result + " " + resultTime + " " + getString(R.string.clock);
+                        PunctualityDialog.load(getContext(), "punctuality", this);
                     } else if (kind.equals(Event.END)) {
                         //Test for same or later date as start
-                        if (c.getTime().before(event.getStart().toDate())) {
+                        if (c.getTime().before(event.getStart().toDate()) || c.getTime().equals(event.getStart().toDate())) {
                             //Dialog with error message
                             try {
                                 ErrorDialog.display(getParentFragmentManager(), getString(R.string.error_time));
                             } catch (Exception ignored) {
-
                             }
                         } else {
                             Date date = event.getEnd().toDate();
@@ -420,7 +581,7 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
                             cDate.set(Calendar.MINUTE, minute);
                             cDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
                             event.setEnd(new Timestamp(cDate.getTime()));
-                            result = timeEnd.getText() + " " + resultTime;
+                            result = result + " " + resultTime;
                             timeEnd.setText(result);
                         }
                     }
@@ -428,6 +589,9 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         timePickerDialog.show();
     }
 
+    /**
+     * Make this dialog full screen
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -440,6 +604,9 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         }
     }
 
+    /**
+     * Make this dialog full screen
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -491,53 +658,54 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
                 });
                 break;
         }
-    }
 
-    private void uploadError() {
-        Snackbar.make(requireView(), R.string.error_upload, Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.close, v -> {
-                })
-                .setActionTextColor(App.getContext().getResources().getColor(R.color.colorPrimaryDark, null))
-                .show();
-    }
-
-    @Override
-    public void notifyOfDialogDone(String punctuality, @NotNull String dayTime, String collar) {
-        result = result + " " + punctuality + " " + collar + " " + dayTime;
-        event.setCollar(collar);
-        //Translate punctuality
-        switch (dayTime) {
-            case ("anschließend"):
-                dayTime = "after";
-                punctuality = "";
-                break;
-            case ("ganztägig"):
-                dayTime = "total";
-                punctuality = "";
-                break;
-            case ("gleicher Tag"):
-                dayTime = "later ";
-                break;
-            case ("Info"):
-                dayTime = "info";
-                punctuality = "";
-                break;
-            case ("noch unbekannt"):
-                dayTime = "unknown ";
-                break;
-            default:
-                dayTime = "";
+        try {
+            if (startAdh.isChecked() && whichOne.equals(Variables.ADD)) {
+                frameLayout.setVisibility(View.GONE);
+            } else {
+                frameLayout.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Visibility did not work on the Map", e);
         }
-        //TODO event.setPunkt(dayTime + punctuality);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void notifyOfAccountingDone(String name) {
+        Map<String, Object> data = (Map<String, Object>) accountingElements.get(name);
+        String format = "€ " + data.get("before").toString() + ",00";
+        accBefore.setText(format);
+        format = "€ " + data.get("after").toString() + ",00";
+        accAfter.setText(format);
+        format = getString(R.string.program_dialog_accounting) + ": " + name;
+        accounting.setText(format);
+        event.setBudget(data);
     }
 
     @Override
-    public void notifyOfNumberPickerDone(@NotNull AllEvents allEvents) {
-        accounting.setText(allEvents.getName());
-        String before = "€ " + allEvents.getBefore() + ",00";
-        accBefore.setText(before);
-        String after = "€ " + allEvents.getAfter() + ",00";
-        accAfter.setText(after);
-        //TODO event.setPlan(allEvents.getName());
+    public void notifyOfTaskDone(@NotNull Map<String, Object> helpers) {
+        Log.d(TAG, "notifiyOfTaskDone:size = " + helpers.size());
+        event.setHelp(helpers);
+    }
+
+    @Override
+    public void punctualityDone(@NotNull String punctuality) {
+        if (!punctuality.equals(" "))
+            event.setPunctuality(punctuality);
+    }
+
+    @Override
+    public void collarDone(String collar) {
+        event.setCollar(collar);
+        result = result + " " + event.getPunctuality() + " " + collar;
+        timeStart.setText(result);
+    }
+
+    @Override
+    public void start(@NotNull Semester chosenSemester) {
+        semester.setText(chosenSemester.getLong());
+        App.setChosenSemester(chosenSemester);
     }
 }

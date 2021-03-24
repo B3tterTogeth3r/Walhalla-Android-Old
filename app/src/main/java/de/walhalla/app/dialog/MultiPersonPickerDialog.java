@@ -7,55 +7,53 @@ import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import de.walhalla.app.R;
 import de.walhalla.app.interfaces.personSelectorListener;
-import de.walhalla.app.models.Event;
-import de.walhalla.app.models.Helper;
-import de.walhalla.app.models.HelperKind;
-import de.walhalla.app.models.Person;
-import de.walhalla.app.utils.Database;
 
 public class MultiPersonPickerDialog extends AlertDialog.Builder implements
         DialogInterface.OnMultiChoiceClickListener, DialogInterface.OnClickListener {
     private final static String TAG = "MultiPersonPickerDialog";
-    private final HelperKind kind;
-    private final ArrayList<Helper> helperArrayList;
-    private final Event event;
-    private final ArrayList<Integer> selectedItems;
-    private final ArrayList<Person> person;
     private final personSelectorListener listener;
+    private final int whichJob;
+    private final List<String> persons;
+    private final List<String> selectedPersons;
 
-    public MultiPersonPickerDialog(Context context, final Event event, final HelperKind kind,
-                                   final ArrayList<Helper> helperArrayList,
-                                   personSelectorListener listener) {
+    public MultiPersonPickerDialog(Context context, final int whichJob, List<String> selectedPersons, @NotNull List<String> persons, personSelectorListener listener) {
         super(context);
-        this.event = event;
-        this.kind = kind;
-        this.helperArrayList = helperArrayList;
         this.listener = listener;
+        this.whichJob = whichJob;
+        this.persons = persons;
+        this.selectedPersons = selectedPersons;
 
-        person = Database.getAktiveMembersArrayList();
-        selectedItems = new ArrayList<>();
-        String[] names = new String[person.size()];
-        boolean[] checkedItems = new boolean[person.size()];
+        String[] names = new String[persons.size()];
+        boolean[] checkedItems = new boolean[persons.size()];
 
-        for (int i = 0; i < person.size(); i++) {
-            names[i] = person.get(i).getFullName();
-            checkedItems[i] = isInList(person.get(i).getId(), helperArrayList);
+        for (int i = 0; i < persons.size(); i++) {
+            names[i] = persons.get(i);
+            checkedItems[i] = isInList(persons.get(i));
             if (checkedItems[i])
-                selectedItems.add(i);
+                this.selectedPersons.add(persons.get(i));
         }
 
-        setTitle(kind.getTag());
+        setTitle(JobPickerDialog.tasks[whichJob - 1]);
         setMultiChoiceItems(names, checkedItems, this);
         setPositiveButton(R.string.done, this);
     }
 
-    private boolean isInList(String personId, @NotNull ArrayList<Helper> helperArrayList) {
-        for (int i = 0; i < helperArrayList.size(); i++) {
-            if (String.valueOf(personId).equals(helperArrayList.get(i).getPerson()))
+    public static void load(Context context, final int whichJob, List<String> selectedPersons, @NotNull List<String> persons, personSelectorListener listener) {
+        try {
+            MultiPersonPickerDialog dialog = new MultiPersonPickerDialog(context, whichJob, selectedPersons, persons, listener);
+            dialog.show();
+        } catch (Exception e) {
+            Log.d(TAG, "MultiPersonPickerDialog:load:error", e);
+        }
+    }
+
+    private boolean isInList(String personId) {
+        for (int i = 0; i < selectedPersons.size(); i++) {
+            if (personId.equals(selectedPersons.get(i)))
                 return true;
         }
         return false;
@@ -65,31 +63,24 @@ public class MultiPersonPickerDialog extends AlertDialog.Builder implements
     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
         if (isChecked) {
             // If the user checked the item, add it to the selected items
-            selectedItems.add(which);
-            Log.i(TAG, person.get(which).getFullName());
+            selectedPersons.add(persons.get(which));
+            Log.i(TAG, persons.get(which));
             //helperArrayList.add(new Helper(event.getId(), kind.getId(), person.get(which).getID()));
-
-        } else if (selectedItems.contains(which)) {
+        } else if (selectedPersons.contains(persons.get(which))) {
             // Else, if the item is already in the array, remove it
-            selectedItems.remove(Integer.valueOf(which));
-            Log.i(TAG, person.get(which).getFullName());
-            int i = 0;
-            int size = helperArrayList.size();
-            do {
-                Helper h = helperArrayList.get(i);
-                if (person.get(which).getId().equals(h.getPerson())) {
-                    helperArrayList.remove(h);
-                    break;
-                }
-                i++;
-            } while (i < size);
+            selectedPersons.remove(persons.get(which));
+            Log.i(TAG, persons.get(which));
         }
     }
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == -1) {  //User clicked on the positive button
-            listener.onPersonSelectorDone(event, helperArrayList, kind);
+            try {
+                listener.onPersonSelectorDone(whichJob, selectedPersons);
+            } catch (Exception e){
+                Log.d(TAG, "listener:done:error", e);
+            }
         }
     }
 }

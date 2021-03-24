@@ -57,7 +57,7 @@ public class OnClick extends Fragment implements View.OnClickListener {
             transaction.commit();
         }
         if (v == done) {
-            String tvTitle = title.getText().toString();
+            String tvTitle = "";
             String tvContent = content.getText().toString();
             Date currentTime = Calendar.getInstance().getTime();
             if (!(tvTitle.equals("")) && !(tvContent.equals(""))) {

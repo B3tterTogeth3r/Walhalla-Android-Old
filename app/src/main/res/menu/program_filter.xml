@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_public"
+        android:icon="@drawable/ic_public"
+        android:title="@string/program_show_public_events"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_private"
+        android:icon="@drawable/ic_public_off"
+        android:title="@string/program_show_private_events"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_draft"
+        android:icon="@drawable/ic_unpublished"
+        android:title="@string/program_show_draft"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/ic_add"
+        android:title="@string/program_add"
+        app:showAsAction="never" />
+</menu>

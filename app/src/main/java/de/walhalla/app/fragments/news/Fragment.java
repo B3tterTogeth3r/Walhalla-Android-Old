@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -52,7 +53,6 @@ public class Fragment extends CustomFragment implements NewsChangeNotifier {
     protected static ImageButton done, abort, add;
     protected static androidx.fragment.app.Fragment f;
     protected static String whichOne;
-    protected static TextView title;
     protected static EditText content;
     protected static ImageButton ShowImg;
     protected static Bitmap bitmap;
@@ -78,6 +78,10 @@ public class Fragment extends CustomFragment implements NewsChangeNotifier {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment, container, false);
+        Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);;
+        toolbar.setTitle(R.string.menu_messages);
+        toolbar.setSubtitle("");
+        //TODO add the "add" button into the Toolbar
         f = this;
         ArrayList<News> arrayList = Database.getNewsArrayList();
         arrayList.sort((o1, o2) -> o1.getDate_Date().after(o2.getDate_Date()) ? -1 : o1.getDate_Date().before(o2.getDate_Date()) ? 1 : 0);
@@ -112,9 +116,7 @@ public class Fragment extends CustomFragment implements NewsChangeNotifier {
     private void buttonVisibility() {
         if (User.isLogIn() && App.isInternet &&
                 (User.isX() | User.isVX() | User.isFM())) {
-            add.setVisibility(View.VISIBLE);
-        } else {
-            add.setVisibility(View.GONE);
+            ((Toolbar) f.getActivity().findViewById(R.id.toolbar)).inflateMenu(R.menu.add);
         }
     }
 

@@ -1,13 +1,9 @@
 package de.walhalla.app.interfaces;
 
-import java.util.ArrayList;
+import org.jetbrains.annotations.NotNull;
 
-import de.walhalla.app.models.Event;
-import de.walhalla.app.models.Helper;
-import de.walhalla.app.models.HelperKind;
-
+import java.util.List;
 
 public interface personSelectorListener {
-    default void onPersonSelectorDone(Event event, ArrayList<Helper> helperArrayList, HelperKind kind) {
-    }
+    void onPersonSelectorDone(int which, @NotNull List<String> names);
 }

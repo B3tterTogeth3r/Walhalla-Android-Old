@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="200dp"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        style="@style/Diashow.Image"/>
+
+    <ImageButton
+        style="@style/Diashow.Left"/>
+
+    <ImageButton
+        style="@style/Diashow.Right"/>
+
+    <TextView
+        style="@style/Diashow.Description"/>
+
+</RelativeLayout>

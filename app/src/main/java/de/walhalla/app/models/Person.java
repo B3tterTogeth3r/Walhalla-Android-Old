@@ -1,8 +1,8 @@
 package de.walhalla.app.models;
 
 import com.google.firebase.Timestamp;
-import com.google.firebase.database.Exclude;
-import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
 import org.jetbrains.annotations.NotNull;
 

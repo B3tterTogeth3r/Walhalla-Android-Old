@@ -14,16 +14,17 @@ import de.walhalla.app.utils.Variables;
 public class User {
     private static final String TAG = "User";
     public static String username;
-    private static Person userData = new Person();
     static UserDataChangeListener listener;
+    private static Person userData = new Person();
+    private static Map<String, Object> admins;
 
     public User(UserDataChangeListener listener) {
         User.listener = listener;
     }
 
     public static boolean isLogIn() {
-        Log.i(TAG, "is user login: " + (Variables.Firebase.AUTHENTICATION != null));
-        return Variables.Firebase.AUTHENTICATION != null;
+        Log.i(TAG, "is user login: " + (userData != null));
+        return userData != null;
     }
 
     public static void setData(@NotNull Person userData, @NotNull String username) {
@@ -33,11 +34,15 @@ public class User {
     }
 
     public static Person getData() {
-        return userData;
+        if (userData != null) {
+            return userData;
+        } else {
+            return new Person();
+        }
     }
 
     public static void logOut() {
-        userData = new Person();
+        userData = null;
         username = "";
         //Clear FirebaseAuth
         Variables.Firebase.AUTHENTICATION.signOut();
@@ -91,20 +96,20 @@ public class User {
     }
 
     private static boolean isAdmin() {
-        final boolean[] returnValue = {false};
-        Variables.Firebase.FIRESTORE.collection("Editors").document("private").get().addOnSuccessListener(documentSnapshot -> {
-            Map<String, Object> admins = documentSnapshot.getData();
-            if (admins != null && !admins.isEmpty()) {
-                for (int i = 0; i < admins.size(); i++) {
-                    try {
-                        if (((String) admins.get(username)).equals("super-admin"))
-                            returnValue[0] = true;
-                    } catch (Exception exception) {
-                        returnValue[0] = false;
-                    }
-                }
-            }
-        });
-        return returnValue[0] && (Variables.Firebase.AUTHENTICATION != null);
+        Map<String, Object> list = getAdmins();
+        try {
+            if (list.get(username).equals("super-admin"))
+                return true;
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    public static Map<String, Object> getAdmins() {
+        return admins;
+    }
+
+    public static void setAdmins(Map<String, Object> admins) {
+        User.admins = admins;
     }
 }

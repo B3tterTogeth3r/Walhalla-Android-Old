@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import de.walhalla.app.R;
 import de.walhalla.app.fragments.CustomFragment;
@@ -35,6 +36,8 @@ public class Fragment extends CustomFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_donate, container, false);
         //TODO This design is awful.
+        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_donate);
+        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
 
         //Beim Anklicken der Felder wird die IBAN in die Zwischenablage kopiert
         Buttons.load();

@@ -2,6 +2,8 @@ package de.walhalla.app;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -28,9 +30,12 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.walhalla.app.dialog.LoginDialog;
 import de.walhalla.app.firebase.CustomAuthListener;
 import de.walhalla.app.fragments.BalanceFragment;
+import de.walhalla.app.fragments.Sites;
 import de.walhalla.app.fragments.home.Fragment;
 import de.walhalla.app.utils.Find;
 import de.walhalla.app.utils.Variables;
@@ -38,22 +43,23 @@ import de.walhalla.app.utils.Variables;
 @SuppressLint("StaticFieldLeak")
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
-        CustomAuthListener.sendMain {
+        CustomAuthListener.sendMain, Sites.start{
     private final static String TAG = "MainActivity";
+    public static CustomAuthListener.sendMain authChange;
     public static View parentLayout;
+    public static Sites.start listener;
     private MenuItem lastItem;
     private DrawerLayout drawerlayout;
     private AppBarConfiguration appBarConfiguration;
     private boolean doubleBackToExitPressedOnce = false;
     private NavigationView navigationView;
-    public static CustomAuthListener.sendMain authChange;
 
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             try {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            } catch (NullPointerException ignored) {
+            } catch (Exception ignored) {
             }
         }
     }
@@ -63,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
         hideKeyboard(getCurrentFocus());
         authChange = this;
+        listener = this;
     }
 
     @Override
@@ -80,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements
             Find.PersonByUID(Variables.Firebase.user.getUid(), Variables.Firebase.user.getEmail());
         }
         parentLayout = findViewById(android.R.id.content);
-
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -136,6 +142,10 @@ public class MainActivity extends AppCompatActivity implements
         menu.add(0, R.string.menu_home, 0, R.string.menu_home)
                 .setChecked(true)
                 .setIcon(R.drawable.ic_home);
+        menu.add(0, R.string.menu_about_us, 0, R.string.menu_about_us)
+                .setIcon(R.drawable.ic_info);
+        menu.add(0, R.string.menu_rooms, 0, R.string.menu_rooms)
+                .setIcon(R.drawable.ic_rooms);
         menu.add(0, R.string.menu_program, 0, R.string.menu_program)
                 .setIcon(R.drawable.ic_calendar);
         menu.add(0, R.string.menu_messages, 0, R.string.menu_messages)
@@ -144,14 +154,11 @@ public class MainActivity extends AppCompatActivity implements
                 .setIcon(R.drawable.ic_group);
         menu.add(0, R.string.menu_chargen_phil, 0, R.string.menu_chargen_phil)
                 .setIcon(R.drawable.ic_group_line);
+        //.setIcon(R.drawable.ic_calendar);
 
         //Login, Sign up, Logout and delete pages
-        /*Menu loginMenu = menu.addSubMenu(R.string.menu_user_editing);
-        if (!isLogin) {
-            loginMenu.add(1, R.string.menu_login, 0, R.string.menu_login)
-                    //.setCheckable(false)
-                    .setIcon(R.drawable.ic_exit);
-        } else {
+        Menu loginMenu = menu.addSubMenu(R.string.menu_user_editing);
+        if(isLogin){
             loginMenu.add(1, R.string.menu_logout, 0, R.string.menu_logout)
                     .setIcon(R.drawable.ic_exit)
                     .setCheckable(false);
@@ -178,7 +185,19 @@ public class MainActivity extends AppCompatActivity implements
                 menuCharge.add(0, R.string.menu_account, 0, R.string.menu_account)
                         .setIcon(R.drawable.ic_account);
             }
-        }*/
+        } else{
+            loginMenu.add(1, R.string.menu_login, 0, R.string.menu_login)
+                    //.setCheckable(false)
+                    .setIcon(R.drawable.ic_exit);
+        }
+
+        //TODO Find icons for the rest
+        Menu moreMenu = menu.addSubMenu(R.string.menu_more);
+        moreMenu.add(1, R.string.menu_more_board, 1, R.string.menu_more_board)
+                .setContentDescription(getString(R.string.menu_more_board_description));
+        moreMenu.add(1, R.string.menu_more_history, 1, R.string.menu_more_history);
+        moreMenu.add(1, R.string.menu_more_frat_wue, 1, R.string.menu_more_frat_wue);
+        moreMenu.add(1, R.string.menu_more_frat_organisation, 1, R.string.menu_more_frat_organisation);
 
         Menu menuEnd = menu.addSubMenu(R.string.menu_other);
         /*menuEnd.add(0, R.string.menu_settings, 0, R.string.menu_settings)
@@ -209,14 +228,10 @@ public class MainActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.string.menu_login:
                 LoginDialog.display(getSupportFragmentManager());
-                Snackbar.make(parentLayout, R.string.login_success, Snackbar.LENGTH_LONG)
-                        .setAction(R.string.close, v -> {
-                        })
-                        .setActionTextColor(App.getContext().getResources().getColor(R.color.colorPrimaryDark, null))
-                ;//.show();
                 break;
             case R.string.menu_logout:
                 Variables.Firebase.AUTHENTICATION.signOut();
+                User.logOut();
                 Snackbar.make(parentLayout, R.string.login_logout_successful, Snackbar.LENGTH_LONG)
                         .setAction(R.string.close, v -> {
                         })
@@ -279,6 +294,29 @@ public class MainActivity extends AppCompatActivity implements
             case R.string.menu_new_person:
                 Toast.makeText(this, R.string.menu_new_person, Toast.LENGTH_SHORT).show();
                 break;
+            case R.string.menu_more_board:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new de.walhalla.app.fragments.more.BoardFragment()).commit();
+                break;
+            case R.string.menu_more_history:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new de.walhalla.app.fragments.more.HistoryFragment()).commit();
+                break;
+            case R.string.menu_more_frat_wue:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new de.walhalla.app.fragments.more.FratWueFragment()).commit();
+                break;
+            case R.string.menu_more_frat_organisation:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new de.walhalla.app.fragments.more.FratOrgaFragment()).commit();
+                break;
+            case R.string.menu_about_us:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new de.walhalla.app.fragments.more.AboutUsFragment()).commit();
+            case R.string.menu_rooms:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new de.walhalla.app.fragments.more.RoomsFragment()).commit();
+                break;
             default:
                 Snackbar.make(parentLayout, R.string.error_site_messages, Snackbar.LENGTH_LONG).show();
                 Log.i(TAG, "nothing checked");
@@ -315,5 +353,25 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAuthChange() {
         runOnUiThread(this::fillSideNav);
+    }
+
+    @Override
+    public void browser(@NotNull String url) {
+        if(!url.startsWith("http://") && !url.startsWith("https://"))
+            url = "http://" + url;
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(browserIntent);
+    }
+
+    @Override
+    public void email() {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        String[] recipients = new String[]{Variables.Walhalla.MAIL_SENIOR};
+        intent.putExtra(Intent.EXTRA_EMAIL, recipients);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Zimmeranfrage über die App");
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 }

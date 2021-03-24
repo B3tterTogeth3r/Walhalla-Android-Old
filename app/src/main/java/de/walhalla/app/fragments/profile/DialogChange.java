@@ -26,7 +26,7 @@ import de.walhalla.app.models.Person;
 @SuppressLint("StaticFieldLeak")
 public class DialogChange extends Dialog implements View.OnClickListener {
     private static final String TAG = "DialogChange";
-    private String kind;
+    private final String kind;
     private Person saveData;
     private Map<String, Object> saveAddress;
     private ViewStub stub;
@@ -42,7 +42,7 @@ public class DialogChange extends Dialog implements View.OnClickListener {
         }
     }
 
-    public static void display(String kind, FragmentManager fragmentManager) {
+    public static void display(String kind) {
         try {
             new DialogChange(Fragment.context, kind).show();
         } catch (Exception e) {
@@ -199,9 +199,9 @@ public class DialogChange extends Dialog implements View.OnClickListener {
     private void major() {
         stub.setLayoutResource(R.layout.change_major);
         stub.inflate();
-        EditText mail = findViewById(R.id.profile_mail);
-        mail.setText(Fragment.userData.getMail());
-        mail.addTextChangedListener(new TextWatcher() {
+        EditText major = findViewById(R.id.profile_major);
+        major.setText(Fragment.userData.getMajor());
+        major.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 

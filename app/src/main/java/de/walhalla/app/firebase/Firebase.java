@@ -60,7 +60,7 @@ public class Firebase {
         };
     }
 
-    private static Bitmap addWatermark(@NotNull Bitmap source) {
+    public static Bitmap addWatermark(@NotNull Bitmap source) {
         float ratio = 0.3f;
         Canvas canvas;
         Paint paint;

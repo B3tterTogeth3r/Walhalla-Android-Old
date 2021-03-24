@@ -40,7 +40,7 @@ public class Variables {
     public static final String[] MONTHS = {App.getContext().getString(R.string.month_jan), App.getContext().getString(R.string.month_feb), App.getContext().getString(R.string.month_mar), App.getContext().getString(R.string.month_apr), App.getContext().getString(R.string.month_may),
             App.getContext().getString(R.string.month_jun), App.getContext().getString(R.string.month_jul), App.getContext().getString(R.string.month_aug), App.getContext().getString(R.string.month_sep), App.getContext().getString(R.string.month_oct), App.getContext().getString(R.string.month_nov), App.getContext().getString(R.string.month_dec)};
     public static final int REQUEST_CODE_ASK_PERMISSIONS = 123;
-    public static final long ONE_MEGABYTE = 1024 * 1024;
+    public static final long ONE_MEGABYTE = 1024 * 1024*2;
     public static final float SCALE = App.getContext().getResources().getDisplayMetrics().density;
     public static ArrayList<Semester> SEMESTER_ARRAY_LIST;
 

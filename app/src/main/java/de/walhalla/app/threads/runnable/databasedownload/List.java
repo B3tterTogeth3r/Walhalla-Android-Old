@@ -6,7 +6,7 @@ public class List extends NotifyingRunnable {
     @Override
     public void doRun() {
         /*
-         * A example how a NotifyingRunnable should be build
+         * An example how a NotifyingRunnable should be build
          */
     }
 }

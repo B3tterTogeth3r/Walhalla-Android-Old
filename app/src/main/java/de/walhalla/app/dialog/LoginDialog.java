@@ -69,8 +69,9 @@ import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 public class LoginDialog extends DialogFragment implements View.OnClickListener, PasswordCheck {
     private static final String TAG = "LoginDialog";
     private static EditText password, password_control;
+    private final PasswordCheck listener;
+    private final boolean[] check = {false, false};
     private View view;
-    private final float scale = Variables.SCALE;
     private Toolbar toolbar;
     private EditText email, firstName, lastName, address, pob, mobile, zip, number, city, street, major;
     private LinearLayout loginLayout, signInLayout, signUpLayout, settingsLayout;
@@ -82,8 +83,6 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
     private Person save;
     private ImageView control_top, control_bottom;
     private Drawable allGood, error;
-    private boolean[] check = {false, false};
-    private PasswordCheck listener;
 
     public LoginDialog() {
         listener = this;
@@ -171,8 +170,6 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
         super.onViewCreated(view, savedInstanceState);
         save = new Person();
 
-        LinearLayout layout = view.findViewById(R.id.login_layout);
-
         toolbar.setNavigationOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle(R.string.attention)
@@ -200,6 +197,7 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
 
         firstName = view.findViewById(R.id.profile_firstName);
         lastName = view.findViewById(R.id.profile_lastName);
+        address = view.findViewById(R.id.profile_address);
         street = view.findViewById(R.id.profile_address_street);
         number = view.findViewById(R.id.profile_address_number);
         zip = view.findViewById(R.id.profile_address_zip);
@@ -529,6 +527,7 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
                     }
                     if (!task.isSuccessful()) {
                         try {
+                            //noinspection ConstantConditions
                             throw task.getException();
                         }
                         // if user enters wrong email.
@@ -881,7 +880,6 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
     private void uploadData(@NotNull Person save) {
         CollectionReference db = Variables.Firebase.FIRESTORE.collection("Person");
 
-        Map<String, Object> data = save.toMap();
         String id = save.getFirst_Name().substring(0, 2) + save.getLast_Name().substring(0, 2)
                 + "-" + save.getUid();
         FirebaseUser user = Variables.Firebase.AUTHENTICATION.getCurrentUser();

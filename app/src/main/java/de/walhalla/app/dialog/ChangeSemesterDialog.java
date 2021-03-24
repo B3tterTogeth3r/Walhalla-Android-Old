@@ -47,11 +47,11 @@ public class ChangeSemesterDialog extends DialogFragment implements DialogInterf
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Activity activity = getActivity();
+        Activity activity = requireActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_number, null);
-        builder.setTitle("Change Semester");
+        builder.setTitle(R.string.change_semester);
         builder.setView(view);
         np = view.findViewById(R.id.numberPicker1);
         /* Select Semester **/

@@ -7,7 +7,6 @@ import de.walhalla.app.App;
 import de.walhalla.app.interfaces.RunnableCompleteListener;
 
 public abstract class NotifyingRunnable implements Runnable {
-    public final boolean internet = App.getInternet();
     public static Set<RunnableCompleteListener> listeners = new CopyOnWriteArraySet<>();
 
     public final void addListener(final RunnableCompleteListener listener) {

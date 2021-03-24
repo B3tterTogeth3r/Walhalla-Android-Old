@@ -18,156 +18,150 @@
             android:layout_alignParentStart="true"
             android:paddingStart="6dp"
             android:paddingEnd="16dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:contentInsetStartWithNavigation="0dp"
-            app:navigationIcon="@drawable/ic_close" />
+            app:navigationIcon="@drawable/ic_close"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
-        android:id="@+id/program_details_layout"
+    <ScrollView
+        android:id="@+id/program_edit_scrollview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/program_edit_title"
+        <LinearLayout
+            android:id="@+id/program_details_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:ignore="Autofill,LabelFor,TextFields" />
+            android:orientation="vertical"
+            android:padding="8dp">
 
-        <EditText
-            android:id="@+id/program_edit_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:ignore="Autofill,LabelFor,TextFields" />
+            <EditText
+                android:id="@+id/program_edit_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="Autofill,LabelFor,TextFields" />
 
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/program_edit_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="Autofill,LabelFor,TextFields" />
+
+            <Button
+                android:id="@+id/program_semester"
+                style="@style/History.Button"
+                android:layout_width="match_parent"
+                android:text="@string/program_dialog_semester" />
 
             <Button
                 android:id="@+id/program_edit_start_time"
+                style="@style/History.Button"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
                 android:text="@string/program_dialog_time_begin" />
 
             <Button
                 android:id="@+id/program_edit_end_time"
+                style="@style/History.Button"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
                 android:text="@string/program_dialog_time_end" />
-        </TableRow>
 
-        <Button
-            android:id="@+id/program_edit_accounting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/program_dialog_accounting" />
+            <Button
+                android:id="@+id/program_edit_accounting"
+                style="@style/History.Button"
+                android:layout_width="match_parent"
+                android:text="@string/program_dialog_accounting" />
 
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <TableLayout style="@style/History.TableLayout">
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/program_dialog_before" />
+                    <TextView
+                        style="@style/History.Text"
+                        android:text="@string/program_dialog_before" />
 
-                <TextView
-                    android:id="@+id/program_edit_acc_before"
+                    <TextView
+                        android:id="@+id/program_edit_acc_before"
+                        style="@style/History.Text"
+                        android:layout_gravity="end"
+                        android:text="@string/program_dialog_acc_nothing" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        style="@style/History.Text"
+                        android:text="@string/program_dialog_after" />
+
+                    <TextView
+                        android:id="@+id/program_edit_acc_after"
+                        style="@style/History.Text"
+                        android:layout_gravity="end"
+                        android:text="@string/program_dialog_acc_nothing" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        style="@style/History.Text"
+                        android:text="@string/program_dialog_current" />
+
+                    <TextView
+                        android:id="@+id/program_edit_acc_current"
+                        style="@style/History.Text"
+                        android:layout_gravity="end"
+                        android:text="@string/program_dialog_acc_nothing" />
+                </TableRow>
+
+                <TableRow
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/program_dialog_acc_nothing" />
-            </TableRow>
+                    android:paddingTop="10dp">
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                    <TextView
+                        style="@style/History.Text"
+                        android:text="@string/program_dialog_meeting" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/program_dialog_after" />
+                    <CheckBox
+                        android:id="@+id/program_meeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false" />
 
-                <TextView
-                    android:id="@+id/program_edit_acc_after"
+                </TableRow>
+
+                <TableRow
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/program_dialog_acc_nothing" />
-            </TableRow>
+                    android:paddingTop="10dp">
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                    <TextView
+                        style="@style/History.Text"
+                        android:text="@string/program_dialog_place" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/program_dialog_current" />
+                    <CheckBox
+                        android:id="@+id/program_start_place"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true" />
 
-                <TextView
-                    android:id="@+id/program_edit_acc_current"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/program_dialog_acc_nothing" />
-            </TableRow>
+                </TableRow>
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp">
+            </TableLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/program_dialog_meeting" />
+            <Button
+                android:id="@+id/program_edit_tasks"
+                style="@style/History.Button"
+                android:layout_width="match_parent"
+                android:text="@string/program_button_give_tasks" />
 
-                <CheckBox
-                    android:id="@+id/switch1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="false" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/program_dialog_place" />
-
-                <CheckBox
-                    android:id="@+id/switch2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true" />
-
-            </TableRow>
-
-        </TableLayout>
-
-    </LinearLayout>
-
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

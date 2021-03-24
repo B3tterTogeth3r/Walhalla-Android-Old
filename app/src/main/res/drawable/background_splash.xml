@@ -4,10 +4,10 @@
 
     <item>
         <bitmap
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="200px"
+            android:layout_height="200px"
             android:gravity="center"
-            android:src="@drawable/wappen_2017" />
+            android:src="@drawable/wappen_2017_v2" />
     </item>
 
 </layer-list>

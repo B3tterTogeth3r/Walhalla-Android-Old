@@ -41,7 +41,7 @@ import java.util.Locale;
 import de.walhalla.app.App;
 import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
-import de.walhalla.app.interfaces.NumberpickerCompleteListener;
+import de.walhalla.app.interfaces.NumberPickerCompleteListener;
 import de.walhalla.app.interfaces.RunnableCompleteListener;
 import de.walhalla.app.interfaces.UploadListener;
 import de.walhalla.app.models.Cashbox;
@@ -51,7 +51,7 @@ import de.walhalla.app.utils.DownloadPictureQue;
 import de.walhalla.app.utils.Variables;
 
 public class CheckboxDialog extends AlertDialog.Builder implements DialogInterface.OnClickListener,
-        View.OnClickListener, UploadListener, NumberpickerCompleteListener, RunnableCompleteListener {
+        View.OnClickListener, UploadListener, RunnableCompleteListener {
     private final static String TAG = "MultiPersonPickerDialog";
     private final Activity activity;
     private EditText income, expense, add, purpose;
@@ -378,9 +378,8 @@ public class CheckboxDialog extends AlertDialog.Builder implements DialogInterfa
             datePickerDialog.show();
         }
         if (v == event) {
+            Log.d(TAG, event.getText().toString());
             //Open numberpicker with the list an event can be accounted for.
-            NumberPickerDialog numberPickerDialog = new NumberPickerDialog(getContext(), "EventsDialog", this);
-            numberPickerDialog.show();
         }
     }
 
@@ -500,11 +499,6 @@ public class CheckboxDialog extends AlertDialog.Builder implements DialogInterfa
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void notifyOfNumberPickerDone(@NotNull Event event) {
-        //backup.setEvent(event.getId());
     }
 
     @Override

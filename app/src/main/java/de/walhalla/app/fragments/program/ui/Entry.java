@@ -20,14 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import de.walhalla.app.App;
 import de.walhalla.app.R;
 import de.walhalla.app.models.Event;
 import de.walhalla.app.utils.Variables;
 
 public class Entry extends ArrayAdapter<Event> {
     private static final String TAG = "EventEntry";
-    private static final float scale = App.getContext().getResources().getDisplayMetrics().density;
     private final Context context;
     private final ArrayList<Event> eventList;
 
@@ -37,7 +35,6 @@ public class Entry extends ArrayAdapter<Event> {
         this.context = context;
         this.eventList = eventList;
     }
-
 
     @NonNull
     @Override
@@ -59,31 +56,35 @@ public class Entry extends ArrayAdapter<Event> {
         TextView title = view.findViewById(R.id.item_event_title);
         TextView description = view.findViewById(R.id.item_event_description);
 
-        //Switch bewteen the kinds of events
+        //Switch between the kinds of events
         Calendar calendar = Calendar.getInstance();
-        try {
+        try {/*
             calendar.setTime(event.getStart().toDate());
-            if (event.getPunctuality().contains("after")) {
+            if (event.getPunctuality().contains("after") || event.getPunctuality().contains("ansch")) {
                 date.setVisibility(View.INVISIBLE);
-                //TODO time.setText(event.getTimeProgram());
+                time.setText(R.string.program_later);
                 collar.setText(event.getCollar());
                 punkt.setVisibility(View.GONE);
                 title.setText(event.getTitle());
                 description.setText(event.getDescription());
-            } else if (event.getPunctuality().contains("later")) {
+            }
+            //TODO Make that also possible for events at the same day depending on .getStart()
+            else if (event.getPunctuality().contains("later")) {
                 date.setVisibility(View.INVISIBLE);
                 time.setText(getTime(calendar));
                 punkt.setVisibility(View.GONE);
                 collar.setVisibility(View.GONE);
                 title.setText(event.getTitle());
                 description.setText(event.getDescription());
-            } else if (event.getPunctuality().contains("total")) {
+            }
+            //TODO Make that also possible for events at the same day depending on .getStart()
+            else if (event.getPunctuality().contains("total")) {
                 //what to show?
                 date.setVisibility(View.VISIBLE);
                 year.setText(String.valueOf(calendar.get(Calendar.YEAR)));
                 day.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
                 month.setText(Variables.MONTHS[calendar.get(Calendar.MONTH)]);
-                //TODO time.setText(event.getTimeProgram());
+                time.setText(getTime(calendar));
                 collar.setVisibility(View.GONE);
                 punkt.setVisibility(View.GONE);
                 title.setText(event.getTitle());
@@ -95,9 +96,9 @@ public class Entry extends ArrayAdapter<Event> {
                 collar.setVisibility(View.GONE);
                 punkt.setVisibility(View.GONE);
                 title.setVisibility(View.GONE);
-                String helper = event.getTitle() + "\\n" + event.getDescription();
+                String helper = event.getTitle() + " " + event.getDescription();
                 description.setText(helper);
-            } else {
+            } else {*/
                 date.setVisibility(View.VISIBLE);
                 year.setText(String.valueOf(calendar.get(Calendar.YEAR)));
                 day.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
@@ -108,6 +109,16 @@ public class Entry extends ArrayAdapter<Event> {
                 collar.setText(event.getCollar());
                 title.setText(event.getTitle());
                 description.setText(event.getDescription());
+            //}
+            if (event.isDraft()) {
+                view.setAlpha(0.5f);
+                date.setBackgroundResource(R.color.colorPrimary);
+            } else if (event.isInternal()) {
+                view.setAlpha(1f);
+                date.setBackgroundResource(R.color.colorAccent);
+            } else {
+                view.setAlpha(1f);
+                date.setBackgroundResource(R.color.colorPrimary);
             }
         } catch (Exception format) {
             Log.e(TAG, "Something went wrong while formatting data", format);

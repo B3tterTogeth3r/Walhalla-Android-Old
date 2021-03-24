@@ -8,7 +8,7 @@
         android:id="@+id/item_event_date"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:orientation="vertical">
 
         <TextView

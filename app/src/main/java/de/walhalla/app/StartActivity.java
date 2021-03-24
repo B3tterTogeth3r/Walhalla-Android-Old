@@ -16,6 +16,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import de.walhalla.app.firebase.DownloadDoneListener;
 import de.walhalla.app.firebase.Firebase;
@@ -63,6 +64,7 @@ public class StartActivity extends AppCompatActivity implements DownloadDoneList
                     124);
         }
         currentChargen();
+        admins();
     }
 
     @Override
@@ -95,7 +97,24 @@ public class StartActivity extends AppCompatActivity implements DownloadDoneList
                         currentChargen.add((String) s.get("uid"));
                     }
                     App.setCurrentChargen(currentChargen);
-                    Log.i(TAG, currentChargen.size() + " is the current size of currentChargen");
+                });
+    }
+
+    @SuppressWarnings("unchecked")
+    public void admins() {
+        Variables.Firebase.FIRESTORE
+                .collection("Editors")
+                .document("private")
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    try {
+                        Map<String, Object> admins = documentSnapshot.getData();
+                        if (admins != null && !admins.isEmpty()) {
+                            Map<String, Object> list = (Map<String, Object>) admins.get("roles");
+                            User.setAdmins(list);
+                        }
+                    } catch (Exception ignored) {
+                    }
                 });
     }
 }

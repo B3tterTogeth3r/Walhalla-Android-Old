@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -158,6 +159,8 @@ public class Fragment extends CustomFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.profile_display, container, false);
+        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_profile);
+        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
         context = getContext();
         activity = getActivity();
 

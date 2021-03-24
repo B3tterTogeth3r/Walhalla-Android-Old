@@ -11,7 +11,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,8 +25,8 @@ import de.walhalla.app.models.News;
 
 @SuppressWarnings("StaticFieldLeak")
 public class Entry extends ArrayAdapter<News> {
-    private static final String TAG = "NewsEntry";
     protected static final float scale = App.getContext().getResources().getDisplayMetrics().density;
+    private static final String TAG = "NewsEntry";
     private final Context context;
     private final ArrayList<News> newsList;
     private TextView title, time, content;
@@ -54,7 +53,7 @@ public class Entry extends ArrayAdapter<News> {
         picture = view.findViewById(R.id.item_news_image);
         News n = newsList.get(position);
 
-        loadContent(view, n);
+        loadContent(n);
 
         Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_in);
         try {
@@ -66,14 +65,13 @@ public class Entry extends ArrayAdapter<News> {
         return view;
     }
 
-    private void loadContent(View view, News n) {
+    private void loadContent(News n) {
         try {
             title.setText(n.getTitle());
             time.setText(n.getDate_Output());
             content.setText(n.getMatter());
             if (n.getPicture() != null) {
                 picture.setVisibility(View.VISIBLE);
-                RelativeLayout.LayoutParams imageParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (144 * scale + 0.5f));
                 picture.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 synchronized (this) {
                     Firebase.downloadImage(n.getPicture(), picture).run();
