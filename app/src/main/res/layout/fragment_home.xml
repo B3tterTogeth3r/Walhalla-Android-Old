@@ -20,6 +20,19 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <TextView
+                style="@style/History.Title"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/home_title" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:contentDescription="@string/description"
+                android:paddingBottom="4dp"
+                android:src="@drawable/wappen_2017" />
+
             <LinearLayout
                 android:id="@+id/home_layout_greetings"
                 android:layout_width="match_parent"

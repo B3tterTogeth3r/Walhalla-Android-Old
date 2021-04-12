@@ -18,7 +18,7 @@ import de.walhalla.app.fragments.CustomFragment;
 import de.walhalla.app.fragments.Sites;
 import de.walhalla.app.utils.Variables;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("ConstantConditions")
 public class RoomsFragment extends CustomFragment {
     private final static String TAG = "RoomsFragment";
     private LinearLayout layout;
@@ -27,8 +27,8 @@ public class RoomsFragment extends CustomFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment, container, false);
-        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_rooms);
-        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
+        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_rooms);
+        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
 
         LinearLayout viewContainer = view.findViewById(R.id.fragment_container);
         ScrollView sc = new ScrollView(getContext());

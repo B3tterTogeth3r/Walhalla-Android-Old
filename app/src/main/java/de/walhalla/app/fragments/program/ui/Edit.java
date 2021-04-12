@@ -37,10 +37,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 
 import org.jetbrains.annotations.NotNull;
@@ -57,7 +55,6 @@ import java.util.Objects;
 import de.walhalla.app.App;
 import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
-import de.walhalla.app.User;
 import de.walhalla.app.dialog.AccountPlanningDialog;
 import de.walhalla.app.dialog.ChangeSemesterDialog;
 import de.walhalla.app.dialog.ErrorDialog;
@@ -67,9 +64,7 @@ import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.interfaces.CouleurTimePickerListener;
 import de.walhalla.app.interfaces.NumberPickerCompleteListener;
 import de.walhalla.app.models.Event;
-import de.walhalla.app.models.Helper;
 import de.walhalla.app.models.Semester;
-import de.walhalla.app.utils.Find;
 import de.walhalla.app.utils.Variables;
 
 @SuppressLint("StaticFieldLeak")
@@ -117,7 +112,6 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup containter, Bundle savedInstanceState) {
         super.onCreateView(inflater, containter, savedInstanceState);
         View view = inflater.inflate(R.layout.program_edit, containter, false);
-
         toolbar = view.findViewById(R.id.program_details_close);
 
         return view;
@@ -206,9 +200,7 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
 
         //Fill fields with the content
         title.setText(event.getTitle());
-        title.setHint(R.string.title);
         description.setText(event.getDescription());
-        description.setHint(R.string.description);
         Calendar c = Calendar.getInstance();
         c.setTime(event.getStart().toDate());
         float hourFl = c.get(Calendar.HOUR_OF_DAY), minuteFl = c.get(Calendar.MINUTE);
@@ -257,38 +249,6 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         }
 
         startAdh.setChecked(whichOne.equals(Variables.ADD));
-
-        /* Bottom with Helper */
-        if (User.isLogIn()) {
-            ArrayList<Helper> helperArrayList = new ArrayList<>();//TODO Find.help4event(event);
-            if (!helperArrayList.isEmpty()) {
-                LinearLayout planingLayout = new LinearLayout(getContext());
-                planingLayout.setOrientation(LinearLayout.VERTICAL);
-                TextView planingTitle = new TextView(getContext());
-                planingTitle.setText(R.string.program_button_given_tasks);
-                planingLayout.addView(planingTitle);
-                ArrayList<ArrayList<Helper>> task = Find.tasks(helperArrayList);
-                for (int i = 0; i < task.size(); i++) {
-                    ArrayList<Helper> work = task.get(i);
-                    if (!work.isEmpty()) {
-                        LinearLayout lv2 = new LinearLayout(getContext());
-                        lv2.setOrientation(LinearLayout.HORIZONTAL);
-                        TextView job = new TextView(getContext());
-                        helper = work.get(0).getJob() + ": ";
-                        job.setText(helper);
-                        lv2.addView(job);
-                        for (Helper p : work) {
-                            TextView person = new TextView(getContext());
-                            person.setText(p.getPersonClean().getFullName());
-                            lv2.addView(person);
-                        }
-                        planingLayout.addView(lv2);
-                    }
-                }
-                linearLayout.addView(planingLayout);
-            }
-        }
-
     }
 
     private void sendDraft() {
@@ -462,7 +422,6 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         //create dialog and sort list inside
-                        //noinspection ConstantConditions
                         JobPickerDialog.load(getContext(), event.getHelp(), documentSnapshot.getData(), this);
                     }
                 });
@@ -670,8 +629,6 @@ public class Edit extends DialogFragment implements OnMapReadyCallback, View.OnC
         }
     }
 
-
-    @SuppressWarnings("unchecked")
     @Override
     public void notifyOfAccountingDone(String name) {
         Map<String, Object> data = (Map<String, Object>) accountingElements.get(name);

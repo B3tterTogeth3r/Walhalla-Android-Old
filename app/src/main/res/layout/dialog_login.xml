@@ -18,8 +18,10 @@
             android:layout_alignParentStart="true"
             android:paddingStart="6dp"
             android:paddingEnd="16dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:contentInsetStartWithNavigation="0dp"
-            app:navigationIcon="@drawable/ic_close" />
+            app:navigationIcon="@drawable/ic_close"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -58,10 +60,8 @@
 
         <Button
             android:id="@+id/login_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/History.Button"
             android:layout_gravity="end"
-            android:paddingTop="10dp"
             android:text="@string/next" />
 
 
@@ -121,14 +121,12 @@
 
             <Button
                 android:id="@+id/login_sign_in_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/History.Button"
                 android:text="@string/back" />
 
             <Button
                 android:id="@+id/login_sign_in"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/History.Button"
                 android:layout_alignEnd="@id/login_sign_in_back"
                 android:layout_gravity="end"
                 android:layout_marginEnd="-303dp"
@@ -234,14 +232,12 @@
 
             <Button
                 android:id="@+id/login_sign_up_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/History.Button"
                 android:text="@string/back" />
 
             <Button
                 android:id="@+id/login_sign_up"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/History.Button"
                 android:layout_alignEnd="@id/login_sign_up_back"
                 android:layout_gravity="end"
                 android:layout_marginEnd="-303dp"
@@ -255,7 +251,8 @@
     <include
         layout="@layout/profile_edit"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="visible" />
 
 
 </LinearLayout>

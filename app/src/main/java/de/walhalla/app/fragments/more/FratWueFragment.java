@@ -24,7 +24,6 @@ public class FratWueFragment extends CustomFragment {
 
     @Nullable
     @Override
-    @SuppressWarnings("unchecked")
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment, container, false);
         ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_more_frat_wue);

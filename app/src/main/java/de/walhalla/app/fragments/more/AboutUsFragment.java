@@ -22,7 +22,6 @@ import de.walhalla.app.fragments.CustomFragment;
 import de.walhalla.app.fragments.Diashow;
 import de.walhalla.app.utils.Variables;
 
-@SuppressWarnings("unchecked")
 public class AboutUsFragment extends CustomFragment {
     private static final String TAG = "AboutUsFragment";
     private LinearLayout whoWeAre, whoWeAreLookingFor, allInAll;
@@ -38,7 +37,6 @@ public class AboutUsFragment extends CustomFragment {
         whoWeAre = view.findViewById(R.id.about_us_who_we_are);
         whoWeAreLookingFor = view.findViewById(R.id.about_us_who_we_are_looking_for);
         allInAll = view.findViewById(R.id.about_us_all_in_all);
-
 
         Variables.Firebase.FIRESTORE
                 .collection("Sites")
@@ -72,7 +70,6 @@ public class AboutUsFragment extends CustomFragment {
                         }
                     }
                 });
-
 
         return view;
     }

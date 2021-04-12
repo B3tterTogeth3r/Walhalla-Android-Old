@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Settings.Layout"
+    android:padding="8dp"
+    android:layout_margin="8dp"/>

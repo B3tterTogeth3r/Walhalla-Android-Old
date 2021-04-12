@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <RelativeLayout
+        android:id="@+id/item_charge_name"
+        style="@style/AddNewSemester.RelativeLayout">
+
+        <TextView
+            style="@style/AddNewSemester.Person.Title"
+            android:text="@string/profile_name" />
+
+        <TextView
+            android:id="@+id/item_charge_name_content"
+            style="@style/AddNewSemester.Person"
+            android:text="@string/profile_name" />
+
+        <ImageView
+            style="@style/Settings.Row.Image"
+            android:contentDescription="@string/description"
+            android:src="@drawable/ic_arrow_right" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/item_charge_pob"
+        style="@style/AddNewSemester.RelativeLayout">
+
+        <TextView
+            style="@style/AddNewSemester.Person.Title"
+            android:text="@string/profile_pob" />
+
+        <TextView
+            android:id="@+id/item_charge_pob_content"
+            style="@style/AddNewSemester.Person"
+            android:text="@string/profile_pob" />
+
+        <ImageView
+            style="@style/Settings.Row.Image"
+            android:contentDescription="@string/description"
+            android:src="@drawable/ic_arrow_right" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/item_charge_major"
+        style="@style/AddNewSemester.RelativeLayout">
+
+        <TextView
+            style="@style/AddNewSemester.Person.Title"
+            android:text="@string/profile_major_2" />
+
+        <TextView
+            android:id="@+id/item_charge_major_content"
+            style="@style/AddNewSemester.Person"
+            android:text="@string/profile_major_2" />
+
+        <ImageView
+            style="@style/Settings.Row.Image"
+            android:contentDescription="@string/description"
+            android:src="@drawable/ic_arrow_right" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/item_charge_mobile"
+        style="@style/AddNewSemester.RelativeLayout">
+
+        <TextView
+            style="@style/AddNewSemester.Person.Title"
+            android:text="@string/profile_phone" />
+
+        <TextView
+            android:id="@+id/item_charge_mobile_content"
+            style="@style/AddNewSemester.Person"
+            android:text="@string/profile_phone" />
+
+        <ImageView
+            style="@style/Settings.Row.Image"
+            android:contentDescription="@string/description"
+            android:src="@drawable/ic_arrow_right" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/item_charge_address"
+        style="@style/AddNewSemester.RelativeLayout">
+
+        <TextView
+            style="@style/AddNewSemester.Person.Title"
+            android:text="@string/profile_address" />
+
+        <TextView
+            android:id="@+id/item_charge_address_content"
+            style="@style/AddNewSemester.Person"
+            android:text="@string/profile_address" />
+
+        <ImageView
+            style="@style/Settings.Row.Image"
+            android:contentDescription="@string/description"
+            android:src="@drawable/ic_arrow_right" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/item_charge_picture"
+        style="@style/AddNewSemester.RelativeLayout">
+
+        <TextView
+            style="@style/AddNewSemester.Person.Title"
+            android:text="@string/profile_picture" />
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/item_charge_picture_content"
+            android:layout_width="220dp"
+            android:layout_height="80dp"
+            android:layout_margin="8dp"
+            android:paddingStart="140dp"
+            android:paddingEnd="21dp"
+            android:src="@drawable/wappen_round"
+            app:civ_border_color="@android:color/transparent" />
+
+        <ImageView
+            style="@style/Settings.Row.Image"
+            android:contentDescription="@string/description"
+            android:src="@drawable/ic_arrow_right" />
+    </RelativeLayout>
+
+</LinearLayout>

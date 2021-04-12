@@ -27,8 +27,6 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,34 +37,28 @@ import java.util.Date;
 import java.util.Locale;
 
 import de.walhalla.app.App;
-import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
-import de.walhalla.app.interfaces.NumberPickerCompleteListener;
-import de.walhalla.app.interfaces.RunnableCompleteListener;
 import de.walhalla.app.interfaces.UploadListener;
-import de.walhalla.app.models.Cashbox;
-import de.walhalla.app.models.Event;
-import de.walhalla.app.threads.NotifyingRunnable;
-import de.walhalla.app.utils.DownloadPictureQue;
+import de.walhalla.app.models.Accounting;
 import de.walhalla.app.utils.Variables;
 
 public class CheckboxDialog extends AlertDialog.Builder implements DialogInterface.OnClickListener,
-        View.OnClickListener, UploadListener, RunnableCompleteListener {
+        View.OnClickListener, UploadListener {
     private final static String TAG = "MultiPersonPickerDialog";
+    public static String kind = "";
     private final Activity activity;
+    private final Accounting backup;
+    private final UploadListener listener;
+    private final Bitmap bitmap = null;
+    private final View myView;
     private EditText income, expense, add, purpose;
     private Button date, event;
     private ImageButton showImg;
-    public static String kind = "";
-    private Cashbox current = null;
-    private final Cashbox backup;
-    private final UploadListener listener;
-    private final Bitmap bitmap = null;
+    private Accounting current = null;
     private String[] saveForUpload;
-    private final View myView;
 
     @SuppressLint("InflateParams")
-    public CheckboxDialog(@NotNull Activity activity, @Nullable Cashbox current, @NotNull String kind, UploadListener listener) {
+    public CheckboxDialog(@NotNull Activity activity, @Nullable Accounting current, @NotNull String kind, UploadListener listener) {
         super(activity);
         this.activity = activity;
         this.listener = listener;
@@ -74,11 +66,11 @@ public class CheckboxDialog extends AlertDialog.Builder implements DialogInterfa
 
         if (current != null) {
             this.current = current;
-            backup = new Cashbox(current.getId(), current.getDateString(),
+            backup = new Accounting(current.getId(), current.getDateString(),
                     current.getExpense(), current.getIncome(), current.getEvent(),
                     current.getPurpose(), current.getAdd(), current.getRecipe());
         } else {
-            backup = new Cashbox(0, "", 0, 0, 0, "", "", 0);
+            backup = new Accounting();
         }
         LayoutInflater layoutInflater = LayoutInflater.from(this.getContext());
         myView = layoutInflater.inflate(R.layout.dialog_account, null);
@@ -103,7 +95,7 @@ public class CheckboxDialog extends AlertDialog.Builder implements DialogInterfa
             dateTV.setText(current.getDateFormat());
             incomeTV.setText(current.getIncomeFormat());
             expenseTV.setText(current.getExpenseFormat());
-            eventTV.setText(current.getEventText());
+            eventTV.setText(current.getEvent());
             if (current.getIncome() == 0) { //is an expense
                 addTV.setVisibility(View.GONE);
                 recipeNumberTV.setText(current.getPurpose());
@@ -162,7 +154,7 @@ public class CheckboxDialog extends AlertDialog.Builder implements DialogInterfa
             expense.setText(String.format(Variables.LOCALE, "%.2f", current.getExpense()));
             expense.setKeyListener(DigitsKeyListener.getInstance("0123456789,"));
             expense.setHint(R.string.account_dialog_expense);
-            event.setText(current.getEventText());
+            event.setText(current.getEvent());
             purpose.setHint(R.string.account_dialog_purpose);
             purpose.setText(current.getPurpose());
             add.setHint(R.string.account_dialog_add);
@@ -225,8 +217,6 @@ public class CheckboxDialog extends AlertDialog.Builder implements DialogInterfa
             setNegativeButton(R.string.abort, this);
         }
         showImg.setVisibility(View.GONE);
-        setOnDismissListener(dialog -> DownloadPictureQue.stopAll());
-        setOnCancelListener(dialog -> DownloadPictureQue.stopAll());
     }
 
     @Override
@@ -474,31 +464,6 @@ public class CheckboxDialog extends AlertDialog.Builder implements DialogInterfa
             return Base64.encodeToString(imgBytes, Base64.DEFAULT);
         }
         return null;
-    }
-
-    @Override
-    public void notifyOfRunnableComplete(NotifyingRunnable runnable) {
-        String message;
-        switch (kind) {
-            case (Variables.EDIT):
-                message = getContext().getString(R.string.account_change_saved);
-                break;
-            case (Variables.ADD):
-                message = getContext().getString(R.string.account_new_saved);
-                break;
-            default:
-                message = getContext().getString(R.string.account_delete_successful);
-                break;
-        }
-        Snackbar.make(MainActivity.parentLayout, message, Snackbar.LENGTH_LONG)
-                .setAction(R.string.close, this)
-                .setActionTextColor(App.getContext().getResources().getColor(R.color.colorPrimaryDark, null))
-                .show();
-        try {
-            listener.onDatabaseUploadDone(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

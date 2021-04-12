@@ -1,6 +1,7 @@
 package de.walhalla.app;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -20,14 +22,13 @@ import java.util.Map;
 
 import de.walhalla.app.firebase.DownloadDoneListener;
 import de.walhalla.app.firebase.Firebase;
-import de.walhalla.app.models.Semester;
-import de.walhalla.app.threads.runnable.CheckInternetRunnable;
 import de.walhalla.app.utils.Variables;
 
 public class StartActivity extends AppCompatActivity implements DownloadDoneListener, Firebase.Chargen {
     private static final String TAG = "StartActivity";
     private static final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     public static DownloadDoneListener listener;
+    //TODO activate all the necessary change listeners for public accessible pages
 
     @Override
     public void onDone() {
@@ -41,15 +42,9 @@ public class StartActivity extends AppCompatActivity implements DownloadDoneList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash_screen);
+        //setContentView(R.layout.splash_screen);
         listener = this;
         Log.i(TAG, "StartActivity should show the shield.");
-
-        final Thread checkInternet = new Thread(new CheckInternetRunnable());
-        checkInternet.start();
-
-        ArrayList<Semester> semList = Variables.SEMESTER_ARRAY_LIST;
-        Variables.setFirebase();
 
         /* Ask for CAMERA permission */
         int hasCameraPermission = checkSelfPermission(android.Manifest.permission.CAMERA);
@@ -63,8 +58,34 @@ public class StartActivity extends AppCompatActivity implements DownloadDoneList
             requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR},
                     124);
         }
-        currentChargen();
-        admins();
+
+        if (!Variables.setFirebase()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+            builder.setTitle(R.string.error_title)
+                    .setMessage(R.string.error_close_app)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> {
+                        dialog.dismiss();
+                        ((Activity) getApplicationContext()).finish();
+                    })
+                    .create();
+            builder.show();
+        } else {
+            try {
+                Log.d(TAG, "Creating successfully finished.");
+                currentChargen();
+            } catch (Exception e) {
+                Log.d(TAG, "Error on App start", e);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                builder.setTitle(R.string.error_title)
+                        .setMessage(R.string.error_close_app)
+                        .setPositiveButton(R.string.ok, (dialog, which) -> {
+                            dialog.dismiss();
+                            ((Activity) getApplicationContext()).finish();
+                        })
+                        .create();
+                builder.show();
+            }
+        }
     }
 
     @Override
@@ -97,10 +118,10 @@ public class StartActivity extends AppCompatActivity implements DownloadDoneList
                         currentChargen.add((String) s.get("uid"));
                     }
                     App.setCurrentChargen(currentChargen);
+                    admins();
                 });
     }
 
-    @SuppressWarnings("unchecked")
     public void admins() {
         Variables.Firebase.FIRESTORE
                 .collection("Editors")
@@ -113,6 +134,7 @@ public class StartActivity extends AppCompatActivity implements DownloadDoneList
                             Map<String, Object> list = (Map<String, Object>) admins.get("roles");
                             User.setAdmins(list);
                         }
+                        onDone();
                     } catch (Exception ignored) {
                     }
                 });

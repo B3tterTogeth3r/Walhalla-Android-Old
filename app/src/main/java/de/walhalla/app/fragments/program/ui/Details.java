@@ -34,7 +34,6 @@ import com.google.android.material.snackbar.Snackbar;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -45,8 +44,6 @@ import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
 import de.walhalla.app.User;
 import de.walhalla.app.models.Event;
-import de.walhalla.app.models.Helper;
-import de.walhalla.app.utils.Find;
 import de.walhalla.app.utils.Variables;
 
 @SuppressLint({"StaticFieldLeak", "NonConstantResourceId"})
@@ -158,37 +155,7 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
                 " " + getResources().getString(R.string.clock);
         time.setText(helper);
 
-        /* Bottom with Helper */
-        if (User.isLogIn()) {
-            ArrayList<Helper> helperArrayList = new ArrayList<>();//TODO Find.help4event(event);
-            if (!helperArrayList.isEmpty()) {
-                LinearLayout planingLayout = new LinearLayout(getContext());
-                planingLayout.setOrientation(LinearLayout.VERTICAL);
-                TextView planingTitle = new TextView(getContext());
-                planingTitle.setText(R.string.program_button_given_tasks);
-                planingLayout.addView(planingTitle);
-                ArrayList<ArrayList<Helper>> task = Find.tasks(helperArrayList);
-                for (int i = 0; i < task.size(); i++) {
-                    ArrayList<Helper> work = task.get(i);
-                    if (!work.isEmpty()) {
-                        LinearLayout lv2 = new LinearLayout(getContext());
-                        lv2.setOrientation(LinearLayout.HORIZONTAL);
-                        TextView job = new TextView(getContext());
-                        helper = work.get(0).getJob() + ": ";
-                        job.setText(helper);
-                        lv2.addView(job);
-                        for (Helper p : work) {
-                            TextView person = new TextView(getContext());
-                            person.setText(p.getPersonClean().getFullName());
-                            lv2.addView(person);
-                        }
-                        planingLayout.addView(lv2);
-                    }
-                }
-                linearLayout.addView(planingLayout);
-            }
-        }
-
+        //TODO Show Helper with there task at the bottom
     }
 
     @Override
@@ -300,7 +267,7 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
                         .document(event.getId())
                         .delete()
                         .addOnSuccessListener(aVoid -> {
-                            if(detailsDialog != null){
+                            if (detailsDialog != null) {
                                 detailsDialog.dismiss();
                             }
                             Snackbar.make(MainActivity.parentLayout, R.string.program_dialog_delete_successful, Snackbar.LENGTH_LONG).show();

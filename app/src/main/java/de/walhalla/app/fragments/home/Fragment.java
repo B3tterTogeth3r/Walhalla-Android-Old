@@ -30,13 +30,12 @@ public class Fragment extends CustomFragment {
     private RelativeLayout signRow;
     private TextView student_x, phil_x;
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.app_name);
-        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
+        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.app_name);
+        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
 
         greeting = view.findViewById(R.id.home_layout_greetings);
         notes = view.findViewById(R.id.home_layout_notes);
@@ -62,7 +61,6 @@ public class Fragment extends CustomFragment {
      *
      * @param id the value of the semester from which the greeting is to be downloaded.
      */
-    @SuppressWarnings("unchecked")
     private void displayCurrentGreeting(int id) {
         Variables.Firebase.FIRESTORE
                 .collection("Semester")
@@ -107,7 +105,7 @@ public class Fragment extends CustomFragment {
         for (int i = 0; i < size; i++) {
             title = new TextView(getContext());
             title.setText(text.get(i).toString());
-            title.setPadding(4, 4, 4, 4);
+            title.setPadding(4, 4, 4, 16);
             title.setTextAppearance(R.style.TextAppearance_AppCompat_Body1);
             notes.addView(title);
         }
@@ -119,7 +117,6 @@ public class Fragment extends CustomFragment {
      *
      * @param text The list with all the paragraphs of the greeting
      */
-    @SuppressWarnings("unchecked")
     private void loadGreeting(@NotNull List<Object> text) {
         int size = text.size();
         Map<String, String> sign = (Map<String, String>) text.get(size - 1);
@@ -127,6 +124,10 @@ public class Fragment extends CustomFragment {
         size--;
         greeting.removeAllViewsInLayout();
         greeting.setOrientation(LinearLayout.VERTICAL);
+        TextView header = (TextView) getLayoutInflater().inflate(R.layout.text_view_history_title, null);
+        header.setText(R.string.greeting);
+        greeting.addView(header);
+
         for (int i = 0; i < size - 1; i++) {
             TextView title = new TextView(getContext());
             title.setText(text.get(i).toString());

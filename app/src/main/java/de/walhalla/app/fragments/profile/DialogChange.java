@@ -10,22 +10,25 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentManager;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Objects;
 
 import de.walhalla.app.R;
+import de.walhalla.app.fragments.addNew.CheckChargeDialog;
 import de.walhalla.app.models.Person;
 
 @SuppressLint("StaticFieldLeak")
 public class DialogChange extends Dialog implements View.OnClickListener {
     private static final String TAG = "DialogChange";
+    private static Person person;
     private final String kind;
     private Person saveData;
     private Map<String, Object> saveAddress;
@@ -34,17 +37,35 @@ public class DialogChange extends Dialog implements View.OnClickListener {
     public DialogChange(@NonNull Context context, String kind) {
         super(context);
         this.kind = kind;
-        try {
-            saveData = (Person) Fragment.userData.clone();
-            saveAddress = Fragment.userData.getAddress();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
+        if (person != null) {
+            try {
+                saveData = (Person) person.clone();
+                saveAddress = person.getAddress();
+            } catch (CloneNotSupportedException cloneNotSupportedException) {
+                cloneNotSupportedException.printStackTrace();
+            }
+        } else {
+            try {
+                saveData = (Person) Fragment.userData.clone();
+                saveAddress = Fragment.userData.getAddress();
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public static void display(String kind) {
         try {
             new DialogChange(Fragment.context, kind).show();
+        } catch (Exception e) {
+            Log.d(TAG, "Building the dialog did not work", e);
+        }
+    }
+
+    public static void display(Context context, String kind, Person person) {
+        try {
+            DialogChange.person = (Person) person.clone();
+            new DialogChange(context, kind).show();
         } catch (Exception e) {
             Log.d(TAG, "Building the dialog did not work", e);
         }
@@ -61,6 +82,7 @@ public class DialogChange extends Dialog implements View.OnClickListener {
         toolbar.setNavigationOnClickListener(this);
         toolbar.inflateMenu(R.menu.send_only);
         toolbar.setOnMenuItemClickListener(item -> {
+            CheckChargeDialog.customDismissListener.chargenDismiss(person);
             dismiss();
             return true;
         });
@@ -104,11 +126,19 @@ public class DialogChange extends Dialog implements View.OnClickListener {
         number = findViewById(R.id.profile_address_number);
         zip = findViewById(R.id.profile_address_zip);
         city = findViewById(R.id.profile_address_city);
-        Map<String, Object> address = Fragment.userData.getAddress();
-        street.setText(address.get(Person.ADDRESS_STREET).toString());
-        number.setText(address.get(Person.ADDRESS_NUMBER).toString());
-        zip.setText(address.get(Person.ADDRESS_ZIP_CODE).toString());
-        city.setText(address.get(Person.ADDRESS_CITY).toString());
+        Map<String, Object> address;
+        if (person != null) {
+            address = person.getAddress();
+        } else {
+            address = Fragment.userData.getAddress();
+        }
+        try {
+            street.setText(address.get(Person.ADDRESS_STREET).toString());
+            number.setText(address.get(Person.ADDRESS_NUMBER).toString());
+            zip.setText(address.get(Person.ADDRESS_ZIP_CODE).toString());
+            city.setText(address.get(Person.ADDRESS_CITY).toString());
+        } catch (Exception ignored) {
+        }
         street.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -123,8 +153,12 @@ public class DialogChange extends Dialog implements View.OnClickListener {
             @Override
             public void afterTextChanged(Editable s) {
                 address.put(Person.ADDRESS_STREET, s.toString());
-                Fragment.userData.setAddress(address);
-                Fragment.addressTV.setText(Fragment.userData.getAddressString());
+                if (person != null) {
+                    person.setAddress(address);
+                } else {
+                    Fragment.userData.setAddress(address);
+                    Fragment.addressTV.setText(Fragment.userData.getAddressString());
+                }
             }
         });
         number.addTextChangedListener(new TextWatcher() {
@@ -141,8 +175,12 @@ public class DialogChange extends Dialog implements View.OnClickListener {
             @Override
             public void afterTextChanged(Editable s) {
                 address.put(Person.ADDRESS_NUMBER, s.toString());
-                Fragment.userData.setAddress(address);
-                Fragment.addressTV.setText(Fragment.userData.getAddressString());
+                if (person != null) {
+                    person.setAddress(address);
+                } else {
+                    Fragment.userData.setAddress(address);
+                    Fragment.addressTV.setText(Fragment.userData.getAddressString());
+                }
             }
         });
         zip.addTextChangedListener(new TextWatcher() {
@@ -159,8 +197,12 @@ public class DialogChange extends Dialog implements View.OnClickListener {
             @Override
             public void afterTextChanged(Editable s) {
                 address.put(Person.ADDRESS_ZIP_CODE, s.toString());
-                Fragment.userData.setAddress(address);
-                Fragment.addressTV.setText(Fragment.userData.getAddressString());
+                if (person != null) {
+                    person.setAddress(address);
+                } else {
+                    Fragment.userData.setAddress(address);
+                    Fragment.addressTV.setText(Fragment.userData.getAddressString());
+                }
             }
         });
         city.addTextChangedListener(new TextWatcher() {
@@ -177,8 +219,12 @@ public class DialogChange extends Dialog implements View.OnClickListener {
             @Override
             public void afterTextChanged(Editable s) {
                 address.put(Person.ADDRESS_CITY, s.toString());
-                Fragment.userData.setAddress(address);
-                Fragment.addressTV.setText(Fragment.userData.getAddressString());
+                if (person != null) {
+                    person.setAddress(address);
+                } else {
+                    Fragment.userData.setAddress(address);
+                    Fragment.addressTV.setText(Fragment.userData.getAddressString());
+                }
             }
         });
     }
@@ -200,7 +246,11 @@ public class DialogChange extends Dialog implements View.OnClickListener {
         stub.setLayoutResource(R.layout.change_major);
         stub.inflate();
         EditText major = findViewById(R.id.profile_major);
-        major.setText(Fragment.userData.getMajor());
+        if (person != null) {
+            major.setText(person.getMajor());
+        } else {
+            major.setText(Fragment.userData.getMajor());
+        }
         major.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -214,8 +264,12 @@ public class DialogChange extends Dialog implements View.OnClickListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Fragment.userData.setMajor(s.toString());
-                Fragment.majorTV.setText(s.toString());
+                if (person != null) {
+                    person.setMajor(s.toString());
+                } else {
+                    Fragment.userData.setMajor(s.toString());
+                    Fragment.majorTV.setText(s.toString());
+                }
             }
         });
     }
@@ -224,7 +278,11 @@ public class DialogChange extends Dialog implements View.OnClickListener {
         stub.setLayoutResource(R.layout.change_pob);
         stub.inflate();
         EditText pob = findViewById(R.id.profile_pob);
-        pob.setText(Fragment.userData.getPoB());
+        if (person != null) {
+            pob.setText(person.getPoB());
+        } else {
+            pob.setText(Fragment.userData.getPoB());
+        }
         pob.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -238,8 +296,12 @@ public class DialogChange extends Dialog implements View.OnClickListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Fragment.userData.setPoB(s.toString());
-                Fragment.pobTV.setText(s.toString());
+                if (person != null) {
+                    person.setPoB(s.toString());
+                } else {
+                    Fragment.userData.setPoB(s.toString());
+                    Fragment.pobTV.setText(s.toString());
+                }
             }
         });
     }
@@ -248,7 +310,11 @@ public class DialogChange extends Dialog implements View.OnClickListener {
         stub.setLayoutResource(R.layout.change_mobile);
         stub.inflate();
         EditText mobile = findViewById(R.id.profile_mobile);
-        mobile.setText(Fragment.userData.getMobile());
+        if (person != null) {
+            mobile.setText(person.getMobile());
+        } else {
+            mobile.setText(Fragment.userData.getMobile());
+        }
         mobile.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -263,8 +329,12 @@ public class DialogChange extends Dialog implements View.OnClickListener {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() > 5 && Patterns.PHONE.matcher(s.toString()).matches()) {
-                    Fragment.userData.setMobile(s.toString());
-                    Fragment.mobileTV.setText(s.toString());
+                    if (person != null) {
+                        person.setMobile(s.toString());
+                    } else {
+                        Fragment.userData.setMobile(s.toString());
+                        Fragment.mobileTV.setText(s.toString());
+                    }
                 }
             }
         });
@@ -279,8 +349,13 @@ public class DialogChange extends Dialog implements View.OnClickListener {
         stub.inflate();
         EditText first_Name = findViewById(R.id.profile_firstName);
         EditText last_Name = findViewById(R.id.profile_lastName);
-        first_Name.setText(Fragment.userData.getFirst_Name());
-        last_Name.setText(Fragment.userData.getLast_Name());
+        if (person != null) {
+            first_Name.setText(person.getFirst_Name());
+            last_Name.setText(person.getLast_Name());
+        } else {
+            first_Name.setText(Fragment.userData.getFirst_Name());
+            last_Name.setText(Fragment.userData.getLast_Name());
+        }
 
         first_Name.addTextChangedListener(new TextWatcher() {
             @Override
@@ -295,8 +370,12 @@ public class DialogChange extends Dialog implements View.OnClickListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Fragment.userData.setFirst_Name(s.toString());
-                Fragment.nameTV.setText(Fragment.userData.getFullName());
+                if (person != null) {
+                    person.setFirst_Name(s.toString());
+                } else {
+                    Fragment.userData.setFirst_Name(s.toString());
+                    Fragment.nameTV.setText(Fragment.userData.getFullName());
+                }
             }
         });
 
@@ -313,8 +392,12 @@ public class DialogChange extends Dialog implements View.OnClickListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Fragment.userData.setLast_Name(s.toString());
-                Fragment.nameTV.setText(Fragment.userData.getFullName());
+                if (person != null) {
+                    person.setLast_Name(s.toString());
+                } else {
+                    Fragment.userData.setLast_Name(s.toString());
+                    Fragment.nameTV.setText(Fragment.userData.getFullName());
+                }
             }
         });
     }
@@ -323,15 +406,31 @@ public class DialogChange extends Dialog implements View.OnClickListener {
     public void onClick(@NotNull View v) {
         if (v.getId() == -1) {
             //TODO if user did not hit save, the address does not get set to the previous state.
-            Fragment.userData.setAddress(saveAddress);
-            Fragment.userData = saveData;
-            Fragment.updateUI();
+            if (person != null) {
+                person = saveData;
+                CheckChargeDialog.customDismissListener.chargenDismiss(person);
+            } else {
+                Fragment.userData.setAddress(saveAddress);
+                Fragment.userData = saveData;
+                //Fragment.updateUI();
+            }
             this.dismiss();
         }
     }
 
-    private void upload() {
-        Log.i(TAG, "uploading changed data");
-        this.dismiss();
+    @Override
+    protected void onStop() {
+        super.onStop();
+        final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            try {
+                imm.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    public interface CustomDismissListener {
+        void chargenDismiss(@NotNull Person person);
     }
 }

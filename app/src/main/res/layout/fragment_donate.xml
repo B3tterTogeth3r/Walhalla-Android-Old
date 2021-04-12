@@ -12,75 +12,55 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark">
+        android:padding="8dp">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/menu_donate"
-            android:textAppearance="@color/text"
-            android:textSize="30sp" />
+            style="@style/History.Text"
+            android:text="@string/footer_helper" />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/footer_helper"
-            android:textAppearance="@color/text"
-            android:textSize="15sp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="@string/footer_sub_1_title"
-            android:textAppearance="@color/text"
-            android:textSize="15sp" />
+            style="@style/History.Title"
+            android:gravity="center_horizontal"
+            android:text="@string/footer_sub_1_title" />
 
         <Button
             android:id="@+id/konto_aktive"
-            style="@style/ButtonDonate"
+            style="@style/History.Button"
+            android:layout_gravity="center_horizontal"
             android:text="@string/footer_sub_1_content" />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="@string/footer_sub_2_title"
-            android:textAppearance="@color/text"
-            android:textSize="15sp" />
+            style="@style/History.Title"
+            android:gravity="center_horizontal"
+            android:text="@string/footer_sub_2_title" />
 
         <Button
             android:id="@+id/konto_hbv"
-            style="@style/ButtonDonate"
+            style="@style/History.Button"
+            android:layout_gravity="center_horizontal"
             android:text="@string/footer_sub_2_content" />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="@string/footer_sub_3_title"
-            android:textAppearance="@color/text"
-            android:textSize="15sp" />
+            style="@style/History.Title"
+            android:gravity="center_horizontal"
+            android:text="@string/footer_sub_3_title" />
 
         <Button
             android:id="@+id/konto_kstv"
-            style="@style/ButtonDonate"
+            style="@style/History.Button"
+            android:layout_gravity="center_horizontal"
             android:text="@string/footer_sub_3_content" />
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:text="@string/footer_sub_4_title"
-            android:textAppearance="@color/text"
-            android:textSize="15sp" />
+            style="@style/History.Title"
+            android:gravity="center_horizontal"
+            android:text="@string/footer_sub_4_title" />
 
         <Button
             android:id="@+id/konto_hbd_donate"
-            style="@style/ButtonDonate"
+            style="@style/History.Button"
+            android:layout_gravity="center_horizontal"
             android:text="@string/footer_sub_4_content" />
-
 
     </LinearLayout>
 </RelativeLayout>

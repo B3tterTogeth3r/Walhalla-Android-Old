@@ -5,76 +5,66 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.walhalla.app.utils.Date_Time_Format_Manual;
 
 @IgnoreExtraProperties
 public class Drink implements Cloneable {
-    private int id, who, amount, kind;
-    private String date;
+    private boolean available = false;
+    private String name;
+    private float priceBuy = 0;
+    private Map<String, Float> priceSell = new HashMap<>();
+    public final static String AKTIVE ="Aktive";
+    public final static String AH = "Alter Herr";
+    public final static String FUX ="Fux";
+    public final static String GAST = "Gast";
 
     public Drink() {
-        this.id = 0;
-        this.date = "";
-        this.who = 0;
-        this.amount = 0;
-        this.kind = 0;
+        priceSell.put(AKTIVE, 0f);
+        priceSell.put(AH, 0f);
+        priceSell.put(FUX, 0f);
+        priceSell.put(GAST, 0f);
     }
 
-    public Drink(int id, String date, int who, int amount, int kind) {
-        this.id = id;
-        this.date = date;
-        this.who = who;
-        this.amount = amount;
-        this.kind = kind;
+    public Drink(boolean available, String name, float priceBuy, Map<String, Float> priceSell) {
+        this.available = available;
+        this.name = name;
+        this.priceBuy = priceBuy;
+        this.priceSell = priceSell;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public boolean isAvailable() {
+        return available;
     }
 
-    public void setWho(int who) {
-        this.who = who;
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public String getName() {
+        return name;
     }
 
-    public void setKind(int kind) {
-        this.kind = kind;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public float getPriceBuy() {
+        return priceBuy;
     }
 
-    public int getId() {
-        return id;
+    public void setPriceBuy(float priceBuy) {
+        this.priceBuy = priceBuy;
     }
 
-    public String getDate() {
-        return date;
+    public Map<String, Float> getPriceSell() {
+        return priceSell;
     }
 
-    public Date getDate_Value() {
-        return Date_Time_Format_Manual.parseDate(this.date);
-    }
-
-    public int getWho() {
-        return who;
-    }
-
-    public Person getPerson() {
-        return new Person();//TODO Find.Person(who);
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public int getKind() {
-        return kind;
+    public void setPriceSell(Map<String, Float> priceSell) {
+        this.priceSell = priceSell;
     }
 
     @NotNull

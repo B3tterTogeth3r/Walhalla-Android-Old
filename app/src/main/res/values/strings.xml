@@ -4,7 +4,7 @@
     <string name="send">Senden</string>
     <string name="wappen_desc">Wappen der Verbindung</string>
     <string name="backgroundImage" translatable="false">BackgroundImage</string>
-    
+
     <string name="maps_api_key_2">AIzaSyBkZmfoEvjUrG1ujh_MLMsaVuSxdpv1_Wg</string>
 
     <string name="save">Speichern</string>
@@ -33,6 +33,7 @@
     <string name="yes">Ja</string>
     <string name="abort_sure">Wirklich abrechen?</string>
     <string name="ok" translatable="false">OK</string>
+    <string name="no">Nein</string>
     <string name="back">Zurück</string>
     <string name="next">Weiter</string>
     <string name="ws">Wintersemester</string>
@@ -52,7 +53,7 @@
     <!-- Menu items -->
     <string name="menu_beer">Bier</string>
     <string name="menu_home">Start</string>
-    <string name="menu_chat">Mitteilungen</string>
+    <string name="menu_chat">Chat</string>
     <string name="menu_contacts">Kartei</string>
     <string name="menu_donation">Spenden</string>
     <string name="menu_login">Login</string>
@@ -77,7 +78,7 @@
     <string name="menu_lecture">Vortrag</string>
     <string name="menu_budget_plan">Budgetplanung</string>
     <string name="menu_end_semester">Kassenschluss</string>
-    <string name="menu_messages">Mitteilungen</string>
+    <string name="menu_messages">Neuigkeiten</string>
     <string name="menu_logout">Logout</string>
     <string name="menu_donate">Spenden</string>
     <string name="menu_other">Sonstiges</string>
@@ -86,10 +87,13 @@
     <string name="menu_user_editing">Nutzerverwaltung</string>
     <string name="menu_profile_edit">Profil bearbeiten</string>
     <string name="menu_profile_add">Eine neue Person hinzufügen</string>
-
+    <string name="menu_chargen_bottom">Vorstand</string>
+    <string name="menu_share">Social Media</string>
+    <string name="menu_program_short">Programm</string>
+    <string name="menu_new_semester">Semester bearbeiten</string>
 
     <!-- Home -->
-    <string name="home_title">Willkommen</string>
+    <string name="home_title">Herzlich willkommen!</string>
     <string name="home_text">"Liebe Bundesbrüder, werte Kartellbrüder, verehrte Damen und liebe Leser, Die Aktivitas des K.St.V. Walhalla freut sich, ihren lieben Alten Herren, ihren Kartell- und Bundesbrüdern sowie ihren sehr geehrten Gästen und treuen Freunden das Programm für das Wintersemester 2020/21 überreichen zu können. Als Verein, welcher aus Akademikern und angehenden Hochschulabsolventen besteht, halten wir die Wissenschaft in allen Ehren und unterstützen uns gegenseitig so gut es geht beim Gewinnen von neuem Wissen. Leider konnten wir in diesem Semester dank Corona keinen Vortrag organisieren. Auch die Freundschaft muss in Zeiten der Isolation fortbestehen können und gepflegt werden, weshalb die Bundesbrüder Walhallae nicht nur während des Semesters, sondern das ganze Jahr über zusammenhalten und sich nach besten Kräften gegenseitig unterstützen. Der Glaube und das Vertrauen in Gott sind essenzielle Teile unseres Lebens und der Verbindung. Gerade in diesen belastenden und mit Sorge gefüllten Tagen hoffen wir auf eine intensive Wahrnehmung des bestehenden Angebots und laden unsere lieben Alten Herren, die sehr verehrten Damen und alle interessierten Abiturienten und Studenten ein, an unseren Veranstaltungen teilzunehmen. In der Hoffnung, dass gemäß unseren Prinzipien religio – scientia – amicitia jedem etwas geboten wird, verbleibe ich mit einem Kraftvollem: Vivat, crescat, floreat Walhalla ad multos annos! "</string>
     <string name="home_2">Wir sind eine katholische Korporation von Studenten aller Fachrichtungen. Wir haben uns zusammengefunden, um gemeinsam zu lernen, zu studieren und zu feiern. Auf dem Walhallahaus in der Mergentheimer Straße 32 hören wir Vorträge, treffen uns zu Federweißerabenden oder traditionellen Kneipen, spielen Tennis und feiern Feste. Uns verbindet die Orientierung an den Grundsätzen Religion, Wissenschaft und Freundschaft. Deshalb haben wir uns in einem starken Dachverband zusammengeschlossen: dem Kartellverband katholischer deutscher Studentenvereine (KV). Diesem gehören über 80 aktive Vereine an mehr als 40 Hochschulen in ganz Deutschland an. Aus unserer christlichen Tradition heraus lehnen wir das Schlagen von Mensuren (auch bekannt als \"Fechten\") ab. Neugierig geworden? Dann solltest du nicht lange zögern! Kontaktiere uns und lerne uns auf einer unserer Veranstaltungen oder auch beim gemeinsamen Fußballschauen auf dem Walhallahaus in der Mergentheimer Straße 32 kennen.</string>
 
@@ -176,8 +180,9 @@
     <string name="program_save_calendar_complete">der Eintrag wurde im Kalender gespeichert</string>
     <string name="program_dialog_delete_successful">Veranstaltung erfolgreich gelöscht.</string>
 
-    <string name="program_add">Veranstaltung Hinzufügen</string>
-    <string name="program_edit">Eintrag bearbeiten</string>
+    <string name="program_add">Neue Veranstaltung</string>
+    <string name="program_add_new">Neu</string>
+    <string name="program_edit">Bearbeiten</string>
     <string name="program_save_in_calendar">In Kalender speichern</string>
 
     <string name="program_delete_title">Diese Veranstaltung löschen?</string>
@@ -196,6 +201,9 @@
     <string name="program_dialog_meeting">Ist der Eintrag ein Konvent?</string>
     <string name="program_dialog_place">Die Veranstaltung beginnt adh?</string>
     <string name="program_dialog_semester">Semesterzugehörigkeit</string>
+    <string name="program_title">Veranstaltungstitel</string>
+    <string name="program_description">Zusatz zur Veranstaltung</string>
+
 
     <string name="link_geocode" translatable="false">https://maps.googleapis.com/maps/api/geocode/json</string>
 
@@ -229,7 +237,7 @@
     <string name="drink_select_person">Wähle eine Person aus</string>
     <string name="drink_invoice_price">"Preis bei "</string>
     <string name="drink_total">In diesem Semester gesamt konsumiert:</string>
-    <string name="drink_place">"Platz im aktuellen Semester: "</string>
+    <string name="drink_place">Platz im aktuellen Semester:</string>
     <string name="drink_explain_extra">Diese Personen haben noch eine offene Getränkerechnung:</string>
 
     <!-- Login -->
@@ -267,6 +275,7 @@
     <string name="error_email_not_verified_title">E-Mail unbestätigt</string>
     <string name="error_email_not_verified_message">Die E-Mail-Adresse ist noch nicht bestätigt. Soll erneut eine Bestätigungsanfrage verschickt werden?</string>
     <string name="error_email_not_verified_new">Erneut senden</string>
+    <string name="error_close_app">Etwas ist beim Starten der App schief gelaufen. Versuche es später erneut.</string>
 
     <!-- Profile -->
     <string name="profile_address_street">Straße</string>
@@ -279,7 +288,7 @@
     <string name="profile_in_loco">Bist du am Ort?</string>
     <string name="profile_get_mail">Möchtest du Mitteilungen per Mail erhalten?</string>
     <string name="profile_get_post">Möchtest du das Programm und weiteres per Post erhalten?</string>
-    <string name="profile_get_push">Möchtest du Push Mitteilungen bekommen?</string>
+    <string name="profile_get_push">Möchtest du Push Nachrichten bekommen?</string>
     <string name="profile_description_messages">Die folgenden Einstellungen kannst du jeder Zeit in deinen Profileinstellungen wieder verändern</string>
     <string name="profile_description_program_data">Für eine schöne Darstellung im Semesterprogramm sind folgende Daten benötigt: </string>
     <string name="found_entry">Eine Person mit dieser E-Mail-Adresse ist schon in der Kartei vorhanden. Sind das die richtigen Daten?</string>
@@ -317,7 +326,6 @@
     <string name="profile_change_mail">E-Mail-Adresse verändern</string>
     <string name="profile_change_mail_description">Mit einer Veränderung dieser wird auch die Adresse zum Login verändert. Die neue E-Mail-Adresse muss wieder über eine verschickte Mail bestätigt werden.</string>
     <string name="profile_change_mobile">Handynummer verändern</string>
-    <string name="toast_still_in_dev">Still in development…</string>
 
     <string name="diashow_icon">diashow_icon</string>
     <string name="diashow_left">arrow_left</string>
@@ -337,6 +345,19 @@
     <string name="menu_about_us_section_2">Wen wir suchen</string>
     <string name="menu_about_us_section_3">Kurz und knapp: Das findest du bei uns</string>
 
+    <!-- Social Media -->
+    <string name="instagram">Instagram</string>
+    <string name="website">Webseite</string>
+    <string name="email">E-Mail</string>
+    <string name="facebook">Facebook</string>
+
+    <!-- News -->
+    <string name="messages_public">Öffentliche Mitteilung</string>
+    <string name="messages_internal">Interne Mitteilung</string>
+    <string name="messages_add_link">Link(s) hinzufügen</string>
+    <string name="messages_link_name">Link Name</string>
+    <string name="messages_link_link">Link</string>
+
     <string name="save_public">Öffentliche Veranstaltung</string>
     <string name="save_private">Private Veranstaltung</string>
     <string name="save_draft">Entwurf speichern</string>
@@ -347,7 +368,25 @@
     <string name="program_show_public_events">Öffentliche Veranstaltungen</string>
     <string name="program_edit_time_start">Beginn der Veranstaltung</string>
     <string name="program_abort_sure">Möchtest du die Eingabe als Entwurf speichern?</string>
-    <string name="no">Nein</string>
     <string name="error_delete_event">Veranstaltung konnte nicht gelöscht werden.</string>
-
+    <string name="select_image">Ein Bild auswählen</string>
+    <string name="messages_dialog">Neue Mitteilung</string>
+    <string name="internal">Intern</string>
+    <string name="draft">Entwurf</string>
+    <string name="add_more">Nächster</string>
+    <string name="string_public">Öffentlich</string>
+    <string name="send_public">Öffentlich</string>
+    <string name="send_private">Intern</string>
+    <string name="greeting">Grußwort des Seniors</string>
+    <string name="charge_aktive">Aktivenchargen des</string>
+    <string name="toast_still_in_dev">Still in development…</string>
+    <string name="greeting_new">Neue Begrüßung</string>
+    <string name="add">Hinzufügen</string>
+    <string name="no_charge">Unbesetzt</string>
+    <string name="check_data">Sind alle Daten korrekt?</string>
+    <string name="end">Fertig</string>
+    <string name="greeting_head">Liebe Bundesbrüder, werte Kartellbrüder, verehrte Damen und liebe Leser,</string>
+    <string name="greeting_end">Vivat, crescat, floreat Walhalla ad multos annos!</string>
+    <string name="remove">remove</string>
+    <string name="new_notes">Neue Hinweise</string>
 </resources>

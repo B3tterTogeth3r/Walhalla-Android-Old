@@ -19,20 +19,13 @@ import com.google.firebase.storage.StorageReference;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import de.walhalla.app.App;
 import de.walhalla.app.R;
 import de.walhalla.app.utils.Variables;
 
 public class Firebase {
     private final static String TAG = "FirebaseDownloader";
-
-    public interface Chargen {
-        void currentChargen();
-    }
-
-    public interface Event {
-        void oneSemester(int semester_id);
-    }
 
     @NotNull
     @Contract(pure = true)
@@ -42,6 +35,23 @@ public class Firebase {
             image.getBytes(Variables.ONE_MEGABYTE).addOnSuccessListener(bytes -> {
                 Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 imageView.setImageBitmap(addWatermark(bmp));
+            }).addOnFailureListener(e ->
+                    Log.e(TAG, "image download unsuccessful", e));
+        };
+    }
+
+    @NotNull
+    @Contract(pure = true)
+    public static Runnable downloadImage(String reference, CircleImageView imageView) {
+        return () -> {
+            StorageReference image = FirebaseStorage.getInstance().getReference(reference);
+            image.getBytes(Variables.ONE_MEGABYTE).addOnSuccessListener(bytes -> {
+                try {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    Bitmap imageBitMap = addWatermark(bmp);
+                    imageView.setImageBitmap(imageBitMap);
+                } catch (Exception ignored) {
+                }
             }).addOnFailureListener(e ->
                     Log.e(TAG, "image download unsuccessful", e));
         };
@@ -102,6 +112,14 @@ public class Firebase {
         canvas.drawBitmap(watermark, matrix, paint);
 
         return bmp;
+    }
+
+    public interface Chargen {
+        void currentChargen();
+    }
+
+    public interface Event {
+        void oneSemester(int semester_id);
     }
 
     public interface board {

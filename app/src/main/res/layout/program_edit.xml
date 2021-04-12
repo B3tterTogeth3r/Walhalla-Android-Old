@@ -37,17 +37,31 @@
             android:orientation="vertical"
             android:padding="8dp">
 
-            <EditText
-                android:id="@+id/program_edit_title"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:ignore="Autofill,LabelFor,TextFields" />
+                app:boxBackgroundColor="@android:color/transparent">
 
-            <EditText
-                android:id="@+id/program_edit_description"
+                <EditText
+                    android:id="@+id/program_edit_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/program_title"
+                    tools:ignore="Autofill,LabelFor,TextFields" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="Autofill,LabelFor,TextFields" />
+                android:layout_height="90dp"
+                app:boxBackgroundColor="@android:color/transparent">
+
+                <EditText
+                    android:id="@+id/program_edit_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="77dp"
+                    android:hint="@string/program_description"
+                    tools:ignore="Autofill,LabelFor,TextFields" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/program_semester"
@@ -55,17 +69,24 @@
                 android:layout_width="match_parent"
                 android:text="@string/program_dialog_semester" />
 
-            <Button
-                android:id="@+id/program_edit_start_time"
-                style="@style/History.Button"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:text="@string/program_dialog_time_begin" />
+                android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/program_edit_end_time"
-                style="@style/History.Button"
-                android:layout_width="match_parent"
-                android:text="@string/program_dialog_time_end" />
+                <Button
+                    android:id="@+id/program_edit_start_time"
+                    style="@style/History.Button"
+                    android:layout_width="wrap_content"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:text="@string/program_dialog_time_begin" />
+
+                <Button
+                    android:id="@+id/program_edit_end_time"
+                    style="@style/History.Button"
+                    android:layout_width="match_parent"
+                    android:text="@string/program_dialog_time_end" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/program_edit_accounting"
@@ -81,6 +102,7 @@
 
                     <TextView
                         style="@style/History.Text"
+                        android:layout_gravity="center_vertical"
                         android:text="@string/program_dialog_before" />
 
                     <TextView
@@ -96,6 +118,7 @@
 
                     <TextView
                         style="@style/History.Text"
+                        android:layout_gravity="center_vertical"
                         android:text="@string/program_dialog_after" />
 
                     <TextView
@@ -106,11 +129,13 @@
                 </TableRow>
 
                 <TableRow
+                    android:id="@+id/program_edit_acc_current_row"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
                     <TextView
                         style="@style/History.Text"
+                        android:layout_gravity="center_vertical"
                         android:text="@string/program_dialog_current" />
 
                     <TextView
@@ -127,6 +152,7 @@
 
                     <TextView
                         style="@style/History.Text"
+                        android:layout_gravity="center_vertical"
                         android:text="@string/program_dialog_meeting" />
 
                     <CheckBox
@@ -144,6 +170,7 @@
 
                     <TextView
                         style="@style/History.Text"
+                        android:layout_gravity="center_vertical"
                         android:text="@string/program_dialog_place" />
 
                     <CheckBox

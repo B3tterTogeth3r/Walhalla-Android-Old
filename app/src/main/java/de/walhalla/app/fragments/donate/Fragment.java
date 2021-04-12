@@ -35,11 +35,11 @@ public class Fragment extends CustomFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_donate, container, false);
-        //TODO This design is awful.
+
         ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_donate);
         ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
 
-        //Beim Anklicken der Felder wird die IBAN in die Zwischenablage kopiert
+        //On click saves the text of the button into the clipboard.
         Buttons.load();
 
         clipboardManager = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);

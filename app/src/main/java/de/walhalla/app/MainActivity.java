@@ -7,10 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,32 +29,43 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
 
 import de.walhalla.app.dialog.LoginDialog;
 import de.walhalla.app.firebase.CustomAuthListener;
 import de.walhalla.app.fragments.BalanceFragment;
 import de.walhalla.app.fragments.Sites;
+import de.walhalla.app.fragments.addNew.NewSemesterDialog;
 import de.walhalla.app.fragments.home.Fragment;
-import de.walhalla.app.utils.Find;
+import de.walhalla.app.models.SocialMedia;
 import de.walhalla.app.utils.Variables;
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 
 @SuppressLint("StaticFieldLeak")
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
-        CustomAuthListener.sendMain, Sites.start{
+        BottomNavigationView.OnNavigationItemSelectedListener,
+        CustomAuthListener.sendMain, Sites.start {
     private final static String TAG = "MainActivity";
     public static CustomAuthListener.sendMain authChange;
     public static View parentLayout;
     public static Sites.start listener;
+    private final ArrayList<SocialMedia> webLinks = new ArrayList<>();
     private MenuItem lastItem;
     private DrawerLayout drawerlayout;
     private AppBarConfiguration appBarConfiguration;
     private boolean doubleBackToExitPressedOnce = false;
     private NavigationView navigationView;
+    private ListenerRegistration registration;
+    private BottomNavigationItemView share;
 
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -70,11 +83,36 @@ public class MainActivity extends AppCompatActivity implements
         hideKeyboard(getCurrentFocus());
         authChange = this;
         listener = this;
+        try {
+            registration = Variables.Firebase.FIRESTORE
+                    .collection("SocialMedia")
+                    .addSnapshotListener((value, error) -> {
+                        if (error != null) {
+                            Log.w(TAG, "Listen to SocialMedia failed", error);
+                            return;
+                        }
+                        if (value != null && !value.isEmpty()) {
+                            for (DocumentSnapshot snapshot : value) {
+                                SocialMedia sm = snapshot.toObject(SocialMedia.class);
+                                if (sm != null) {
+                                    webLinks.add(sm);
+                                }
+                            }
+                        }
+                    });
+        } catch (Exception e) {
+            Log.d(TAG, "Listen to social media changes crashed", e);
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        try {
+            registration.remove();
+        } catch (Exception e) {
+            Log.d(TAG, "Something went wrong while removing the snapshot listener", e);
+        }
         hideKeyboard(getCurrentFocus());
     }
 
@@ -82,9 +120,17 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Set user data if any is still signed in
-        if (Variables.Firebase.user != null) {
-            Variables.Firebase.isUserLogin = true;
-            Find.PersonByUID(Variables.Firebase.user.getUid(), Variables.Firebase.user.getEmail());
+        try {
+            if (Variables.Firebase.AUTHENTICATION.getCurrentUser() != null) {
+                Variables.Firebase.setAuth();
+                Variables.Firebase.isUserLogin = true;
+            } else {
+                User.logOut();
+                Variables.Firebase.isUserLogin = false;
+            }
+        } catch (Exception e) {
+            User.logOut();
+            Variables.Firebase.isUserLogin = false;
         }
         parentLayout = findViewById(android.R.id.content);
         setContentView(R.layout.activity_main);
@@ -99,6 +145,14 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
         fillSideNav();
 
+        //ButtonNavigationView
+        BottomNavigationViewEx bnve = findViewById(R.id.bottom_nav_view);
+        bnve.enableShiftingMode(false);
+        bnve.enableItemShiftingMode(false);
+        bnve.setTextVisibility(true);
+        bnve.setOnNavigationItemSelectedListener(this);
+        share = findViewById(R.id.menu_share);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerlayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         toggle.syncState();
 
@@ -110,7 +164,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void fillSideNav() {
-        boolean isLogin = (Variables.Firebase.AUTHENTICATION.getCurrentUser() != null);
+        boolean isLogin = false;
+        try {
+            isLogin = (Variables.Firebase.AUTHENTICATION.getCurrentUser() != null);
+        } catch (Exception ignored) {
+        }
         Log.e(TAG, "isLogin: " + isLogin);
 
         //Navigation Head
@@ -154,18 +212,17 @@ public class MainActivity extends AppCompatActivity implements
                 .setIcon(R.drawable.ic_group);
         menu.add(0, R.string.menu_chargen_phil, 0, R.string.menu_chargen_phil)
                 .setIcon(R.drawable.ic_group_line);
-        //.setIcon(R.drawable.ic_calendar);
 
-        //Login, Sign up, Logout and delete pages
+        /* Login/Sign up, Logout */
         Menu loginMenu = menu.addSubMenu(R.string.menu_user_editing);
-        if(isLogin){
+        if (isLogin) {
             loginMenu.add(1, R.string.menu_logout, 0, R.string.menu_logout)
                     .setIcon(R.drawable.ic_exit)
                     .setCheckable(false);
             loginMenu.add(0, R.string.menu_profile, 0, R.string.menu_profile)
                     .setIcon(R.drawable.ic_person);
 
-            loginMenu.add(0, R.string.menu_beer, 0, R.string.menu_beer) //Change appearance depending on who is logged in
+            /*loginMenu.add(0, R.string.menu_beer, 0, R.string.menu_beer) //Change appearance depending on who is logged in
                     .setIcon(R.drawable.ic_beer);
 
             //Only visible to members of the fraternity
@@ -174,24 +231,26 @@ public class MainActivity extends AppCompatActivity implements
                     .setIcon(R.drawable.ic_scriptor);
             menuLogin.add(0, R.string.menu_kartei, 0, R.string.menu_kartei)
                     .setIcon(R.drawable.ic_contacts);
-
+             */
             //Only visible to a active board member of the current semester
             if (User.hasCharge()) {
                 Menu menuCharge = menu.addSubMenu(R.string.menu_board_only);
-                menuCharge.add(0, R.string.menu_new_person, 0, R.string.menu_new_person)
+                /*menuCharge.add(0, R.string.menu_new_person, 0, R.string.menu_new_person)
                         .setIcon(R.drawable.ic_person_add);
                 menuCharge.add(0, R.string.menu_user, 0, R.string.menu_user)
                         .setIcon(R.drawable.ic_home);
                 menuCharge.add(0, R.string.menu_account, 0, R.string.menu_account)
-                        .setIcon(R.drawable.ic_account);
+                        .setIcon(R.drawable.ic_account);*/
+                menuCharge.add(0, R.string.menu_new_semester, 0, R.string.menu_new_semester);
             }
-        } else{
+        } else {
             loginMenu.add(1, R.string.menu_login, 0, R.string.menu_login)
-                    //.setCheckable(false)
+                    ///.setCheckable(false)
                     .setIcon(R.drawable.ic_exit);
         }
 
-        //TODO Find icons for the rest
+        loginMenu.setGroupCheckable(1, false, true);
+
         Menu moreMenu = menu.addSubMenu(R.string.menu_more);
         moreMenu.add(1, R.string.menu_more_board, 1, R.string.menu_more_board)
                 .setContentDescription(getString(R.string.menu_more_board_description));
@@ -223,13 +282,20 @@ public class MainActivity extends AppCompatActivity implements
         if (lastItem != null) {
             lastItem.setChecked(false);
         } else {
-            navigationView.getMenu().getItem(0).setChecked(false);
+            lastItem = navigationView.getMenu().getItem(0);
+            lastItem.setChecked(true);
         }
+        //Set selected Item as checked
+        item.setChecked(true);
         switch (item.getItemId()) {
+            //SiteNav Left
             case R.string.menu_login:
                 LoginDialog.display(getSupportFragmentManager());
+                lastItem.setChecked(true);
                 break;
             case R.string.menu_logout:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new Fragment()).commit();
                 Variables.Firebase.AUTHENTICATION.signOut();
                 User.logOut();
                 Snackbar.make(parentLayout, R.string.login_logout_successful, Snackbar.LENGTH_LONG)
@@ -237,9 +303,9 @@ public class MainActivity extends AppCompatActivity implements
                         })
                         .setActionTextColor(App.getContext().getResources().getColor(R.color.colorPrimaryDark, null))
                         .show();
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new Fragment()).commit();
+                lastItem.setChecked(true);
                 break;
+            case R.id.menu_home:
             case R.string.menu_home:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new Fragment()).commit();
@@ -252,14 +318,17 @@ public class MainActivity extends AppCompatActivity implements
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new de.walhalla.app.fragments.donate.Fragment()).commit();
                 break;
+            case R.id.menu_program:
             case R.string.menu_program:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new de.walhalla.app.fragments.program.Fragment()).commit();
                 break;
+            case R.id.menu_messages:
             case R.string.menu_messages:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new de.walhalla.app.fragments.news.Fragment()).commit();
                 break;
+            case R.id.menu_board:
             case R.string.menu_chargen:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new de.walhalla.app.fragments.chargen.Fragment()).commit();
@@ -313,17 +382,64 @@ public class MainActivity extends AppCompatActivity implements
             case R.string.menu_about_us:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new de.walhalla.app.fragments.more.AboutUsFragment()).commit();
+                break;
             case R.string.menu_rooms:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new de.walhalla.app.fragments.more.RoomsFragment()).commit();
                 break;
+            case R.string.menu_new_semester:
+                //Open dialog which forces the user to create the whole semester with every necessary field
+                NewSemesterDialog.display(getSupportFragmentManager());
+                break;
+            //BottomToolBar
+            case R.id.menu_share:
+                //Open the social Media as a kind of dialog / tooltip
+                try {
+                    lastItem.setChecked(true);
+                } catch (Exception ignored) {
+                }
+                @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.social_media, null);
+                new SimpleTooltip.Builder(App.getContext())
+                        .anchorView(share)
+                        .showArrow(false)
+                        .contentView(view, 0)
+                        .gravity(Gravity.TOP)
+                        .animated(false)
+                        .modal(true)
+                        .dismissOnInsideTouch(true)
+                        .transparentOverlay(true)
+                        .build()
+                        .show();
+                ImageButton insta = view.findViewById(R.id.icon_instagram);
+                ImageButton facebook = view.findViewById(R.id.icon_facebook);
+                ImageButton web = view.findViewById(R.id.icon_website);
+                ImageButton mail = view.findViewById(R.id.icon_email);
+                insta.setOnClickListener(v -> {
+                    for (SocialMedia sm : webLinks) {
+                        if (sm.getName().equals("instagram")) {
+                            browser(sm.getLink());
+                        }
+                    }
+                });
+                facebook.setOnClickListener(v -> {
+                    for (SocialMedia sm : webLinks) {
+                        if (sm.getName().equals("facebook")) {
+                            browser(sm.getLink());
+                        }
+                    }
+                });
+                web.setOnClickListener(v -> browser(null));
+                mail.setOnClickListener(v -> email());
+                break;
             default:
-                Snackbar.make(parentLayout, R.string.error_site_messages, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(parentLayout, R.string.error_site_messages, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.close, v -> {
+                        })
+                        .setActionTextColor(App.getContext().getResources().getColor(R.color.colorPrimaryDark, null))
+                        .show();
                 Log.i(TAG, "nothing checked");
                 break;
         }
-        //Set selected Item as checked
-        item.setChecked(true);
         lastItem = item;
         //Close drawer
         drawerlayout.closeDrawer(GravityCompat.START);
@@ -339,12 +455,10 @@ public class MainActivity extends AppCompatActivity implements
                 super.onBackPressed();
                 return;
             }
-
             this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, R.string.exit_app_via_back, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.exit_app_via_back, Toast.LENGTH_LONG).show();
 
             new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 500);
-
         } else { //Otherwise open the left menu
             drawerlayout.open();
         }
@@ -355,21 +469,32 @@ public class MainActivity extends AppCompatActivity implements
         runOnUiThread(this::fillSideNav);
     }
 
+    /**
+     * Via the listener open the web browser
+     *
+     * @param url the link the browser will open
+     */
     @Override
-    public void browser(@NotNull String url) {
-        if(!url.startsWith("http://") && !url.startsWith("https://"))
+    public void browser(@Nullable String url) {
+        if (url == null) {
+            url = Variables.Walhalla.WEBSITE;
+        }
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
             url = "http://" + url;
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(browserIntent);
     }
 
+    /**
+     * Via a listener open the default mail program and write an e mail
+     */
     @Override
     public void email() {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:")); // only email apps should handle this
         String[] recipients = new String[]{Variables.Walhalla.MAIL_SENIOR};
         intent.putExtra(Intent.EXTRA_EMAIL, recipients);
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Zimmeranfrage über die App");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }

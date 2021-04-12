@@ -34,25 +34,6 @@ public class SinglePersonPickerDialog extends AlertDialog.Builder implements Dia
         setPositiveButton(R.string.done, this);
     }
 
-    public SinglePersonPickerDialog(Context context, ChangeChargeListener listener, int charge, String personID) {
-        super(context);
-        this.listener = listener;
-        this.charge = charge;
-        this.personID = personID;
-        int checked = -1;
-
-        arrayList = Database.getAktiveMembersArrayList();
-        names = new String[arrayList.size()];
-        for (int i = 0; i < arrayList.size(); i++) {
-            names[i] = arrayList.get(i).getFullName();
-            if (arrayList.get(i).getId() == personID)
-                checked = i;
-        }
-        setTitle(ChargenDialog.CHARGEN_NAMES[charge]);
-        setSingleChoiceItems(names, checked, this);
-        setPositiveButton(R.string.done, this);
-    }
-
     @Override
     public void onClick(DialogInterface dialog, int which) {
         //User clicked a person

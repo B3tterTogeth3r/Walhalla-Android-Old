@@ -12,6 +12,7 @@ import android.widget.NumberPicker;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,23 +20,45 @@ import java.util.ArrayList;
 
 import de.walhalla.app.App;
 import de.walhalla.app.R;
+import de.walhalla.app.interfaces.AddNewSemesterListener;
 import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.models.Semester;
 import de.walhalla.app.utils.Variables;
 
 public class ChangeSemesterDialog extends DialogFragment implements DialogInterface.OnClickListener {
-    private final String TAG = "ChangeSemDialog";
-    private NumberPicker np;
+    private static final String TAG = "ChangeSemDialog";
     private final ChosenSemesterListener listener;
     int startingID = -1;
+    private NumberPicker np;
+    private AddNewSemesterListener addNewSemesterListener = null;
 
     public ChangeSemesterDialog(ChosenSemesterListener listener) {
         this.listener = listener;
     }
 
+    public ChangeSemesterDialog(AddNewSemesterListener listener) {
+        this.addNewSemesterListener = listener;
+        this.listener = null;
+    }
+
     public ChangeSemesterDialog(ChosenSemesterListener listener, int startingID) {
         this.listener = listener;
         this.startingID = startingID - 1;
+    }
+
+    public static void load(FragmentManager manager, AddNewSemesterListener listener) {
+        ChangeSemesterDialog dialog = new ChangeSemesterDialog(listener);
+        dialog.show(manager, TAG);
+    }
+
+    public static void load(FragmentManager manager, ChosenSemesterListener listener, int startingID) {
+        ChangeSemesterDialog dialog = new ChangeSemesterDialog(listener, startingID);
+        dialog.show(manager, TAG);
+    }
+
+    public static void load(FragmentManager manager, ChosenSemesterListener listener) {
+        ChangeSemesterDialog dialog = new ChangeSemesterDialog(listener);
+        dialog.show(manager, TAG);
     }
 
     @Override
@@ -84,10 +107,14 @@ public class ChangeSemesterDialog extends DialogFragment implements DialogInterf
             Semester chosenOne = Variables.SEMESTER_ARRAY_LIST.get(np.getValue());
             if (listener != null && startingID == -1) {
                 listener.start(chosenOne);
+                dismiss();
             } else if (listener != null) {
                 listener.joinedSemesterDone(chosenOne);
+                dismiss();
+            } else if (addNewSemesterListener != null) {
+                dismiss();
+                addNewSemesterListener.semesterDone(chosenOne);
             }
-            dismiss();
         } else if (which == DialogInterface.BUTTON_NEGATIVE) {
             dismiss();
         }

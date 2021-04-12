@@ -29,10 +29,13 @@ public class CustomAuthListener extends Firebase.Auth {
                         if (task.isSuccessful()) {
                             QuerySnapshot snapshot = task.getResult();
                             if (!snapshot.isEmpty()) {
-                                List<Person> p = snapshot.toObjects(Person.class);
-                                User.setData(p.get(0), user.getUid());
-                                MainActivity.authChange.onAuthChange();
-                                CustomFragment.authChange.onAuthChange();
+                                try {
+                                    List<Person> p = snapshot.toObjects(Person.class);
+                                    User.setData(p.get(0), user.getUid());
+                                    MainActivity.authChange.onAuthChange();
+                                    CustomFragment.authChange.onAuthChange();
+                                } catch (Exception ignored) {
+                                }
                             }
                         }
                     });

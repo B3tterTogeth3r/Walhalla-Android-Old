@@ -16,15 +16,6 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="ButtonDonate">
-        <item name="background">@color/background</item>
-        <item name="android:background">@color/background</item>
-        <item name="textAllCaps">true</item>
-        <item name="android:textColor">@color/text</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
     <style name="FullScreenAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowBackground">@drawable/background_button</item>
     </style>
@@ -68,8 +59,8 @@
     <style name="Settings.Layout">
         <item name="android:background">@drawable/background_profile</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:layout_margin">4dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_margin">8dp</item>
     </style>
 
     <style name="Settings.TV">
@@ -112,7 +103,7 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="Settings.Row"/>
+    <style name="Settings.Row" />
 
     <style name="Settings.Row.Title">
         <item name="android:paddingEnd">20dp</item>
@@ -141,17 +132,6 @@
     <style name="Diashow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">200dp</item>
-    </style>
-
-    <style name="Diashow.Image">
-        <item name="android:padding">2dp</item>
-        <item name="android:id">@id/diashow_image</item>
-        <item name="android:layout_height">196dp</item>
-        <item name="android:layout_alignParentStart">true</item>
-        <item name="android:layout_alignParentEnd">false</item>
-        <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:contentDescription">@string/diashow_icon</item>
-        <item name="android:src">@drawable/wappen_2017</item>
     </style>
 
     <style name="Diashow.Left">
@@ -186,14 +166,27 @@
         <item name="android:background">@drawable/background_button</item>
     </style>
 
+    <style name="Diashow.Image">
+        <item name="android:padding">2dp</item>
+        <item name="android:id">@id/diashow_image</item>
+        <item name="android:layout_height">180dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_alignParentEnd">false</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:contentDescription">@string/diashow_icon</item>
+        <item name="android:src">@drawable/wappen_2017</item>
+    </style>
+
     <style name="Diashow.Description">
         <item name="android:id">@id/diashow_description</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:layout_margin">4dp</item>
         <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_alignBottom">@id/diashow_image</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/background_image_description</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Subhead.Inverse</item>
     </style>
 
@@ -251,12 +244,73 @@
     </style>
 
     <style name="History.Button">
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:padding">10dp</item>
-        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_margin">14dp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/background_button</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body2</item>
+    </style>
+
+    <style name="SocialMediaButtons">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:layout_width">?actionBarSize</item>
+        <item name="android:layout_height">?actionBarSize</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="AddNewSemester" />
+
+    <style name="AddNewSemester.Button" parent="History.Button">
+        <item name="android:layout_width">150dp</item>
+    </style>
+
+    <style name="AddNewSemester.ImageButton" parent="History.Button">
+        <item name="android:layout_height">150dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:layout_width">150dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:src">@drawable/wappen_2017</item>
+        <item name="android:background">@drawable/image_border</item>
+    </style>
+
+    <style name="AddNewSemester.TextView" parent="History.Text">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Subhead</item>
+    </style>
+
+    <style name="AddNewSemester.RelativeLayout" parent="Settings.TV.StartEnd">
+        <item name="android:background">@drawable/background_profile</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Subhead</item>
+    </style>
+
+    <style name="AddNewSemester.Person">
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
+        <item name="android:paddingStart">140dp</item>
+        <item name="android:layout_alignParentEnd">false</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">start</item>
+        <item name="android:paddingEnd">21dp</item>
+    </style>
+
+    <style name="AddNewSemester.Person.Title" parent="Settings.Row.Title">
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="AddNewSemester.Person.Image">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
     </style>
 
 </resources>

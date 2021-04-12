@@ -6,4 +6,4 @@
     android:background="@color/background"
     android:contentDescription="@string/description_background"
     android:padding="20sp"
-    android:src="@drawable/wappen_round" />
+    android:src="@drawable/wappen_herz" />

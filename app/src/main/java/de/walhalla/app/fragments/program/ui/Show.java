@@ -55,11 +55,6 @@ public class Show extends Fragment implements EventChangeNotifier, Firebase.Even
         Show.internal = internal;
         Show.draft = draft;
         Show.layout = new LinearLayout(f.getContext());
-        /*adapter = new Entry(f.getActivity(), arrayList);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener((parent, view, position, id) ->
-                Details.display(f.getParentFragmentManager(), arrayList.get(position))
-        );*/
 
         return layout;
     }
@@ -109,6 +104,7 @@ public class Show extends Fragment implements EventChangeNotifier, Firebase.Even
                 });
     }
 
+    @SuppressLint("InflateParams")
     private void formatResult() {
         arrayList.clear();
         if (!queryDocumentSnapshots.isEmpty()) {
@@ -143,7 +139,8 @@ public class Show extends Fragment implements EventChangeNotifier, Firebase.Even
         //Group ArrayList by month and day
         ArrayList<Map<String, Object>> groupByMonthsFinal = Group.byMonths(arrayList);
         Log.d(TAG, "groupByMonthsFinal.size = " + groupByMonthsFinal.size());
-        //TODO show Events grouped by day and month
+
+        //show Events grouped by day and month
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.removeAllViews();
         for (Map<String, Object> month : groupByMonthsFinal) {
@@ -159,27 +156,31 @@ public class Show extends Fragment implements EventChangeNotifier, Firebase.Even
                 for (int i = 0; i < keySize; i++) {
                     try {
                         Event event = (Event) month.get(keys.get(i));
-                        Log.d(TAG, "formatResult: design: second for: parse successful for event " + event.getTitle());
                         View view = fillEventItem(event, inflater.inflate(R.layout.item_event_default, null));
                         view.setOnClickListener(v -> Details.display(f.getParentFragmentManager(), event));
+                        view.setBackgroundResource(R.drawable.border_bottom_black);
                         layout.addView(view);
                     } catch (Exception e) {
+                        if(e.getClass() != ClassCastException.class) {
+                            Log.d(TAG, "formatResult: design: first try: exception: ", e);
+                        }
                         try {
                             Map<String, Event> eventMap = (Map<String, Event>) month.get(keys.get(i));
-                            //TODO Add layout around for the border
-                            LinearLayout multiEventAtOneDay = new LinearLayout(getContext());
+                            //Add layout around for the border
+                            LinearLayout multiEventAtOneDay = new LinearLayout(f.getContext());
                             multiEventAtOneDay.setOrientation(LinearLayout.VERTICAL);
-                            for(String string : eventMap.keySet()) {
+                            for (String string : eventMap.keySet()) {
                                 // Format the events accordingly
                                 Event sameDay = eventMap.get(string);
-                                Log.d(TAG, "formatResult: design2: second for: parse successful for event " + event.getTitle());
                                 View view = fillEventItem(sameDay, inflater.inflate(R.layout.item_event_default, null));
-                                view.setOnClickListener(v -> Details.display(f.getParentFragmentManager(), event));
+                                view.setOnClickListener(v -> Details.display(f.getParentFragmentManager(), sameDay));
+                                view.setBackgroundResource(R.drawable.border_bottom_gray);
                                 multiEventAtOneDay.addView(view);
                             }
+                            multiEventAtOneDay.setBackgroundResource(R.drawable.border_bottom_black);
                             layout.addView(multiEventAtOneDay);
                         } catch (Exception ex) {
-                            Log.d(TAG, "formatResult: parse2: parsing into that map did not work at position " + keys.get(i), ex);
+                            Log.d(TAG, "formatResult: design: second try: parsing into that map did not work at position " + keys.get(i), ex);
                         }
                     }
                 }

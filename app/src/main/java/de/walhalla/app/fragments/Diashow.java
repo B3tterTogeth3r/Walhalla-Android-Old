@@ -22,6 +22,7 @@ import com.google.firebase.storage.StorageReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,22 +35,22 @@ public class Diashow implements View.OnClickListener, StopDiashowListener {
     private static final String TAG = "Diashow";
     public static StopDiashowListener listener;
     private final Context context;
-    private final Animation anim;
+    private final Animation anim, anim_out;
     private final AtomicInteger diashow_position = new AtomicInteger(0);
+    private final AtomicBoolean threadAlive = new AtomicBoolean(false);
+    private final ArrayList<Thread> threads = new ArrayList<>();
     private RelativeLayout layout;
     private TextView diashow_description;
     private ImageView diashow;
     private ImageButton diashow_right, diashow_left;
     private ArrayList<String> picture_names;
-    private Thread thread;
-    private final AtomicBoolean threadAlive = new AtomicBoolean(false);
     private String threadName;
 
     public Diashow(Context context) {
-        //TODO maybe add a function for swipes inside the layout
         this.context = context;
         listener = this;
         anim = AnimationUtils.loadAnimation(context, R.anim.picture_change);
+        anim_out = AnimationUtils.loadAnimation(context, R.anim.picture_change_out);
     }
 
     @SuppressLint("InflateParams")
@@ -72,7 +73,6 @@ public class Diashow implements View.OnClickListener, StopDiashowListener {
         return layout;
     }
 
-    @SuppressWarnings("unchecked")
     private void load(@NotNull DocumentReference documentReference) {
         threadName = documentReference.toString();
 
@@ -103,6 +103,7 @@ public class Diashow implements View.OnClickListener, StopDiashowListener {
                         ButtonVisibility(true);
                         //Automatic switch between images after 3-5 seconds.
                         startSwitchTimer();
+                        //TODO Activate swipe gestures
                     }
                 }
             }
@@ -113,33 +114,39 @@ public class Diashow implements View.OnClickListener, StopDiashowListener {
      * Automatic switch between images after 3-5 seconds.
      */
     private void startSwitchTimer() {
-        thread = new Thread(() -> {
-            while (threadAlive.get()) {
-                try {
-                    //noinspection BusyWait
-                    Thread.sleep(6000);
-                } catch (Exception ignored) {
-                }
-                if (threadAlive.get()) {
-                    if (picture_names != null && picture_names.size() != 0) {
-                        if (diashow_position.incrementAndGet() > picture_names.size() - 1) {
-                            diashow_position.set(0);
+        Random random = new Random();
+        int randomNumber = random.nextInt(4000);
+        Thread thread = new Thread(() -> {
+            try {
+                while (threadAlive.get()) {
+                    try {
+                        //noinspection BusyWait
+                        Thread.sleep(6000 + randomNumber);
+                    } catch (Exception ignored) {
+                    }
+                    if (threadAlive.get()) {
+                        if (picture_names != null && picture_names.size() != 0) {
+                            if (diashow_position.incrementAndGet() > picture_names.size() - 1) {
+                                diashow_position.set(0);
+                            }
+                            changeDisplayedImage();
                         }
-                        changeDisplayedImage();
                     }
                 }
+            } catch (Exception ignored) {
             }
         });
 
         threadAlive.set(true);
         thread.setName(threadName);
+        threads.add(thread);
         //TODO How to stop multiple diashow elements inside one fragment? While there is a problem, no automatic diashow should start.
         //thread.start();
     }
 
     private void ButtonVisibility(boolean Visible) {
         int visibility = View.GONE;
-        if(Visible){
+        if (Visible) {
             visibility = View.VISIBLE;
         }
         diashow_right.setVisibility(visibility);
@@ -182,6 +189,7 @@ public class Diashow implements View.OnClickListener, StopDiashowListener {
     private void downloadImage(String image_name) {
         diashow_right.setClickable(false);
         diashow_left.setClickable(false);
+        diashow.startAnimation(anim_out);
 
         StorageReference image = FirebaseStorage.getInstance().getReference(image_name);
         image.getBytes(Variables.ONE_MEGABYTE).addOnSuccessListener(bytes -> {
@@ -218,12 +226,15 @@ public class Diashow implements View.OnClickListener, StopDiashowListener {
     @Override
     public void stopDiashow() {
         //Stop the automatic new images
-        if (thread.isAlive() | threadAlive.get()) {
-            threadAlive.set(false);
-            thread.interrupt();
-            if (thread.isInterrupted()) {
-                Log.d(TAG, "Thread successfully interrupted " + thread.getName());
+        for (Thread thread : threads) {
+            if (thread.isAlive() | threadAlive.get()) {
+                threadAlive.set(false);
+                thread.interrupt();
+                if (thread.isInterrupted()) {
+                    Log.d(TAG, "Thread successfully interrupted " + thread.getName());
+                }
             }
+            threads.remove(thread);
         }
     }
 }

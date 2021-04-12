@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import androidx.fragment.app.FragmentActivity;
 
 import de.walhalla.app.R;
-import de.walhalla.app.utils.DownloadPictureQue;
 
 public class PictureZoomDialog extends Dialog {
     Drawable drawable;
@@ -53,13 +52,11 @@ public class PictureZoomDialog extends Dialog {
 
     @Override
     public void cancel() {
-        DownloadPictureQue.stopAll();
         super.cancel();
     }
 
     @Override
     public void dismiss() {
-        DownloadPictureQue.stopAll();
         super.dismiss();
     }
 

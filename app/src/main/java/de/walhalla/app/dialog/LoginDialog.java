@@ -379,7 +379,6 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
      * Download the ranks from the database. After that format them
      * into an ArrayList and display the dialog for the user to select one.
      */
-    @SuppressWarnings("unchecked")
     private void downloadRank() {
         Variables.Firebase.FIRESTORE
                 .collection("Kind")
@@ -395,7 +394,7 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
                                 try {
                                     Map<String, Object> data = (Map<String, Object>) dataSet.get(String.valueOf(i));
                                     Rank r = new Rank();
-                                    r.setId("" + i);
+                                    r.setId(i);
                                     r.setFirst_fraternity((boolean) data.get(Rank.FIRST_FRATERNITY));
                                     r.setFull_member((boolean) data.get(Rank.FULL_MEMBER));
                                     r.setIn_loco((boolean) data.get(Rank.IN_LOCO));
@@ -527,7 +526,6 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
                     }
                     if (!task.isSuccessful()) {
                         try {
-                            //noinspection ConstantConditions
                             throw task.getException();
                         }
                         // if user enters wrong email.
@@ -624,7 +622,7 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
                                     .anchorView(v)
                                     .text(finalMessage)
                                     .gravity(Gravity.TOP)
-                                    .animated(true)
+                                    .animated(false)
                                     .build()
                                     .show());
                 }

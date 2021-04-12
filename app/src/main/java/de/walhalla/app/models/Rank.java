@@ -1,48 +1,27 @@
 package de.walhalla.app.models;
 
-import com.google.firebase.database.IgnoreExtraProperties;
-import com.google.firebase.firestore.Exclude;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
 
-@IgnoreExtraProperties
-public class Rank implements Cloneable {
-    public static final String FIRST_FRATERNITY = "first_fraternity";
-    public static final String FULL_MEMBER = "full_member";
-    public static final String IN_LOCO = "in_loco";
-    public static final String PRICE = "price_semester";
-    public static final String NAME = "rank_name";
+public class Rank {
+    public final static String FIRST_FRATERNITY = "first_fraternity";
+    public final static String FULL_MEMBER = "full_member";
+    public final static String IN_LOCO = "in_loco";
+    public final static String PRICE = "price_semester";
+    public final static String NAME = "rank_name";
     private int id;
-    private String rank_name;
     private boolean first_fraternity, full_member, in_loco;
     private Map<String, Object> price_semester;
+    private String rank_name;
 
     public Rank() {
     }
 
-    @Exclude
     public int getId() {
         return id;
     }
 
-    /**
-     * The id is to get the correct element inside the rank map on the server
-     *
-     * @param id Object key of the parent element
-     */
-    @Exclude
-    public void setId(String id) {
-        this.id = Integer.parseInt(id);
-    }
-
-    public String getRank_name() {
-        return rank_name;
-    }
-
-    public void setRank_name(String rank_name) {
-        this.rank_name = rank_name;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public boolean isFirst_fraternity() {
@@ -77,9 +56,11 @@ public class Rank implements Cloneable {
         this.price_semester = price_semester;
     }
 
-    @NotNull
-    public Object clone() throws
-            CloneNotSupportedException {
-        return super.clone();
+    public String getRank_name() {
+        return rank_name;
+    }
+
+    public void setRank_name(String rank_name) {
+        this.rank_name = rank_name;
     }
 }

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/new_details_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentStart="true"
+            android:paddingStart="6dp"
+            android:paddingEnd="16dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:contentInsetStartWithNavigation="0dp"
+            app:menu="@menu/send_only"
+            app:navigationIcon="@drawable/ic_close"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <include
+        layout="@layout/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TableLayout
+        android:id="@+id/new_semester_table_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/new_details_toolbar"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TableRow style="@style/History.TableRow">
+
+            <Button
+                android:id="@+id/new_semester"
+                style="@style/History.Button"
+                android:padding="15dp"
+                android:text="@string/semester" />
+
+            <ImageView
+                android:id="@+id/new_semester_image"
+                style="@style/Settings.Row.Image"
+                android:contentDescription="@string/description" />
+        </TableRow>
+
+        <TableRow style="@style/History.TableRow">
+
+            <Button
+                android:id="@+id/new_chargen"
+                style="@style/History.Button"
+                android:clickable="false"
+                android:padding="15dp"
+                android:text="@string/menu_chargen" />
+
+            <ImageView
+                android:id="@+id/new_chargen_image"
+                style="@style/Settings.Row.Image"
+                android:contentDescription="@string/description"
+                android:src="@drawable/ic_error_outline" />
+        </TableRow>
+
+        <TableRow style="@style/History.TableRow">
+
+            <Button
+                android:id="@+id/new_chargen_phil"
+                style="@style/History.Button"
+                android:clickable="false"
+                android:padding="15dp"
+                android:text="@string/menu_chargen_phil" />
+
+            <ImageView
+                android:id="@+id/new_chargen_phil_image"
+                style="@style/Settings.Row.Image"
+                android:contentDescription="@string/description"
+                android:src="@drawable/ic_error_outline" />
+        </TableRow>
+
+        <TableRow
+            style="@style/History.TableRow"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/new_program"
+                style="@style/History.Button"
+                android:clickable="false"
+                android:padding="15dp"
+                android:text="@string/program_add" />
+
+            <ImageView
+                android:id="@+id/new_program_image"
+                style="@style/Settings.Row.Image"
+                android:contentDescription="@string/description"
+                android:src="@drawable/ic_error_outline" />
+        </TableRow>
+
+        <TableRow style="@style/History.TableRow">
+
+            <Button
+                android:id="@+id/new_greeting"
+                style="@style/History.Button"
+                android:clickable="false"
+                android:padding="15dp"
+                android:text="@string/greeting" />
+
+            <ImageView
+                android:id="@+id/new_greeting_image"
+                style="@style/Settings.Row.Image"
+                android:contentDescription="@string/description"
+                android:src="@drawable/ic_error_outline" />
+        </TableRow>
+
+        <TableRow style="@style/History.TableRow">
+
+            <Button
+                android:id="@+id/new_notes"
+                style="@style/History.Button"
+                android:clickable="false"
+                android:padding="15dp"
+                android:text="@string/home_notes" />
+
+            <ImageView
+                android:id="@+id/new_notes_image"
+                style="@style/Settings.Row.Image"
+                android:contentDescription="@string/description"
+                android:src="@drawable/ic_error_outline" />
+        </TableRow>
+
+        <TableRow
+            android:visibility="gone"
+            style="@style/History.TableRow">
+
+            <Button
+                android:id="@+id/new_message"
+                style="@style/History.Button"
+                android:clickable="false"
+                android:padding="15dp"
+                android:text="@string/messages_new_head" />
+
+            <ImageView
+                android:id="@+id/new_message_image"
+                style="@style/Settings.Row.Image"
+                android:contentDescription="@string/description"
+                android:src="@drawable/ic_error_outline" />
+        </TableRow>
+    </TableLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:progress="0" />
+
+</RelativeLayout>

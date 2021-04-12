@@ -6,6 +6,7 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,27 +15,26 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class Person implements Cloneable {
-    public static final String DOB = "DoB";
-    public static final String POB = "PoB";
     public static final String ADDRESS = "address";
     public static final String ADDRESS_2 = "address_2";
     public static final String BALANCE = "balance";
+    public static final String DOB = "DoB";
     public static final String FIRST_NAME = "first_Name";
     public static final String JOINED = "joined";
     public static final String LAST_NAME = "last_Name";
     public static final String MAIL = "mail";
+    public static final String MAJOR = "major";
     public static final String MOBILE = "mobile";
     public static final String PICTURE_PATH = "picture_path";
+    public static final String POB = "PoB";
     public static final String RANK = "rank";
     public static final String UID = "uid";
-    public static final String MAJOR = "major";
 
     public static final String ADDRESS_CITY = "city";
     public static final String ADDRESS_NUMBER = "number";
     public static final String ADDRESS_STREET = "street";
     public static final String ADDRESS_ZIP_CODE = "zip-code";
 
-    @Exclude
     private String id;
     private String PoB;
     private String first_Name;
@@ -44,13 +44,13 @@ public class Person implements Cloneable {
     private String rank;
     private String uid;
     private String major;
-    private Map<String, Object> address;
-    private Map<String, Object> address_2;
-    private int joined;
+    private Map<String, Object> address = new HashMap<>();
+    private Map<String, Object> address_2 = new HashMap<>();
+    private int joined = 0;
     private Timestamp DoB;
-    private float balance;
+    private float balance = 0f;
     private String picture_path;
-    private List<String> rankSettings;
+    private List<String> rankSettings = new ArrayList<>();
 
     public Person() {
     }
@@ -72,12 +72,10 @@ public class Person implements Cloneable {
         this.major = major;
     }
 
-    @Exclude
     public String getId() {
         return id;
     }
 
-    @Exclude
     public void setId(String id) {
         this.id = id;
     }

@@ -1,16 +1,17 @@
 package de.walhalla.app.fragments.chargen;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageButton;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,48 +19,57 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.walhalla.app.App;
 import de.walhalla.app.R;
-import de.walhalla.app.User;
+import de.walhalla.app.dialog.ChangeSemesterDialog;
 import de.walhalla.app.firebase.Firebase;
 import de.walhalla.app.fragments.CustomFragment;
-import de.walhalla.app.fragments.chargen.ui.Entry;
 import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.models.Person;
+import de.walhalla.app.models.Semester;
+import de.walhalla.app.utils.Border;
 import de.walhalla.app.utils.Variables;
 
-@SuppressWarnings("StaticFieldLeak")
-public class Fragment extends CustomFragment implements ChosenSemesterListener, Firebase.board {
+@SuppressLint("InflateParams")
+@SuppressWarnings({"StaticFieldLeak", "ConstantConditions"})
+public class Fragment extends CustomFragment implements ChosenSemesterListener {
     protected static final String TAG = "ChargenFragment";
     protected static final float scale = App.getContext().getResources().getDisplayMetrics().density;
-    protected static ImageButton add, edit;
-    protected static Button title;
-    protected static androidx.fragment.app.Fragment f;
     protected static StorageReference image;
-    private ArrayAdapter<Person> adapter;
-    private ArrayList<Person> numbers = new ArrayList<>();
+    private final ArrayList<Person> numbers = new ArrayList<>();
+    protected Toolbar toolbar;
     private ListenerRegistration registration;
+    private TextView name;
+    private TextView PoB;
+    private TextView address;
+    private TextView mobile;
+    private TextView major;
+    private ImageView picture;
+    private ChosenSemesterListener listener;
 
     public Fragment() {
         numbers.clear();
-        student(App.getChosenSemester().getID());
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        loadData(App.getChosenSemester());
+    }
+
+    public void loadData(Semester semester) {
+        if (registration != null) {
+            registration.remove();
+        }
         registration = Variables.Firebase.FIRESTORE
                 .collection("Semester")
-                .document(String.valueOf(App.getChosenSemester().getID()))
+                .document(String.valueOf(semester.getID()))
                 .collection("Chargen")
                 .limit(5)
                 .addSnapshotListener(((value, error) -> {
@@ -68,18 +78,127 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener, 
                         for (DocumentSnapshot document : value.getDocuments()) {
                             try {
                                 Person p = document.toObject(Person.class);
-                                //noinspection ConstantConditions
                                 p.setId(document.getId());
                                 numbers.add(p);
                             } catch (Exception e) {
                                 Log.d(TAG, "Something went wrong while fetching the person data.", e);
                             }
                         }
-                        adapter.notifyDataSetChanged();
+                        formatData();
                     } else {
                         Log.d(TAG, "Something went wrong while fetching the student board.", error);
                     }
                 }));
+    }
+
+    private void formatData() {
+        try {
+            LinearLayout linearLayout = requireView().findViewById(R.id.fragment_container);
+            ScrollView sc = new ScrollView(getContext());
+            LinearLayout layout = new LinearLayout(getContext());
+            layout.setOrientation(LinearLayout.VERTICAL);
+            for (int i = 0; i < numbers.size(); i++) {
+                Person p = numbers.get(i);
+                layout.addView(onePerson(p, i));
+            }
+            sc.addView(layout);
+            linearLayout.addView(sc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @NotNull
+    private View onePerson(@NotNull Person number, int position) {
+        View view = getLayoutInflater().inflate(R.layout.item_person, null);
+
+        name = view.findViewById(R.id.item_charge_name);
+        major = view.findViewById(R.id.item_charge_major);
+        PoB = view.findViewById(R.id.item_charge_birth_place);
+        address = view.findViewById(R.id.item_charge_address);
+        mobile = view.findViewById(R.id.item_charge_mobile);
+        TextView mail = view.findViewById(R.id.item_charge_mail);
+        picture = view.findViewById(R.id.item_charge_image);
+        TextView title = view.findViewById(R.id.item_charge_title);
+
+        if (!number.getFirst_Name().equals("")) {
+            switch (position) {
+                case 0:
+                    title.setText(R.string.charge_x);
+                    mail.setText(Variables.Walhalla.MAIL_SENIOR);
+                    fillPerson(number);
+                    break;
+                case 1:
+                    title.setText(R.string.charge_vx);
+                    mail.setText(Variables.Walhalla.MAIL_CONSENIOR);
+                    fillPerson(number);
+                    break;
+                case 2:
+                    title.setText(R.string.charge_fm);
+                    mail.setText(Variables.Walhalla.MAIL_FUXMAJOR);
+                    fillPerson(number);
+                    break;
+                case 3:
+                    title.setText(R.string.charge_xx);
+                    mail.setText(Variables.Walhalla.MAIL_SCHRIFTFUEHRER);
+                    fillPerson(number);
+                    break;
+                case 4:
+                    title.setText(R.string.charge_xxx);
+                    mail.setText(Variables.Walhalla.MAIL_KASSIER);
+                    fillPerson(number);
+                    break;
+                default:
+                    title.setText(R.string.error_download);
+                    break;
+            }
+        } else {
+            //Set everything Visibility.GONE
+            title.setVisibility(View.GONE);
+            name.setVisibility(View.GONE);
+            major.setVisibility(View.GONE);
+            PoB.setVisibility(View.GONE);
+            address.setVisibility(View.GONE);
+            mobile.setVisibility(View.GONE);
+            mail.setVisibility(View.GONE);
+            picture.setVisibility(View.GONE);
+        }
+
+        Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        try {
+            view.startAnimation(anim);
+        } catch (Exception e) {
+            Log.d(TAG, "An error occurred while animating an entry", e);
+        }
+
+        return view;
+    }
+
+    private void fillPerson(Person person) {
+        try {
+            name.setText(person.getFullName());
+            String majorStr = "stud. " + person.getMajor();
+            major.setText(majorStr);
+            String PoBStr = getContext().getString(R.string.charge_from) + " " + person.getPoB();
+            PoB.setText(PoBStr);
+            String addressStr;
+            addressStr = person.getAddress().get(Person.ADDRESS_STREET).toString() + " " +
+                    person.getAddress().get(Person.ADDRESS_NUMBER).toString() + "\n" +
+                    person.getAddress().get(Person.ADDRESS_ZIP_CODE).toString() + " " +
+                    person.getAddress().get(Person.ADDRESS_CITY).toString();
+            address.setText(addressStr);
+            mobile.setText(person.getMobile());
+            picture.setBackground(Border.getBlack(R.color.colorPrimaryDark, 1, 1, 1, 1));
+
+            //Download the profile picture if the person has one
+            if (person.getPicture_path() != null) {
+                synchronized (new Object()) {
+                    Firebase.downloadImage(person.getPicture_path(), picture).run();
+                }
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "No person filled that position", e);
+        }
     }
 
     @Override
@@ -87,145 +206,45 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener, 
         super.onStop();
         try {
             registration.remove();
+            toolbar.findViewById(R.id.custom_title).setVisibility(View.GONE);
+            toolbar.findViewById(R.id.custom_title).setOnClickListener(null);
         } catch (Exception e) {
             Log.d(TAG, "Something went wrong while removing the snapshot listener", e);
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment, container, false);
-        Fragment.f = this;
-        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_chargen);
-        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
-
-        //Button chooseSemester = new Button(getContext());
-        RelativeLayout header = new RelativeLayout(getContext());
-
-        add = new ImageButton(getContext());
-        header.addView(add);
-        add.setId(R.id.chargen_add);
-        add.setBackgroundResource(R.color.background);
-        add.setImageResource(R.drawable.ic_add);
-        RelativeLayout.LayoutParams addParams = (RelativeLayout.LayoutParams) add.getLayoutParams();
-        addParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        addParams.setMargins(0, (int) scale * 5, (int) scale * 15, (int) scale * 5);
-        add.setLayoutParams(addParams);
-
-        edit = new ImageButton(getContext());
-        header.addView(edit);
-        edit.setId(R.id.chargen_edit);
-        edit.setImageResource(R.drawable.ic_edit);
-        edit.setBackgroundResource(R.color.background);
-        RelativeLayout.LayoutParams editParams = (RelativeLayout.LayoutParams) edit.getLayoutParams();
-        editParams.addRule(RelativeLayout.ALIGN_RIGHT);
-        editParams.addRule(RelativeLayout.LEFT_OF, add.getId());
-        editParams.setMargins(0, (int) scale * 5, (int) scale * 15, (int) scale * 5);
-        edit.setLayoutParams(editParams);
-
-        title = new Button(f.getContext());
-        title.setText(App.getChosenSemester().getLong());
-        //Open SelectSemesterDialog with setOnDismissListener
-        title.setOnClickListener(new OnClick(title));
-
-        buttonVisibility();
-
-        LinearLayout linearLayout = view.findViewById(R.id.fragment_container);
-        linearLayout.addView(header);
-        linearLayout.addView(title);
-        linearLayout.addView(display());
-
-        add.setOnClickListener(new OnClick(add));
-        edit.setOnClickListener(new OnClick(edit));
-
+        try {
+            toolbar = requireActivity().findViewById(R.id.toolbar);
+            toolbarContent();
+        } catch (Exception e) {
+            Log.d(TAG, "Something went wrong while creating the fragment.", e);
+        }
+        listener = this;
 
         return view;
     }
 
-
-    @NotNull
-    private ListView display() {
-        ListView listView = new ListView(getContext());
-        adapter = new Entry(getActivity(), numbers);
-        listView.setAdapter(adapter);
-        //listView.setDivider(null);
-        listView.setClickable(false);
-        listView.setItemsCanFocus(false);
-        listView.setOnItemClickListener(null);
-
-        return listView;
-    }
-
-    private void buttonVisibility() {
-        //Edit only in the current semester or a admin is logged in
-        int visibility;
-        if (User.hasCharge() && App.isInternet) {
-            visibility = View.VISIBLE;
-        } else {
-            visibility = View.GONE;
-        }
-        edit.setVisibility(visibility);
-        add.setVisibility(visibility);
+    private void toolbarContent() {
+        LinearLayout subtitle = toolbar.findViewById(R.id.custom_title);
+        subtitle.setVisibility(View.VISIBLE);
+        subtitle.setOnClickListener(v -> Log.d(TAG, "toolbar got clicked"));
+        TextView title = subtitle.findViewById(R.id.action_bar_title);
+        title.setText(String.format("%s %s", getString(R.string.charge_aktive), App.getChosenSemester().getShort()));
+        toolbar.setOnClickListener(v -> ChangeSemesterDialog.load(getChildFragmentManager(), listener));
     }
 
     @Override
     public void changeSemesterDone() {
         numbers.clear();
-        student(App.getChosenSemester().getID());
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (image != null) {
-            outState.putString("reference", image.toString());
-        }
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-
-        // If there was a download in progress, get its reference and create a new StorageReference
-        try {
-            final String stringRef = savedInstanceState.getString("reference");
-            if (stringRef == null) {
-                return;
-            }
-            image = FirebaseStorage.getInstance().getReferenceFromUrl(stringRef);
-
-            // Find all DownloadTasks under this StorageReference
-            List<FileDownloadTask> tasks = image.getActiveDownloadTasks();
-            if (tasks.size() > 0) {
-                // Get the task monitoring the download
-
-                for (FileDownloadTask t : tasks) {
-                    t.cancel();
-                }
-            }
-        } catch (Exception ignored) {
-        }
-    }
-
-    @Override
-    public void student(int semester_id) {
-        Log.i(TAG, "Listener got activated");
-    }
-
-    @Override
-    public void philister(int semester_id) {
-
+        loadData(App.getChosenSemester());
     }
 
     @Override
     public void onAuthChange() {
-        buttonVisibility();
-        numbers.clear();
-        student(App.getChosenSemester().getID());
+        toolbarContent();
+        loadData(App.getChosenSemester());
     }
 }

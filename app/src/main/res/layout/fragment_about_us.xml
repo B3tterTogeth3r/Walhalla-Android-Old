@@ -20,15 +20,6 @@
             android:orientation="vertical"
             android:padding="4dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:gravity="center_horizontal"
-                android:padding="8dp"
-                android:text="@string/menu_about_us"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
             <LinearLayout
                 android:id="@+id/about_us_who_we_are"
                 style="@style/Settings.Layout" />

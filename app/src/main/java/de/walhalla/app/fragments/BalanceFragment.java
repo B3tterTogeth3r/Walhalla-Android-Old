@@ -32,21 +32,20 @@ import de.walhalla.app.dialog.ChangeSemesterDialog;
 import de.walhalla.app.dialog.CheckboxDialog;
 import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.interfaces.CustomClickListener;
-import de.walhalla.app.interfaces.RunnableCompleteListener;
 import de.walhalla.app.interfaces.UploadListener;
-import de.walhalla.app.models.Cashbox;
+import de.walhalla.app.models.Accounting;
 import de.walhalla.app.utils.Database;
 import de.walhalla.app.utils.Variables;
 
 public class BalanceFragment extends CustomFragment implements View.OnClickListener,
-        ChosenSemesterListener, CustomClickListener, UploadListener, RunnableCompleteListener {
+        ChosenSemesterListener, CustomClickListener, UploadListener {
 
-    private TableLayout tableLayout;
-    private Button chooseSemester;
-    private ImageButton addNewEntry;
     private final float scale = App.getContext().getResources().getDisplayMetrics().density;
     private final CustomClickListener listener = this;
     private final String which;
+    private TableLayout tableLayout;
+    private Button chooseSemester;
+    private ImageButton addNewEntry;
 
     public BalanceFragment() {
         this.which = null;
@@ -105,13 +104,13 @@ public class BalanceFragment extends CustomFragment implements View.OnClickListe
 
     public void loadTable() {
         requireActivity().runOnUiThread(() -> {
-            ArrayList<Cashbox> arrayList;
+            ArrayList<Accounting> arrayList;
             arrayList = Database.getCashboxArrayList(App.getChosenSemester());
             int sizeArrayList = arrayList.size();
             tableLayout.removeAllViewsInLayout();
             float totalExpense = 0, totalIncome = 0;
             for (int i = 0; i < sizeArrayList; i++) {
-                Cashbox current = arrayList.get(i);
+                Accounting current = arrayList.get(i);
                 TableRow row = new TableRow(getContext());
                 TextView date = new TextView(getContext());
                 date.setText(current.getDateFormat());
@@ -128,7 +127,7 @@ public class BalanceFragment extends CustomFragment implements View.OnClickListe
                 row.addView(income);
 
                 TextView event = new TextView(getContext());
-                event.setText(current.getEventText());
+                event.setText(current.getEvent());
                 row.addView(event);
 
                 TextView purpose = new TextView(getContext());
@@ -148,7 +147,7 @@ public class BalanceFragment extends CustomFragment implements View.OnClickListe
     }
 
     @Override
-    public void customOnClick(@NotNull Cashbox current) {
+    public void customOnClick(@NotNull Accounting current) {
         String TAG = "BalanceFragment";
         Log.i(TAG, current.getId() + "");
         CheckboxDialog dialog = new CheckboxDialog(requireActivity(), current, Variables.DETAILS, this);

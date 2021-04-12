@@ -16,4 +16,18 @@
         android:orientation="vertical"
         android:padding="4dp"
         tools:ignore="UselessLeaf" />
+
+    <RelativeLayout
+        android:id="@+id/home_diashow"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+
+    <LinearLayout
+        android:id="@+id/home_layout_notes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="8sp"
+        android:paddingTop="30sp" />
+
 </RelativeLayout>

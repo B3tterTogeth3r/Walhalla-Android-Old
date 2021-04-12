@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import de.walhalla.app.R;
 import de.walhalla.app.User;
 import de.walhalla.app.fragments.drink.Fragment;
-import de.walhalla.app.utils.Find;
 import de.walhalla.app.utils.Variables;
 
 public class Overview extends Fragment {
@@ -48,7 +47,7 @@ public class Overview extends Fragment {
         totalAmount.setText(String.valueOf(numberOfDrinks));
 
         place.setText(R.string.drink_place);
-        position.setText(String.valueOf(Find.PlaceInDrinks()));
+        //TODO Find place in current semester
 
 
         return tableLayout;

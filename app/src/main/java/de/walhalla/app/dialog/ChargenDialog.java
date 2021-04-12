@@ -26,7 +26,6 @@ import de.walhalla.app.interfaces.ChangeChargeListener;
 import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.models.Chargen;
 import de.walhalla.app.models.Semester;
-import de.walhalla.app.utils.Find;
 import de.walhalla.app.utils.Variables;
 
 public class ChargenDialog extends DialogFragment implements View.OnClickListener,
@@ -35,9 +34,9 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
             App.getContext().getString(R.string.charge_vx), App.getContext().getString(R.string.charge_fm),
             App.getContext().getString(R.string.charge_xx), App.getContext().getString(R.string.charge_xxx)};
     private static final String TAG = "ChargenDialog";
+    int semID;
     private Chargen chargen = new Chargen(0, 0, 0, 0, 0, 0);
     private Chargen backupChargen = new Chargen(0, 0, 0, 0, 0, 0);
-    int semID;
     private Button senior, consenior, fuxmajor, scriptor, kassier, semester_spinner;
 
     public ChargenDialog(int selected_semester) {
@@ -75,7 +74,7 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
         scriptor.setOnClickListener(this);
         kassier.setOnClickListener(this);
         if (semID != 0) {
-            final Semester semester = Find.Semester(semID);
+            final Semester semester = Variables.SEMESTER_ARRAY_LIST.get(semID);
             assert semester != null;
             backupChargen = new Chargen();//Find.Chargen(semester);
             try {

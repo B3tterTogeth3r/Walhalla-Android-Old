@@ -45,15 +45,19 @@ public class User {
         userData = null;
         username = "";
         //Clear FirebaseAuth
-        Variables.Firebase.AUTHENTICATION.signOut();
+        Variables.Firebase.isUserLogin = false;
+        try {
+            Variables.Firebase.AUTHENTICATION.signOut();
+        } catch (Exception ignored){
+        }
         if (listener != null) {
             listener.userDataChangeListener();
         }
     }
 
     public static boolean hasCharge() {
-        Log.i(TAG, "User has charge: " + (App.getCurrentChargen().contains(username) | isAdmin()));
-        return App.getCurrentChargen().contains(username) | isAdmin();
+        Log.i(TAG, "User has charge: " + (App.getCurrentChargen().contains(username) || isAdmin()));
+        return (App.getCurrentChargen().contains(username) || isAdmin());
     }
 
     public static boolean isX() {
@@ -110,6 +114,9 @@ public class User {
     }
 
     public static void setAdmins(Map<String, Object> admins) {
+        if (admins != null) {
+            System.out.println(admins.size());
+        }
         User.admins = admins;
     }
 }

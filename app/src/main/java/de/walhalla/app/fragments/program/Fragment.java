@@ -1,11 +1,7 @@
 package de.walhalla.app.fragments.program;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,16 +9,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 import de.walhalla.app.App;
 import de.walhalla.app.R;
@@ -70,7 +62,6 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
         sc.addView(Show.load(false, false));
         content.addView(sc);
 
-
         return view;
     }
 
@@ -87,31 +78,15 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
 
     public void toolbarContent() {
         try {
-            String title = getString(R.string.program) + " " + getString(R.string.of) + " " + App.getChosenSemester().getShort();
-            toolbar.setTitle(title);
             //Set the subtitle and make it clickable to change the displayed semester
-            //TODO make the String inline with the image
-            SpannableString spannableString = new SpannableString("@ " + getString(R.string.change_semester));
-            try {
-                Drawable d = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_down);
-                Objects.requireNonNull(d).setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-                Drawable dw = DrawableCompat.wrap(d);
-                DrawableCompat.setTint(dw, requireContext().getColor(R.color.whiteish));
-                ImageSpan span = new ImageSpan(dw, ImageSpan.ALIGN_BASELINE);
-                spannableString.setSpan(span, spannableString.toString().indexOf("@"), spannableString.toString().indexOf("@") + 1, 0);
-                toolbar.setSubtitleTextColor(requireContext().getColor(R.color.whiteish));
-                toolbar.setSubtitle(spannableString);
-                //Add the filter icon on the right side
-                Drawable unwrapped = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_filter_list);
-                Drawable wrapped = DrawableCompat.wrap(Objects.requireNonNull(unwrapped));
-                DrawableCompat.setTint(wrapped, Color.WHITE);
-                toolbar.setOverflowIcon(wrapped);
-                toolbar.setOnClickListener(new OnClick("title"));
-                toolbar.getMenu().clear();
-                toolbar.inflateMenu(R.menu.program_filter);
-            } catch (NullPointerException npe) {
-                Log.d(TAG, "toolbar could not be set", npe);
-            }
+            LinearLayout subtitle = toolbar.findViewById(R.id.custom_title);
+            subtitle.setVisibility(View.VISIBLE);
+            //subtitle.setOnClickListener(v -> Log.d(TAG, "toolbar got clicked"));
+            TextView title = subtitle.findViewById(R.id.action_bar_title);
+            title.setText(String.format("%s %s %s", getString(R.string.program), getString(R.string.of), App.getChosenSemester().getShort()));
+            toolbar.setOnClickListener(new OnClick(this));
+            toolbar.getMenu().clear();
+            toolbar.inflateMenu(R.menu.program_filter);
 
             if (!(User.isLogIn() && User.hasCharge())) {
                 toolbar.getMenu().removeItem(R.id.action_add);
@@ -133,10 +108,11 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
                     } else if (item.getItemId() == R.id.action_public) {
                         Show.setBooleans(false, false);
                     }
+                    return true;
                 } catch (NullPointerException e) {
                     Log.d(TAG, "add a new Event.", e);
+                    return false;
                 }
-                return true;
             });
         } catch (Exception e) {
             Log.d(TAG, "Setting the toolbar was unsuccessful", e);
@@ -146,6 +122,11 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
     @Override
     public void onStop() {
         super.onStop();
-        toolbar.getMenu().clear();
+        try {
+            toolbar.getMenu().clear();
+            toolbar.findViewById(R.id.custom_title).setVisibility(View.GONE);
+            toolbar.findViewById(R.id.custom_title).setOnClickListener(null);
+        } catch (Exception ignored) {
+        }
     }
 }

@@ -15,19 +15,18 @@ import java.util.ArrayList;
 import de.walhalla.app.App;
 import de.walhalla.app.R;
 import de.walhalla.app.interfaces.InvoiceListener;
-import de.walhalla.app.models.DrinkPrice;
+import de.walhalla.app.models.Drink;
 import de.walhalla.app.utils.Border;
-import de.walhalla.app.utils.Find;
 
-public class InvoiceRow extends ArrayAdapter<DrinkPrice> {
+public class InvoiceRow extends ArrayAdapter<Drink> {
     protected static final String TAG = "InvoiceRow";
     private final Context context;
-    private final ArrayList<DrinkPrice> drinkPrices;
+    private final ArrayList<Drink> drinkPrices;
     protected static final float scale = App.getContext().getResources().getDisplayMetrics().density;
     protected static final int defaultMargin = (int) scale * 15;
     private final InvoiceListener listener;
 
-    public InvoiceRow(Context context, ArrayList<DrinkPrice> drinkPrices, InvoiceListener listener) {
+    public InvoiceRow(Context context, ArrayList<Drink> drinkPrices, InvoiceListener listener) {
         super(context, R.layout.item_beer_invoice, drinkPrices);
         this.context = context;
         this.drinkPrices = drinkPrices;
@@ -81,7 +80,7 @@ public class InvoiceRow extends ArrayAdapter<DrinkPrice> {
         counter.setBackground(Border.getBlack(getContext().getColor(R.color.background), 2, 2, 2, 2));
         counter.setWidth(defaultMargin * 5);
 
-        minus10.setOnClickListener(v -> {
+        /*minus10.setOnClickListener(v -> {
             if (count[0] >= 10) {
                 count[0] = count[0] - 10;
             } else {
@@ -111,8 +110,8 @@ public class InvoiceRow extends ArrayAdapter<DrinkPrice> {
             listener.amountChangeListener(count[0], drinkPrices.get(position));
         });
 
-        String helper = Find.DrinkName(drinkPrices.get(position).getKind());
-        title.setText(helper);
+        String helper = drinkPrices.get(position);
+        title.setText(helper);*/
 
         return rowView;
     }
