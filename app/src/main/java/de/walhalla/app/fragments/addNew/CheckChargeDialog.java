@@ -13,8 +13,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import org.jetbrains.annotations.NotNull;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -31,10 +29,8 @@ public class CheckChargeDialog extends AlertDialog.Builder implements View.OnCli
     private final static String TAG = "CheckChargenDialog";
     public static DialogChange.CustomDismissListener customDismissListener;
     public final TextView nameTV, pobTV, majorTV, mobileTV, addressTV;
-    private final RelativeLayout name, pob, major, mobile, address, image;
+    private final RelativeLayout name, pob, major, mobile, address;
     private final String kind;
-    private final View view;
-    public CircleImageView imageIV;
     private Person person;
     private boolean newPersonToUpload = false;
 
@@ -44,7 +40,7 @@ public class CheckChargeDialog extends AlertDialog.Builder implements View.OnCli
         this.kind = kind;
         customDismissListener = this;
         LayoutInflater inflater = LayoutInflater.from(context);
-        view = inflater.inflate(R.layout.item_charge, null);
+        View view = inflater.inflate(R.layout.item_charge, null);
         setView(view);
         setTitle(R.string.check_data);
         name = view.findViewById(R.id.item_charge_name);
@@ -52,21 +48,18 @@ public class CheckChargeDialog extends AlertDialog.Builder implements View.OnCli
         major = view.findViewById(R.id.item_charge_major);
         mobile = view.findViewById(R.id.item_charge_mobile);
         address = view.findViewById(R.id.item_charge_address);
-        image = view.findViewById(R.id.item_charge_picture);
 
         name.setOnClickListener(this);
         pob.setOnClickListener(this);
         major.setOnClickListener(this);
         mobile.setOnClickListener(this);
         address.setOnClickListener(this);
-        image.setOnClickListener(this);
 
         nameTV = view.findViewById(R.id.item_charge_name_content);
         pobTV = view.findViewById(R.id.item_charge_pob_content);
         majorTV = view.findViewById(R.id.item_charge_major_content);
         mobileTV = view.findViewById(R.id.item_charge_mobile_content);
         addressTV = view.findViewById(R.id.item_charge_address_content);
-        imageIV = view.findViewById(R.id.item_charge_picture_content);
         if (this.person != null) {
             fillUi(this.person);
             Log.d(TAG, "Person != null with person named: " + this.person.getFullName());
@@ -100,9 +93,6 @@ public class CheckChargeDialog extends AlertDialog.Builder implements View.OnCli
         } else if (v == address) {
             DialogChange.display(getContext(), "address", this.person);
             Log.d(TAG, "address");
-        } else if (v == image) {
-            Snackbar.make(view, R.string.toast_still_in_dev, Snackbar.LENGTH_LONG).show();
-            Log.d(TAG, "image");
         }
     }
 
@@ -153,10 +143,6 @@ public class CheckChargeDialog extends AlertDialog.Builder implements View.OnCli
         }
         try {
             addressTV.setText(person.getAddressString());
-        } catch (Exception ignored) {
-        }
-        try {
-            Firebase.downloadImage(person.getPicture_path(), imageIV).run();
         } catch (Exception ignored) {
         }
     }

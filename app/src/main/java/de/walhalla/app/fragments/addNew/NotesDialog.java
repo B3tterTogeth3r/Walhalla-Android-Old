@@ -120,7 +120,9 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
         if (notes != null && notes.size() != 0) {
             int size = notes.size();
             for (int i = 0; i < size; i++) {
-                addView(((String) notes.get(i)));
+                if (notes.get(i).toString().length() != 0) {
+                    addView(((String) notes.get(i)));
+                }
             }
         }
     }
@@ -160,7 +162,10 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
             remove.setVisibility(View.VISIBLE);
         }
         remove.setOnClickListener(v1 -> {
-            notes.remove(index);
+            try {
+                notes.remove(index);
+            } catch (Exception ignored) {
+            }
             viewLayout.removeView(view);
             viewLayout.invalidate();
         });

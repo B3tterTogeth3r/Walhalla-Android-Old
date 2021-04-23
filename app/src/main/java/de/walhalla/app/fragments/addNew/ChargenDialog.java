@@ -2,17 +2,23 @@ package de.walhalla.app.fragments.addNew;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -33,6 +39,8 @@ import de.walhalla.app.interfaces.AddNewSemesterListener;
 import de.walhalla.app.models.Person;
 import de.walhalla.app.utils.Variables;
 
+import static android.app.Activity.RESULT_OK;
+
 public class ChargenDialog extends DialogFragment implements View.OnClickListener, PersonPickerDialog.CustomDismissListener, CheckChargeDialog.CustomDismissListener {
     public static final String[] kinds = new String[]{"Aktiver", "Alter Herr"};
     private static final String TAG = "ChargenDialog";
@@ -44,9 +52,10 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
     private final AddNewSemesterListener addNewSemesterListener;
     private ArrayList<Object> chargen = new ArrayList<>();
     private Button senior, consenior, fuxmajor, scriptor, kassier, seniorAH, scriptorAH, kassierAH, hv1, hv2;
+    private RelativeLayout seniorEdit, conseniorEdit, fuxmajorEdit, scriptorEdit, kassierEdit, seniorAHEdit, scriptorAHEdit, kassierAHEdit, hv1Edit, hv2Edit;
     private Toolbar toolbar;
     private TextView seniorTV, conseniorTV, fuxmajorTV, scriptorTV, kassierTV, seniorAHTV, scriptorAHTV, kassierAHTV, hv1TV, hv2TV;
-    private CircleImageView seniorIV, conseniorIV, fuxmajorIV, scriptorIV, kassierIV, seniorAHIV, scriptorAHIV, kassierAHIV, hv1IV, hv2IV;
+    private CircleImageView seniorIV, conseniorIV, fuxmajorIV, scriptorIV, kassierIV, seniorAHIV, scriptorAHIV, kassierAHIV, hv1IV, hv2IV, editedImage;
 
     public ChargenDialog(AddNewSemesterListener addNewSemesterListener, ArrayList<Object> chargenList) {
         this.addNewSemesterListener = addNewSemesterListener;
@@ -137,6 +146,16 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
         kassierAH = view.findViewById(R.id.ahxxx);
         hv1 = view.findViewById(R.id.hbv1);
         hv2 = view.findViewById(R.id.hbv2);
+        seniorEdit = view.findViewById(R.id.x_edit);
+        conseniorEdit = view.findViewById(R.id.vx_edit);
+        fuxmajorEdit = view.findViewById(R.id.fm_edit);
+        scriptorEdit = view.findViewById(R.id.xx_edit);
+        kassierEdit = view.findViewById(R.id.xxx_edit);
+        seniorAHEdit = view.findViewById(R.id.ahx_edit);
+        scriptorAHEdit = view.findViewById(R.id.ahxx_edit);
+        kassierAHEdit = view.findViewById(R.id.ahxxx_edit);
+        hv1Edit = view.findViewById(R.id.hbv1_edit);
+        hv2Edit = view.findViewById(R.id.hbv2_edit);
         toolbar = view.findViewById(R.id.new_greeting);
         seniorTV = view.findViewById(R.id.x_name);
         conseniorTV = view.findViewById(R.id.vx_name);
@@ -181,21 +200,19 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
                 Log.d(TAG, "send");
                 //send content
                 boolean allGood = true;
-                for (Object p : chargen) {
-                    if (p == null) {
-                        allGood = false;
-                        break;
-                    }
+                if(chargen.get(0) == null){
+                    allGood = false;
                 }
                 if (allGood) {
+                    ArrayList<Drawable> allImages = new ArrayList<>(getAllImages());
                     if (kind.equals(kinds[0])) {
-                        addNewSemesterListener.chargenDone(chargen);
+                        addNewSemesterListener.chargenDone(chargen, allImages);
                     } else if (kind.equals(kinds[1])) {
-                        addNewSemesterListener.philChargenDone(chargen);
+                        addNewSemesterListener.philChargenDone(chargen, allImages);
                     }
                     this.dismiss();
                 } else {
-                    Snackbar.make(requireView(), "Alle Chargen müssen gesetzt werden.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(requireView(), R.string.charge_add_error_no_senior, Snackbar.LENGTH_LONG).show();
                 }
             }
             return true;
@@ -207,6 +224,11 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
             fuxmajor.setOnClickListener(this);
             scriptor.setOnClickListener(this);
             kassier.setOnClickListener(this);
+            seniorEdit.setOnClickListener(this);
+            conseniorEdit.setOnClickListener(this);
+            fuxmajorEdit.setOnClickListener(this);
+            scriptorEdit.setOnClickListener(this);
+            kassierEdit.setOnClickListener(this);
             Person p;
             try {
                 p = (Person) chargen.get(0);
@@ -247,6 +269,11 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
             kassierAH.setOnClickListener(this);
             hv1.setOnClickListener(this);
             hv2.setOnClickListener(this);
+            seniorAHEdit.setOnClickListener(this);
+            scriptorAHEdit.setOnClickListener(this);
+            kassierAHEdit.setOnClickListener(this);
+            hv1Edit.setOnClickListener(this);
+            hv2Edit.setOnClickListener(this);
             Person p;
             try {
                 p = (Person) chargen.get(0);
@@ -286,6 +313,30 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
         }
         listener = this;
         customDismissListener = this;
+    }
+
+    @NotNull
+    private ArrayList<Drawable> getAllImages() {
+        ArrayList<Drawable> returnList = new ArrayList<>();
+        if (kind.equals(kinds[0])) {
+            returnList.add(seniorIV.getDrawable());
+            returnList.add(conseniorIV.getDrawable());
+            returnList.add(fuxmajorIV.getDrawable());
+            returnList.add(scriptorIV.getDrawable());
+            returnList.add(kassierIV.getDrawable());
+        } else if (kind.equals(kinds[1])) {
+            returnList.add(seniorAHIV.getDrawable());
+            returnList.add(scriptorAHIV.getDrawable());
+            returnList.add(kassierAHIV.getDrawable());
+            returnList.add(hv1IV.getDrawable());
+            returnList.add(hv2IV.getDrawable());
+        }
+        for (int i = 0; i < 5; i++) {
+            if (returnList.get(i) == ContextCompat.getDrawable(getContext(), R.drawable.wappen_round)) {
+                returnList.set(i, null);
+            }
+        }
+        return returnList;
     }
 
     @Override
@@ -330,9 +381,54 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
             Log.d(TAG, hv2.getText().toString());
             PersonPickerDialog personPickerDialog = new PersonPickerDialog(requireContext(), persons, "hbv2");
             personPickerDialog.show();
+        } else if (v == seniorEdit) {
+            imageSelector(seniorIV);
+        } else if (v == conseniorEdit) {
+            imageSelector(conseniorIV);
+        } else if (v == fuxmajorEdit) {
+            imageSelector(fuxmajorIV);
+        } else if (v == scriptorEdit) {
+            imageSelector(scriptorIV);
+        } else if (v == kassierEdit) {
+            imageSelector(kassierIV);
+        } else if (v == seniorAHEdit) {
+            imageSelector(seniorAHIV);
+        } else if (v == scriptorAHEdit) {
+            imageSelector(scriptorAHIV);
+        } else if (v == kassierAHEdit) {
+            imageSelector(kassierAHIV);
+        } else if (v == hv1Edit) {
+            imageSelector(hv1IV);
+        } else if (v == hv2Edit) {
+            imageSelector(hv2IV);
         } else {
             Log.d(TAG, requireContext().getString(R.string.error_site_messages));
             Snackbar.make(requireView(), R.string.error_site_messages, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void imageSelector(CircleImageView imageView) {
+        //Select image and set it to te ImageView
+        editedImage = imageView;
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhoto, 1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    assert imageReturnedIntent != null;
+                    Uri selectedImage = imageReturnedIntent.getData();
+                    editedImage.setImageURI(selectedImage);
+                    editedImage = null;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -348,7 +444,7 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
                 dismissChecker(kind, null);
             }
         } else {
-            //Check the saved data and TODO upload a new image
+            //Check the saved data
             Log.d(TAG, kind + " at " + position + " resulted in " + personsComplete.get(position).getFullName());
             Person person = new Person();
             person.setFirst_Name(personsComplete.get(position).getFirst_Name());

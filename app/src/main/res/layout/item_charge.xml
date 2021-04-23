@@ -105,29 +105,4 @@
 
     </RelativeLayout>
 
-
-    <RelativeLayout
-        android:id="@+id/item_charge_picture"
-        style="@style/AddNewSemester.RelativeLayout">
-
-        <TextView
-            style="@style/AddNewSemester.Person.Title"
-            android:text="@string/profile_picture" />
-
-        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/item_charge_picture_content"
-            android:layout_width="220dp"
-            android:layout_height="80dp"
-            android:layout_margin="8dp"
-            android:paddingStart="140dp"
-            android:paddingEnd="21dp"
-            android:src="@drawable/wappen_round"
-            app:civ_border_color="@android:color/transparent" />
-
-        <ImageView
-            style="@style/Settings.Row.Image"
-            android:contentDescription="@string/description"
-            android:src="@drawable/ic_arrow_right" />
-    </RelativeLayout>
-
 </LinearLayout>

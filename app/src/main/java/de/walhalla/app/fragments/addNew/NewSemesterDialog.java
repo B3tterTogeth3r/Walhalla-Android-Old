@@ -2,6 +2,9 @@ package de.walhalla.app.fragments.addNew;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,9 +23,12 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +53,8 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
     public static ArrayList<Object> greetingList = new ArrayList<>();
     public static ArrayList<Object> notesList = new ArrayList<>();
     public static ArrayList<Object> message = new ArrayList<>();
+    public static ArrayList<Drawable> imagesAktive = new ArrayList<>();
+    public static ArrayList<Drawable> imagesAH = new ArrayList<>();
     private int downloadProgress = 0;
     private Button greeting, notes, chargen, phil_chargen, events, messageBT, send, semesterBT;
     private Toolbar toolbar;
@@ -123,13 +131,46 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
     private void uploadAll() {
         Snackbar.make(MainActivity.parentLayout, R.string.toast_still_in_dev, Snackbar.LENGTH_LONG).show();
         //Upload Chargen
+
         int size = chargenList.size();
         for (int i = 0; i < size; i++) {
+            //TODO Check if image got changed in the first place to avoid duplicate data
+            //Set image_path if an image got selected
+            if(imagesAktive.get(i) != null){
+                String name = "Charge_" + i + "_sem_" + semester.getID() + ".jpg";
+                //Upload image
+                Bitmap bitmap = ((BitmapDrawable)imagesAktive.get(i)).getBitmap();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+                byte[] data = baos.toByteArray();
+                StorageReference imageRef = Variables.Firebase.IMAGES.child(name);
+                UploadTask uploadTask = imageRef.putBytes(data);
+                uploadTask.addOnFailureListener(e -> Log.d(TAG, "Image available: upload error", e))
+                        .addOnSuccessListener(taskSnapshot -> Log.d(TAG, Objects.requireNonNull(Objects.requireNonNull(taskSnapshot.getMetadata()).getName())));
+                ((Person)chargenList.get(i)).setPicture_path("/pictures/" + name);
+            }
             Variables.Firebase.FIRESTORE.collection("Semester")
                     .document(String.valueOf(semester.getID()))
                     .collection("Chargen")
                     .document(String.valueOf(i))
                     .set(chargenList.get(i), SetOptions.merge());
+        }
+        for (int i = 0; i < size; i++) {
+            //TODO Check if image got changed in the first place to avoid duplicate data
+            //Set image_path if an image got selected
+            if(imagesAH.get(i) != null){
+                String name = "Phil_Charge_" + i + "_sem_" + semester.getID() + ".jpg";
+                //Upload image
+                Bitmap bitmap = ((BitmapDrawable)imagesAH.get(i)).getBitmap();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+                byte[] data = baos.toByteArray();
+                StorageReference imageRef = Variables.Firebase.IMAGES.child(name);
+                UploadTask uploadTask = imageRef.putBytes(data);
+                uploadTask.addOnFailureListener(e -> Log.d(TAG, "Image available: upload error", e))
+                        .addOnSuccessListener(taskSnapshot -> Log.d(TAG, Objects.requireNonNull(Objects.requireNonNull(taskSnapshot.getMetadata()).getName())));
+                ((Person)philChargenList.get(i)).setPicture_path("/pictures/" + name);
+            }
         }
         //Upload Phil Chargen
         Variables.Firebase.FIRESTORE.collection("Semester")
@@ -322,24 +363,25 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
     }
 
     @Override
-    public void chargenDone(@NotNull ArrayList<Object> chargenList) {
+    public void chargenDone(@NotNull ArrayList<Object> chargenList, ArrayList<Drawable> allImages) {
         System.out.println(progressBar.getProgress());
         //Activate next button
         phil_chargen.setClickable(true);
         phil_chargen.setOnClickListener(this);
         Log.d(TAG, chargenList.size() + "");
         NewSemesterDialog.chargenList = chargenList;
-
+        NewSemesterDialog.imagesAktive = allImages;
         //Open Phil Chargen Dialog
         ChargenDialog.display(getChildFragmentManager(), ChargenDialog.kinds[1], philChargenList, this);
     }
 
     @Override
-    public void philChargenDone(@NotNull ArrayList<Object> philChargenList) {
+    public void philChargenDone(@NotNull ArrayList<Object> philChargenList, ArrayList<Drawable> allImages) {
         //Activate next button
         greeting.setClickable(true);
         greeting.setOnClickListener(this);
         NewSemesterDialog.philChargenList = philChargenList;
+        NewSemesterDialog.imagesAH = allImages;
 
         //Open Greeting site
         GreetingDialog.display(getChildFragmentManager(), greetingList, this);
@@ -366,8 +408,7 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
         notes.setClickable(true);
         notes.setOnClickListener(this);
         //Add last line and current x and ahx
-        //TODO Add first line
-        String lastLine = "Vivat, crescat, floreat Walhalla ad multos annos!";
+        String lastLine = getString(R.string.greeting_end);
         greetingList.add(lastLine);
         Map<String, String> sign = new HashMap<>();
         sign.put("Aktivensenior", ((Person) chargenList.get(0)).getFullName());

@@ -1,4 +1,4 @@
-package de.walhalla.app.fragments.donate.ui;
+package de.walhalla.app.fragments.donate;
 
 import de.walhalla.app.R;
 import de.walhalla.app.fragments.donate.Fragment;

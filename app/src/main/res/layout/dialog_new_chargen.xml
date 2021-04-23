@@ -48,17 +48,32 @@
                 android:layout_centerVertical="true"
                 android:text="@string/charge_x" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/x_image"
+            <RelativeLayout
+                android:id="@+id/x_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/x_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/x_name"
@@ -83,17 +98,32 @@
                 android:layout_toEndOf="@id/vx"
                 android:text="@string/charge_vx" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/vx_image"
+            <RelativeLayout
+                android:id="@+id/vx_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/vx_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout style="@style/AddNewSemester.RelativeLayout">
@@ -110,17 +140,32 @@
                 android:layout_toEndOf="@id/fm"
                 android:text="@string/charge_fm" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/fm_image"
+            <RelativeLayout
+                android:id="@+id/fm_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/fm_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout style="@style/AddNewSemester.RelativeLayout">
@@ -137,17 +182,32 @@
                 android:layout_toEndOf="@id/xx"
                 android:text="@string/charge_xx" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/xx_image"
+            <RelativeLayout
+                android:id="@+id/xx_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/xx_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout style="@style/AddNewSemester.RelativeLayout">
@@ -164,17 +224,32 @@
                 android:layout_toEndOf="@id/xxx"
                 android:text="@string/charge_xxx" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/xxx_image"
+            <RelativeLayout
+                android:id="@+id/xxx_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/xxx_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
         </RelativeLayout>
 
     </LinearLayout>
@@ -205,17 +280,32 @@
                 android:layout_toEndOf="@id/ahx"
                 android:text="@string/charge_x_phil" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/ahx_image"
+            <RelativeLayout
+                android:id="@+id/ahx_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ahx_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout style="@style/AddNewSemester.RelativeLayout">
@@ -223,7 +313,7 @@
             <Button
                 android:id="@+id/ahxx"
                 style="@style/History.Button"
-                android:text="@string/charge_vx_phil" />
+                android:text="@string/charge_xx" />
 
             <TextView
                 android:id="@+id/ahxx_name"
@@ -232,17 +322,32 @@
                 android:layout_toEndOf="@id/ahxx"
                 android:text="@string/charge_vx_phil" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/ahxx_image"
+            <RelativeLayout
+                android:id="@+id/ahxx_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ahxx_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout style="@style/AddNewSemester.RelativeLayout">
@@ -250,7 +355,7 @@
             <Button
                 android:id="@+id/ahxxx"
                 style="@style/History.Button"
-                android:text="@string/charge_fm_phil" />
+                android:text="@string/charge_xxx" />
 
             <TextView
                 android:id="@+id/ahxxx_name"
@@ -259,17 +364,32 @@
                 android:layout_toEndOf="@id/ahxxx"
                 android:text="@string/charge_fm_phil" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/ahxxx_image"
+            <RelativeLayout
+                android:id="@+id/ahxxx_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ahxxx_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout style="@style/AddNewSemester.RelativeLayout">
@@ -286,17 +406,32 @@
                 android:layout_toEndOf="@id/hbv1"
                 android:text="@string/charge_phil_hw" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/hbv1_image"
+            <RelativeLayout
+                android:id="@+id/hbv1_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/hbv1_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout style="@style/AddNewSemester.RelativeLayout">
@@ -313,17 +448,32 @@
                 android:layout_toEndOf="@id/hbv2"
                 android:text="@string/charge_phil_hw" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/hbv2_image"
+            <RelativeLayout
+                android:id="@+id/hbv2_edit"
+                style="@style/AddNewSemester.RelativeLayout"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:src="@drawable/wappen_round"
-                app:civ_border_color="@android:color/transparent" />
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@string/edit"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_edit" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/hbv2_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:src="@drawable/wappen_round"
+                    app:civ_border_color="@android:color/transparent" />
+            </RelativeLayout>
         </RelativeLayout>
 
     </LinearLayout>

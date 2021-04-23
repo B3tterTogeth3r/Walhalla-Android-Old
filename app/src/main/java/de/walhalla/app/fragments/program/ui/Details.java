@@ -35,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -204,13 +205,16 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
 
     protected void saveToCalendar(@NotNull Event toSave) {
         //TODO E: The time is mostly the current one...
+        //TODO Maybe add a color so every event looks the same on every device by default
         Intent intent = new Intent(Intent.ACTION_INSERT);
         TimeZone tz = TimeZone.getTimeZone("Europe/Berlin");
 
         Calendar calStart = Calendar.getInstance();
         Calendar calEnd = Calendar.getInstance();
-        calStart.setTime(toSave.getStart().toDate());
-        calEnd.setTime(toSave.getEnd().toDate());
+        Date date = toSave.getStart().toDate();
+        calStart.setTime(date);
+        date = toSave.getEnd().toDate();
+        calEnd.setTime(date);
         calEnd.setTimeZone(tz);
         calStart.setTimeZone(tz);
 
@@ -235,22 +239,28 @@ public class Details extends DialogFragment implements OnMapReadyCallback {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        intent.setType("vnd.android.cursor.item/event")
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.Events.ORGANIZER, Variables.Walhalla.MAIL_SENIOR)
-                .putExtra(CalendarContract.Events.DTSTART, calStart)// Only date part is considered when ALL_DAY is true
-                .putExtra(CalendarContract.Events.DTEND, calEnd) // Only date part is considered when ALL_DAY is true
-                .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, false)
-                .putExtra(CalendarContract.Events.TITLE, toSave.getTitle())
-                .putExtra(CalendarContract.Events.DESCRIPTION, toSave.getDescription())
-                .putExtra(CalendarContract.Events.EVENT_TIMEZONE, tz.getID())
-                //TODO Maybe add a color so every event looks the same on every device by default
-                .putExtra(CalendarContract.Events.EVENT_LOCATION, formatted_address)
-                .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY)
-                .putExtra(CalendarContract.Events.RRULE, "FREQ=NONE");
-        startActivity(intent);
-
+        try {
+            System.out.println(Calendar.getInstance().getTimeInMillis());
+            System.out.println(calStart.getTimeInMillis());
+            System.out.println(toSave.getStart().toDate().getTime());
+            intent.setType("vnd.android.cursor.item/event")
+                    .setData(CalendarContract.Events.CONTENT_URI)
+                    .putExtra(CalendarContract.Events.ORGANIZER, Variables.Walhalla.MAIL_SENIOR)
+                    .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, false)
+                    .putExtra("dtstart", ((int) toSave.getStart().toDate().getTime()))// Only date part is considered when ALL_DAY is true
+                    .putExtra(CalendarContract.Events.DTEND, toSave.getEnd().toDate().getTime()) // Only date part is considered when ALL_DAY is true
+                    .putExtra(CalendarContract.Events.TITLE, toSave.getTitle())
+                    .putExtra(CalendarContract.Events.DESCRIPTION, toSave.getDescription())
+                    .putExtra(CalendarContract.Events.EVENT_TIMEZONE, tz.getID())
+                    .putExtra(CalendarContract.Events.EVENT_COLOR, R.color.red)
+                    .putExtra(CalendarContract.Events.DISPLAY_COLOR, R.color.red)
+                    .putExtra(CalendarContract.Events.EVENT_LOCATION, formatted_address)
+                    .putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY)
+                    .putExtra(CalendarContract.Events.RRULE, "FREQ=NONE");
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     protected void delete(@NotNull final Event event) {

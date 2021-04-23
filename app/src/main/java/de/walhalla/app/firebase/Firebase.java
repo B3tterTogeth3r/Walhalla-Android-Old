@@ -78,7 +78,7 @@ public class Firebase {
         Matrix matrix;
         RectF r;
 
-        Bitmap watermark = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.wappen_zirkel);
+        Bitmap watermark = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.wappen_herz);
 
         int width, height;
         float scale;
@@ -105,8 +105,8 @@ public class Firebase {
         r = new RectF(0, 0, watermark.getWidth(), watermark.getHeight());
         matrix.mapRect(r);
 
-        // Move the watermark to the bottom right corner
-        matrix.postTranslate(width - r.width(), height - r.height());
+        // Move the watermark to the top right corner
+        matrix.postTranslate(width - r.width() - 5, 5);
 
         // Draw the watermark
         canvas.drawBitmap(watermark, matrix, paint);

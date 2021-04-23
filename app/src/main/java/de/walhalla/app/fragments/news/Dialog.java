@@ -1,4 +1,4 @@
-package de.walhalla.app.fragments.news.ui;
+package de.walhalla.app.fragments.news;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -194,14 +194,6 @@ public class Dialog extends DialogFragment implements View.OnClickListener {
         news.setTitle(title);
         ArrayList<String> contentList = new ArrayList<>(Arrays.asList(content.split("\n")));
         news.setContent(contentList);
-        if (selectedImage != null) {
-            String imageName = (title + " " + timeStamp.getTime().toString().replaceAll(":", "-") + ".jpg").replaceAll(" ", "_");
-            StorageReference imageRef = Variables.Firebase.IMAGES.child(imageName);
-            UploadTask uploadTask = imageRef.putFile(selectedImage);
-            uploadTask.addOnFailureListener(e -> Log.d(TAG, "Image available: upload error", e))
-                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG, Objects.requireNonNull(Objects.requireNonNull(taskSnapshot.getMetadata()).getName())));
-            news.setImage("/pictures/" + imageName);
-        }
         if (title.isEmpty())
             error = true;
         if (content.isEmpty() || news.getContent().isEmpty())
@@ -209,6 +201,14 @@ public class Dialog extends DialogFragment implements View.OnClickListener {
 
         //Upload data
         if (!error) {
+            if (selectedImage != null) {
+                String imageName = (title + " " + timeStamp.getTime().toString().replaceAll(":", "-") + ".jpg").replaceAll(" ", "_");
+                StorageReference imageRef = Variables.Firebase.IMAGES.child(imageName);
+                UploadTask uploadTask = imageRef.putFile(selectedImage);
+                uploadTask.addOnFailureListener(e -> Log.d(TAG, "Image available: upload error", e))
+                        .addOnSuccessListener(taskSnapshot -> Log.d(TAG, Objects.requireNonNull(Objects.requireNonNull(taskSnapshot.getMetadata()).getName())));
+                news.setImage("/pictures/" + imageName);
+            }
             Variables.Firebase.FIRESTORE
                     .collection("News")
                     .add(news)

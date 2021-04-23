@@ -16,7 +16,7 @@ import de.walhalla.app.utils.Variables;
 public abstract class CustomFragment extends Fragment implements CustomAuthListener.sendMain {
 
     public static CustomAuthListener.sendMain authChange;
-    private final String TAG = "CustomFragment";
+    protected final String TAG = "CustomFragment";
 
     @Override
     public void onStart() {

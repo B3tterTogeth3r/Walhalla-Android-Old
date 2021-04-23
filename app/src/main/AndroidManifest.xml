@@ -7,15 +7,16 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!--uses-permission android:name="android.permission.CAMERA" /-->
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CALENDAR"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name="de.walhalla.app.App"
         android:hardwareAccelerated="false"
-        android:icon="@mipmap/mid_wappen_2017"
+        android:icon="@drawable/wappen_round"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:roundIcon="@mipmap/mid_wappen_2017"
+        android:roundIcon="@drawable/wappen_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
@@ -37,6 +38,7 @@
             android:name="de.walhalla.app.SplashActivity"
             android:autoRemoveFromRecents="true"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,11 +50,13 @@
         <activity
             android:name="de.walhalla.app.StartActivity"
             android:taskAffinity=".StartActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashTheme" />
 
         <activity
             android:name="de.walhalla.app.MainActivity"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:taskAffinity=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 

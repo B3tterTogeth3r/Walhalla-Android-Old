@@ -39,7 +39,6 @@ import de.walhalla.app.R;
 import de.walhalla.app.User;
 import de.walhalla.app.firebase.Firebase;
 import de.walhalla.app.fragments.CustomFragment;
-import de.walhalla.app.fragments.news.ui.Dialog;
 import de.walhalla.app.models.News;
 import de.walhalla.app.utils.Variables;
 

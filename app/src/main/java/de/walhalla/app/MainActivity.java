@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements
                         new de.walhalla.app.fragments.more.RoomsFragment()).commit();
                 break;
             case R.string.menu_new_semester:
-                //Open dialog which forces the user to create the whole semester with every necessary field
+                //Open dialog which enables the user to create the whole semester with every necessary field
                 NewSemesterDialog.display(getSupportFragmentManager());
                 break;
             //BottomToolBar
@@ -398,8 +398,9 @@ public class MainActivity extends AppCompatActivity implements
                     lastItem.setChecked(true);
                 } catch (Exception ignored) {
                 }
-                @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.social_media, null);
-                new SimpleTooltip.Builder(App.getContext())
+                @SuppressLint("InflateParams")
+                View view = getLayoutInflater().inflate(R.layout.social_media, null);
+                SimpleTooltip socialMedia = new SimpleTooltip.Builder(App.getContext())
                         .anchorView(share)
                         .showArrow(false)
                         .contentView(view, 0)
@@ -407,17 +408,20 @@ public class MainActivity extends AppCompatActivity implements
                         .animated(false)
                         .modal(true)
                         .dismissOnInsideTouch(true)
+                        .dismissOnInsideTouch(false)
                         .transparentOverlay(true)
-                        .build()
-                        .show();
-                ImageButton insta = view.findViewById(R.id.icon_instagram);
+                        .build();
+
+                ImageButton instagram = view.findViewById(R.id.icon_instagram);
                 ImageButton facebook = view.findViewById(R.id.icon_facebook);
                 ImageButton web = view.findViewById(R.id.icon_website);
                 ImageButton mail = view.findViewById(R.id.icon_email);
-                insta.setOnClickListener(v -> {
+
+                instagram.setOnClickListener(v -> {
                     for (SocialMedia sm : webLinks) {
                         if (sm.getName().equals("instagram")) {
                             browser(sm.getLink());
+                            socialMedia.dismiss();
                         }
                     }
                 });
@@ -425,11 +429,19 @@ public class MainActivity extends AppCompatActivity implements
                     for (SocialMedia sm : webLinks) {
                         if (sm.getName().equals("facebook")) {
                             browser(sm.getLink());
+                            socialMedia.dismiss();
                         }
                     }
                 });
-                web.setOnClickListener(v -> browser(null));
-                mail.setOnClickListener(v -> email());
+                web.setOnClickListener(v -> {
+                    browser(null);
+                    socialMedia.dismiss();
+                });
+                mail.setOnClickListener(v -> {
+                    email();
+                    socialMedia.dismiss();
+                });
+                socialMedia.show();
                 break;
             default:
                 Snackbar.make(parentLayout, R.string.error_site_messages, Snackbar.LENGTH_LONG)
@@ -458,7 +470,7 @@ public class MainActivity extends AppCompatActivity implements
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, R.string.exit_app_via_back, Toast.LENGTH_LONG).show();
 
-            new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 500);
+            new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 1000);
         } else { //Otherwise open the left menu
             drawerlayout.open();
         }

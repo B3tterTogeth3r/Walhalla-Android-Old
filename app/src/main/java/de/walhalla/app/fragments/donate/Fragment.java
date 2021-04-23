@@ -15,7 +15,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import de.walhalla.app.R;
 import de.walhalla.app.fragments.CustomFragment;
-import de.walhalla.app.fragments.donate.ui.Buttons;
 
 @SuppressLint("StaticFieldLeak")
 public class Fragment extends CustomFragment {

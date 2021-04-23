@@ -8,7 +8,7 @@
     </style>
 
     <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
+        <item name="windowActionBar">true</item>
         <item name="windowNoTitle">true</item>
     </style>
 
@@ -168,10 +168,9 @@
 
     <style name="Diashow.Image">
         <item name="android:padding">2dp</item>
-        <item name="android:id">@id/diashow_image</item>
         <item name="android:layout_height">180dp</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_alignParentStart">false</item>
         <item name="android:layout_alignParentEnd">false</item>
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:contentDescription">@string/diashow_icon</item>
@@ -185,6 +184,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_alignBottom">@id/diashow_image</item>
+        <item name="android:layout_alignStart">@id/diashow_image</item>
+        <item name="android:layout_alignEnd">@id/diashow_image</item>
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/background_image_description</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Subhead.Inverse</item>

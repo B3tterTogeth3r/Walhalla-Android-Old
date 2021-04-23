@@ -112,7 +112,11 @@ public class GreetingDialog extends DialogFragment {
                 Log.d(TAG, "send");
                 //Format content
                 String content = this.content.getText().toString();
-                ArrayList<Object> contentList = new ArrayList<>(Arrays.asList(content.split("\n")));
+                ArrayList<Object> contentList = new ArrayList<>();
+                //TODO Add first line
+                String firstLine = getString(R.string.greeting_first_line);
+                contentList.add(firstLine);
+                contentList.addAll(Arrays.asList(content.split("\n")));
                 addNewSemesterListener.greetingDone(contentList);
                 this.dismiss();
             }

@@ -389,4 +389,6 @@
     <string name="greeting_end">Vivat, crescat, floreat Walhalla ad multos annos!</string>
     <string name="remove">remove</string>
     <string name="new_notes">Neue Hinweise</string>
+    <string name="greeting_first_line">Liebe Bundesbrüder, werte Kartellbrüder, verehrte Damen und liebe Leser,</string>
+    <string name="charge_add_error_no_senior">Mindestens der Senior muss gesetzt werden.</string>
 </resources>

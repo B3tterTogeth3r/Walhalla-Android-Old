@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import de.walhalla.app.App;
 import de.walhalla.app.R;
 import de.walhalla.app.User;
+import de.walhalla.app.dialog.ChangeSemesterDialog;
 import de.walhalla.app.fragments.CustomFragment;
 import de.walhalla.app.fragments.program.ui.Edit;
 import de.walhalla.app.fragments.program.ui.Show;
@@ -84,16 +85,22 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
             //subtitle.setOnClickListener(v -> Log.d(TAG, "toolbar got clicked"));
             TextView title = subtitle.findViewById(R.id.action_bar_title);
             title.setText(String.format("%s %s %s", getString(R.string.program), getString(R.string.of), App.getChosenSemester().getShort()));
-            toolbar.setOnClickListener(new OnClick(this));
+            toolbar.setOnClickListener(v -> {
+                ChangeSemesterDialog changeSem = new ChangeSemesterDialog(this);
+                changeSem.show(getParentFragmentManager(), null);
+            });
+            subtitle.setOnClickListener(v -> {
+                ChangeSemesterDialog changeSem = new ChangeSemesterDialog(this);
+                changeSem.show(getParentFragmentManager(), null);
+            });
             toolbar.getMenu().clear();
-            toolbar.inflateMenu(R.menu.program_filter);
 
-            if (!(User.isLogIn() && User.hasCharge())) {
-                toolbar.getMenu().removeItem(R.id.action_add);
-                toolbar.getMenu().removeItem(R.id.action_draft);
-            }
-            if (!User.isLogIn()) {
-                toolbar.getMenu().clear();
+            if (User.isLogIn()) {
+                toolbar.inflateMenu(R.menu.program_filter);
+                if (!User.hasCharge()) {
+                    toolbar.getMenu().removeItem(R.id.action_add);
+                    toolbar.getMenu().removeItem(R.id.action_draft);
+                }
             }
 
             toolbar.setOnMenuItemClickListener(item -> {
@@ -124,6 +131,7 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
         super.onStop();
         try {
             toolbar.getMenu().clear();
+            toolbar.setOnClickListener(null);
             toolbar.findViewById(R.id.custom_title).setVisibility(View.GONE);
             toolbar.findViewById(R.id.custom_title).setOnClickListener(null);
         } catch (Exception ignored) {
