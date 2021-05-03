@@ -28,16 +28,16 @@ import java.util.ArrayList;
 import de.walhalla.app.App;
 import de.walhalla.app.R;
 import de.walhalla.app.dialog.ChangeSemesterDialog;
-import de.walhalla.app.firebase.Firebase;
 import de.walhalla.app.fragments.CustomFragment;
 import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.models.Person;
 import de.walhalla.app.models.Semester;
 import de.walhalla.app.utils.Border;
+import de.walhalla.app.utils.ImageDownload;
 import de.walhalla.app.utils.Variables;
 
 @SuppressLint("InflateParams")
-@SuppressWarnings({"StaticFieldLeak", "ConstantConditions"})
+@SuppressWarnings({"StaticFieldLeak"})
 public class Fragment extends CustomFragment implements ChosenSemesterListener {
     protected static final String TAG = "ChargenFragment";
     protected static final float scale = App.getContext().getResources().getDisplayMetrics().density;
@@ -192,9 +192,10 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
 
             //Download the profile picture if the person has one
             if (person.getPicture_path() != null) {
-                synchronized (new Object()) {
-                    Firebase.downloadImage(person.getPicture_path(), picture).run();
-                }
+                Log.d(TAG, "fillPerson: " + person.getPicture_path());
+                Log.d(TAG, "fillPerson: " + picture.getId());
+                final ImageView pictureFinal = picture;
+                new Thread(new ImageDownload(pictureFinal::setImageBitmap, person.getPicture_path())).start();
             }
         } catch (Exception e) {
             Log.d(TAG, "No person filled that position", e);

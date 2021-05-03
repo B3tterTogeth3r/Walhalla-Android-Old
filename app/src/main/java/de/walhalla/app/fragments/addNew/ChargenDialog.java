@@ -34,9 +34,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
 import de.walhalla.app.dialog.PersonPickerDialog;
-import de.walhalla.app.firebase.Firebase;
 import de.walhalla.app.interfaces.AddNewSemesterListener;
 import de.walhalla.app.models.Person;
+import de.walhalla.app.utils.ImageDownload;
 import de.walhalla.app.utils.Variables;
 
 import static android.app.Activity.RESULT_OK;
@@ -233,32 +233,32 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
             try {
                 p = (Person) chargen.get(0);
                 seniorTV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), seniorIV).run();
+                new Thread(new ImageDownload(imageBitmap -> seniorIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(1);
                 conseniorTV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), conseniorIV).run();
+                new Thread(new ImageDownload(imageBitmap -> conseniorIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(2);
                 fuxmajorTV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), fuxmajorIV).run();
+                new Thread(new ImageDownload(imageBitmap -> fuxmajorIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
                 p = (Person) chargen.get(3);
                 scriptorTV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), scriptorIV).run();
+                new Thread(new ImageDownload(imageBitmap -> scriptorIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(4);
                 kassierTV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), kassierIV).run();
+                new Thread(new ImageDownload(imageBitmap -> kassierIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception ignored) {
             }
         }
@@ -279,35 +279,35 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
                 p = (Person) chargen.get(0);
                 p.setId("0");
                 seniorAHTV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), seniorAHIV).run();
+                new Thread(new ImageDownload(imageBitmap -> seniorAHIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(1);
                 p.setId("1");
                 scriptorAHTV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), scriptorAHIV).run();
+                new Thread(new ImageDownload(imageBitmap -> scriptorAHIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(2);
                 p.setId("2");
                 kassierAHTV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), kassierAHIV).run();
+                new Thread(new ImageDownload(imageBitmap -> kassierAHIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(3);
                 p.setId("3");
                 hv1TV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), hv1IV).run();
+                new Thread(new ImageDownload(imageBitmap -> hv1IV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(4);
                 p.setId("4");
                 hv2TV.setText(p.getFullName());
-                Firebase.downloadImage(p.getPicture_path(), hv2IV).run();
+                new Thread(new ImageDownload(imageBitmap -> hv2IV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
             } catch (Exception ignored) {
             }
         }
@@ -332,7 +332,7 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
             returnList.add(hv2IV.getDrawable());
         }
         for (int i = 0; i < 5; i++) {
-            if (returnList.get(i) == ContextCompat.getDrawable(getContext(), R.drawable.wappen_round)) {
+            if (returnList.get(i) == ContextCompat.getDrawable(requireContext(), R.drawable.wappen_round)) {
                 returnList.set(i, null);
             }
         }
@@ -459,6 +459,7 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
             dialog = new CheckChargeDialog(getContext(), kind, person);
         }
         try {
+            //noinspection ConstantConditions
             dialog.show();
         } catch (Exception e) {
             Log.e(TAG, "Displaying the check dialog failed.");
@@ -468,7 +469,7 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
     @Override
     public void dismissChecker(@NotNull String kind, @Nullable Person person) {
         try {
-            if (!kind.contains("h")) {
+            if (!kind.contains("h") && person != null) {
                 switch (kind) {
                     case "x":
                         chargen.set(0, person);
@@ -491,7 +492,7 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
                         kassierTV.setText(person.getFullName());
                         break;
                 }
-            } else if (kind.contains("h")) {
+            } else if (kind.contains("h") && person != null) {
                 switch (kind) {
                     case "ahx":
                         chargen.set(0, person);

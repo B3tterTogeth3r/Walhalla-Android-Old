@@ -60,7 +60,6 @@ public class BoardFragment extends CustomFragment {
         return view;
     }
 
-    @SuppressWarnings("unchecked")
     private void loadBoard() {
         TableLayout layout = view.findViewById(R.id.board_list);
         layout.removeAllViews();
@@ -102,7 +101,6 @@ public class BoardFragment extends CustomFragment {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        //noinspection unchecked
                         picture_names = (ArrayList<String>) documentSnapshot.get("picture_names");
                         if (picture_names != null && picture_names.size() != 0) {
                             //download only the first image
@@ -113,11 +111,10 @@ public class BoardFragment extends CustomFragment {
     }
 
     private void downloadImage(String image_name) {
-
         StorageReference image = FirebaseStorage.getInstance().getReference(image_name);
         image.getBytes(Variables.ONE_MEGABYTE).addOnSuccessListener(bytes -> {
             Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            diashow.setImageBitmap(Firebase.addWatermark(bmp));
+            //TODO diashow.setImageBitmap(Firebase.addWatermark(bmp));
             Variables.Firebase.FIRESTORE.collection("Data")
                     .whereEqualTo("name", image_name)
                     .get()

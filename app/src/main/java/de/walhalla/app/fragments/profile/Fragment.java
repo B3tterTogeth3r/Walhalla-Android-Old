@@ -16,25 +16,27 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.List;
-
+import de.hdodenhof.circleimageview.CircleImageView;
 import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
 import de.walhalla.app.fragments.CustomFragment;
 import de.walhalla.app.models.Person;
+import de.walhalla.app.utils.ImageDownload;
 import de.walhalla.app.utils.Variables;
 
 @SuppressLint("StaticFieldLeak")
 public class Fragment extends CustomFragment {
     private final static String TAG = "ProfileFragment";
     public static TextView nameTV, pobTV, joinedTV, dobTV, majorTV, passwordTV, mailTV, mobileTV, addressTV, rankTV, uid;
+    public static CircleImageView imageView;
     public static Person userData;
     public static Context context;
     public static FragmentActivity activity;
     public static View view;
-    private String uidStr;
+    private String uidStr, docId;
     private RelativeLayout nameLayout, dobLayout, pobLayout, majorLayout, passwordLayout, mailLayout, mobileLayout, addressLayout, rankLayout, joinedLayout, pictureLayout;
 
     public Fragment(@Nullable String uid) {
@@ -95,17 +97,22 @@ public class Fragment extends CustomFragment {
         try {
             rankTV.setText(userData.getRank());
         } catch (Exception e) {
-            Log.d(TAG, "An error while filling rankTV", e);
+            Log.e(TAG, "An error while filling rankTV", e);
         }
         try {
             joinedTV.setText(Variables.SEMESTER_ARRAY_LIST.get(userData.getJoined() - 1).getLong());
         } catch (Exception e) {
-            Log.d(TAG, "An error while filling joinedTV", e);
+            Log.e(TAG, "An error while filling joinedTV", e);
+        }
+        try {
+            new Thread(new ImageDownload(imageBitmap -> imageView.setImageBitmap(imageBitmap), userData.getPicture_path())).start();
+        } catch (Exception e) {
+            Log.e(TAG, "updateUI: Image download error", e);
         }
         try {
             uid.setText(userData.getUid());
         } catch (Exception e) {
-            Log.d(TAG, "An error while filling uid", e);
+            Log.e(TAG, "An error while filling uid", e);
         }
     }
 
@@ -122,18 +129,19 @@ public class Fragment extends CustomFragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         QuerySnapshot snapshot = task.getResult();
-                        if (!snapshot.isEmpty()) {
-                            List<Person> p = snapshot.toObjects(Person.class);
-                            userData = p.get(0);
-                            updateUI();
+                        if (snapshot != null && !snapshot.isEmpty()) {
+                            for (DocumentSnapshot doc : snapshot) {
+                                userData = doc.toObject(Person.class);
+                                docId = doc.getId();
+                                updateUI();
+                            }
                         }
                     }
                 });
     }
 
     /**
-     * While leaving this site the changed userdata is getting uploaded.
-     * The user gets immediate message, because firebase will do it on its own
+     * On leaving this site the changed userdata is getting uploaded.
      */
     @Override
     public void onStop() {
@@ -142,15 +150,12 @@ public class Fragment extends CustomFragment {
         if (userData != null) {
             Variables.Firebase.FIRESTORE
                     .collection("Person")
-                    .document(uidStr)
+                    .document(docId)
                     .set(userData)
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d(TAG, "upload of new userdata successful");
-                    });
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "upload of new userdata successful"));
+
             Snackbar.make(MainActivity.parentLayout, R.string.upload_complete, Snackbar.LENGTH_SHORT)
                     .show();
-            //TODO make a SnackBar to display that the upload was successful.
-            //Snackbar.make(App.getContext(), R.string.upload_complete, Snackbar.LENGTH_SHORT).show();
         }
 
     }
@@ -159,8 +164,8 @@ public class Fragment extends CustomFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.profile_display, container, false);
-        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_profile);
-        ((Toolbar)requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
+        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setTitle(R.string.menu_profile);
+        ((Toolbar) requireActivity().findViewById(R.id.toolbar)).setSubtitle("");
         context = getContext();
         activity = getActivity();
 
@@ -190,6 +195,7 @@ public class Fragment extends CustomFragment {
         addressTV = view.findViewById(R.id.profile_contact_information_address_user);
         rankTV = view.findViewById(R.id.profile_fraternity_information_rank_user);
         joinedTV = view.findViewById(R.id.profile_fraternity_information_joined_user);
+        imageView = view.findViewById(R.id.profile_fraternity_information_picture_image);
         uid = view.findViewById(R.id.profile_uid);
 
         clearAllTV();

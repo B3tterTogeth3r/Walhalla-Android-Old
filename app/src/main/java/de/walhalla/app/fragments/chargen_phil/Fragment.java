@@ -33,6 +33,7 @@ import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.models.Person;
 import de.walhalla.app.models.Semester;
 import de.walhalla.app.utils.Border;
+import de.walhalla.app.utils.ImageDownload;
 import de.walhalla.app.utils.Variables;
 
 @SuppressLint("InflateParams")
@@ -194,9 +195,8 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
 
             //Download the profile picture if the person has one
             if (person.getPicture_path() != null) {
-                synchronized (new Object()) {
-                    Firebase.downloadImage(person.getPicture_path(), picture).run();
-                }
+                final ImageView pictureFinal = picture;
+                new Thread(new ImageDownload(pictureFinal::setImageBitmap, person.getPicture_path(), true)).start();
             }
         } catch (Exception e) {
             Log.d(TAG, "No person filled that position", e);

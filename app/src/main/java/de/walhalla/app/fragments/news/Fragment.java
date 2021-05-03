@@ -37,9 +37,9 @@ import java.util.Set;
 import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
 import de.walhalla.app.User;
-import de.walhalla.app.firebase.Firebase;
 import de.walhalla.app.fragments.CustomFragment;
 import de.walhalla.app.models.News;
+import de.walhalla.app.utils.ImageDownload;
 import de.walhalla.app.utils.Variables;
 
 @SuppressWarnings("StaticFieldLeak")
@@ -150,9 +150,7 @@ public class Fragment extends CustomFragment {
             }
             //Get image, if anyone is set, and set it
             if (image != null && !image.isEmpty()) {
-                synchronized (new Object()) {
-                    Firebase.downloadImage(n.getImage(), newsImage).run();
-                }
+                new Thread(new ImageDownload(newsImage::setImageBitmap, n.getImage(), true)).start();
                 newsImage.setClickable(false);
                 newsImage.setVisibility(View.VISIBLE);
                 newsImage.setScaleType(ImageView.ScaleType.FIT_CENTER);

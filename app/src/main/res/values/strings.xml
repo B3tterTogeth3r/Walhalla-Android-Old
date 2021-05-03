@@ -312,7 +312,7 @@
     <string name="profile_major_2">Studium</string>
     <string name="profile_phone">Telefon</string>
     <string name="profile_fraternity_information_title">Informationen zum Verbindungsstatus</string>
-    <string name="profile_picture_edit_add">Hier kann das Bild bearbeitet werden, damit für neue Ämter und die Ahnengallerie dieses verwendet wird</string>
+    <string name="profile_picture_edit_add">Hier kann das Bild bearbeitet werden. Dieses wird für neue Ämter und die Ahnengallerie verwendet.</string>
     <string name="profile_update_successfull">Daten aktualisiert</string>
     <string name="profile_change_name">Namen verändern</string>
     <string name="profile_major_short">Studiengang</string>
@@ -391,4 +391,5 @@
     <string name="new_notes">Neue Hinweise</string>
     <string name="greeting_first_line">Liebe Bundesbrüder, werte Kartellbrüder, verehrte Damen und liebe Leser,</string>
     <string name="charge_add_error_no_senior">Mindestens der Senior muss gesetzt werden.</string>
+    <string name="profile_major_3">Studium/Abschluss</string>
 </resources>

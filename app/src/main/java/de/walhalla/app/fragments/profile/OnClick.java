@@ -37,7 +37,7 @@ import static de.walhalla.app.fragments.profile.Fragment.userData;
 
 public class OnClick implements View.OnClickListener {
     private static final String TAG = "ProfileOnClick";
-    private FragmentManager fragmentManager;
+    private final FragmentManager fragmentManager;
 
     public OnClick(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
@@ -121,10 +121,10 @@ public class OnClick implements View.OnClickListener {
                                     //.setOnDismissListener()
                                     .show();
                         } else {
-                            Log.d(TAG, "2 something went wrong while downloading the ranks");
+                            Log.d(TAG, "downloadRank: 2");
                         }
                     } else {
-                        Log.d(TAG, "1 something went wrong while downloading the ranks");
+                        Log.d(TAG, "downloadRank: 1");
                     }
                 });
     }
@@ -146,7 +146,7 @@ public class OnClick implements View.OnClickListener {
                 })
                 .setItems(options, (dialog, which) -> {
                     rankTV.setText(options[which]);
-                    Log.i(TAG, which + " is the selected value");
+                    Log.i(TAG, "rankDialog: selected value: " + which);
                     userData.setRank(options[which]);
                 });
         return rankPicker;

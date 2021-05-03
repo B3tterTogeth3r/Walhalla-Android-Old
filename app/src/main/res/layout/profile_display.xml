@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/profile_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -99,33 +101,12 @@
 
                     <TextView
                         style="@style/Settings.Row.Title"
-                        android:text="@string/profile_major_2" />
+                        android:text="@string/profile_major_3" />
 
                     <TextView
                         android:id="@+id/profile_general_information_major_user"
                         style="@style/Settings.Row.Content"
                         android:text="@string/profile_major_2" />
-
-                    <ImageView
-                        style="@style/Settings.Row.Image"
-                        android:contentDescription="@string/description"
-                        android:src="@drawable/ic_arrow_right" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/profile_general_information_password"
-                    style="@style/Settings.TV.StartEnd"
-                    android:text="@string/login_password">
-
-                    <TextView
-                        style="@style/Settings.Row.Title"
-                        android:text="@string/login_password" />
-
-                    <TextView
-                        android:id="@+id/profile_general_information_password_user"
-                        style="@style/Settings.Row.Content"
-                        android:text="@string/login_password" />
 
                     <ImageView
                         style="@style/Settings.Row.Image"
@@ -170,6 +151,27 @@
 
                 </RelativeLayout>
 
+
+                <RelativeLayout
+                    android:id="@+id/profile_general_information_password"
+                    style="@style/Settings.TV.StartEnd"
+                    android:text="@string/login_password">
+
+                    <TextView
+                        style="@style/Settings.Row.Title"
+                        android:text="@string/login_password" />
+
+                    <TextView
+                        android:id="@+id/profile_general_information_password_user"
+                        style="@style/Settings.Row.Content"
+                        android:text="@string/login_password" />
+
+                    <ImageView
+                        style="@style/Settings.Row.Image"
+                        android:contentDescription="@string/description"
+                        android:src="@drawable/ic_arrow_right" />
+
+                </RelativeLayout>
                 <RelativeLayout
                     android:id="@+id/profile_contact_information_mobile"
                     style="@style/Settings.TV">
@@ -196,6 +198,7 @@
 
                     <TextView
                         style="@style/Settings.Row.Title"
+                        android:layout_centerVertical="true"
                         android:text="@string/profile_address" />
 
                     <TextView
@@ -267,12 +270,28 @@
 
                     <TextView
                         style="@style/Settings.Row.Title"
+                        android:layout_centerVertical="true"
                         android:text="@string/profile_picture" />
 
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_fraternity_information_picture_image"
+                        android:layout_width="220dp"
+                        android:layout_height="80dp"
+                        android:padding="4dp"
+                        android:paddingStart="140dp"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/wappen_round"
+                        app:civ_border_color="@android:color/transparent"
+                        tools:ignore="RtlSymmetry" />
+
                     <TextView
-                        android:id="@+id/profile_fraternity_information_picture_user"
+                        android:layout_toRightOf="@id/profile_fraternity_information_picture_image"
                         style="@style/Settings.Row.Content"
-                        android:text="@string/profile_picture_edit_add" />
+                        android:paddingStart="4dp"
+                        android:paddingEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:text="@string/profile_picture_edit_add"
+                        />
 
                     <ImageView
                         style="@style/Settings.Row.Image"

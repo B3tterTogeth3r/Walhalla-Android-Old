@@ -3,7 +3,6 @@ package de.walhalla.app.fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,29 +14,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.walhalla.app.R;
-import de.walhalla.app.firebase.Firebase;
+import de.walhalla.app.interfaces.PictureListener;
 import de.walhalla.app.interfaces.StopDiashowListener;
+import de.walhalla.app.utils.ImageDownload;
 import de.walhalla.app.utils.Variables;
 
-public class Diashow implements View.OnClickListener, StopDiashowListener {
+public class Diashow implements View.OnClickListener, StopDiashowListener, PictureListener {
     private static final String TAG = "Diashow";
     public static StopDiashowListener listener;
+    public static boolean threadAlive = false;
     private final Context context;
-    private final Animation anim, anim_out;
+    private final Animation anim;
     private final AtomicInteger diashow_position = new AtomicInteger(0);
-    private final AtomicBoolean threadAlive = new AtomicBoolean(false);
     private final ArrayList<Thread> threads = new ArrayList<>();
     private RelativeLayout layout;
     private TextView diashow_description;
@@ -50,7 +45,6 @@ public class Diashow implements View.OnClickListener, StopDiashowListener {
         this.context = context;
         listener = this;
         anim = AnimationUtils.loadAnimation(context, R.anim.picture_change);
-        anim_out = AnimationUtils.loadAnimation(context, R.anim.picture_change_out);
     }
 
     @SuppressLint("InflateParams")
@@ -95,12 +89,14 @@ public class Diashow implements View.OnClickListener, StopDiashowListener {
                     } catch (Exception ignored) {
                     }
                     diashow_position.set(0);
-                    changeDisplayedImage();
+                    downloadImage(picture_names.get(diashow_position.get()));
 
                     if (picture_names.size() == 1) {
-                        ButtonVisibility(false);
+                        diashow_right.setVisibility(View.GONE);
+                        diashow_left.setVisibility(View.GONE);
                     } else {
-                        ButtonVisibility(true);
+                        diashow_right.setVisibility(View.VISIBLE);
+                        diashow_left.setVisibility(View.VISIBLE);
                         //Automatic switch between images after 3-5 seconds.
                         startSwitchTimer();
                         //TODO Activate swipe gestures
@@ -111,130 +107,100 @@ public class Diashow implements View.OnClickListener, StopDiashowListener {
     }
 
     /**
-     * Automatic switch between images after 3-5 seconds.
+     * Automatic switch between images after 10 seconds.
      */
     private void startSwitchTimer() {
-        Random random = new Random();
-        int randomNumber = random.nextInt(4000);
-        Thread thread = new Thread(() -> {
-            try {
-                while (threadAlive.get()) {
-                    try {
-                        //noinspection BusyWait
-                        Thread.sleep(6000 + randomNumber);
-                    } catch (Exception ignored) {
-                    }
-                    if (threadAlive.get()) {
-                        if (picture_names != null && picture_names.size() != 0) {
-                            if (diashow_position.incrementAndGet() > picture_names.size() - 1) {
-                                diashow_position.set(0);
-                            }
-                            changeDisplayedImage();
-                        }
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        });
-
-        threadAlive.set(true);
+        threadAlive = true;
+        Thread thread = new Thread(ImageDownload.diashowTimer(this, picture_names, threadName));
         thread.setName(threadName);
         threads.add(thread);
         //TODO How to stop multiple diashow elements inside one fragment? While there is a problem, no automatic diashow should start.
         //thread.start();
     }
 
-    private void ButtonVisibility(boolean Visible) {
-        int visibility = View.GONE;
-        if (Visible) {
-            visibility = View.VISIBLE;
-        }
-        diashow_right.setVisibility(visibility);
-        diashow_left.setVisibility(visibility);
-    }
-
     @Override
     public void onClick(@NotNull View v) {
         //Diashow button left got clicked
         if (v.getId() == diashow_left.getId()) {
-            Log.d(TAG, "Button left got clicked");
-            if (picture_names != null && picture_names.size() != 0) {
-                if (diashow_position.decrementAndGet() < 0) {
-                    diashow_position.set(picture_names.size() - 1);
-                }
-                changeDisplayedImage();
-            }
+            previousImage();
         }
         //Diashow button right got clicked
         else if (v.getId() == diashow_right.getId()) {
-            Log.d(TAG, "Button right got clicked");
-            if (picture_names != null && picture_names.size() != 0) {
-                if (diashow_position.incrementAndGet() > picture_names.size() - 1) {
-                    diashow_position.set(0);
-                }
-                changeDisplayedImage();
-            }
-        }
-    }
-
-    private void changeDisplayedImage() {
-        try {
-            downloadImage(picture_names.get(diashow_position.get()));
-        } catch (Exception e) {
-            Log.e(TAG, "downloadImage(picture_names.get(diashow_position.get())) created an exception");
-            //e.printStackTrace();
+            nextImage();
         }
     }
 
     private void downloadImage(String image_name) {
-        diashow_right.setClickable(false);
-        diashow_left.setClickable(false);
-        diashow.startAnimation(anim_out);
-
-        StorageReference image = FirebaseStorage.getInstance().getReference(image_name);
-        image.getBytes(Variables.ONE_MEGABYTE).addOnSuccessListener(bytes -> {
-            Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            //Animate a blend from one to the next image
-            try {
-                diashow.startAnimation(anim);
-            } catch (Exception ignored) {
-            }
-            diashow.setImageBitmap(Firebase.addWatermark(bmp));
-            diashow_right.setClickable(true);
-            diashow_left.setClickable(true);
-            downloadName(image_name);
-        }).addOnFailureListener(e ->
-                Log.e(TAG, "download of image " + image_name + " unsuccessful", e));
-    }
-
-    private void downloadName(String image_name) {
-        Variables.Firebase.FIRESTORE.collection("Data")
-                .whereEqualTo("name", image_name)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            diashow_description.setText((String) documentSnapshot.get("title"));
-                        }
-                    } else {
-                        diashow_description.setText("");
-                    }
-                })
-                .addOnFailureListener(e -> diashow_description.setText(image_name));
+        Thread downloader = new Thread(new ImageDownload(this, image_name, true, true));
+        downloader.start();
     }
 
     @Override
     public void stopDiashow() {
         //Stop the automatic new images
         for (Thread thread : threads) {
-            if (thread.isAlive() | threadAlive.get()) {
-                threadAlive.set(false);
-                thread.interrupt();
-                if (thread.isInterrupted()) {
-                    Log.d(TAG, "Thread successfully interrupted " + thread.getName());
+            if (thread.isAlive() | threadAlive) {
+                threadAlive = false;
+                try {
+                    thread.interrupt();
+                    if (thread.isInterrupted()) {
+                        Log.d(TAG, "Thread successfully interrupted " + thread.getName());
+                    }
+                } catch (Exception ignored) {
                 }
             }
             threads.remove(thread);
+        }
+    }
+
+    @Override
+    public void downloadDone(Bitmap imageBitmap) {
+        //Animate a blend from one to the next image
+        try {
+            diashow.startAnimation(anim);
+            diashow.setImageBitmap(imageBitmap);
+            diashow_right.setClickable(true);
+            diashow_left.setClickable(true);
+        } catch (Exception e) {
+            Log.e(TAG, "downloadDone: couldn't display the downloaded image", e);
+        }
+    }
+
+    @Override
+    public void descriptionDone(String description) {
+        if (description != null && description.length() != 0) {
+            diashow.startAnimation(anim);
+            diashow_description.setVisibility(View.VISIBLE);
+            diashow_description.setText(description);
+        } else {
+            diashow.startAnimation(anim);
+            diashow_description.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void nextImage() {
+        diashow_right.setClickable(false);
+        diashow_left.setClickable(false);
+        Log.d(TAG, "nextImage: got activated");
+        if (picture_names != null && picture_names.size() != 0) {
+            if (diashow_position.incrementAndGet() > picture_names.size() - 1) {
+                diashow_position.set(0);
+            }
+            downloadImage(picture_names.get(diashow_position.get()));
+        }
+    }
+
+    @Override
+    public void previousImage() {
+        diashow_right.setClickable(false);
+        diashow_left.setClickable(false);
+        Log.d(TAG, "previousImage: listener got activated");
+        if (picture_names != null && picture_names.size() != 0) {
+            if (diashow_position.decrementAndGet() < 0) {
+                diashow_position.set(picture_names.size() - 1);
+            }
+            downloadImage(picture_names.get(diashow_position.get()));
         }
     }
 }

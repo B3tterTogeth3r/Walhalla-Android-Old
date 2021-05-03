@@ -2,6 +2,8 @@ package de.walhalla.app.fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -17,9 +19,11 @@ public abstract class CustomFragment extends Fragment implements CustomAuthListe
 
     public static CustomAuthListener.sendMain authChange;
     protected final String TAG = "CustomFragment";
+    public static Handler fragmentHandler;
 
     @Override
     public void onStart() {
+        fragmentHandler = new Handler(Looper.getMainLooper());
         super.onStart();
     }
 
@@ -60,9 +64,5 @@ public abstract class CustomFragment extends Fragment implements CustomAuthListe
     @Override
     public void onStop() {
         super.onStop();
-        try {
-            Diashow.listener.stopDiashow();
-        } catch (Exception ignored) {
-        }
     }
 }
