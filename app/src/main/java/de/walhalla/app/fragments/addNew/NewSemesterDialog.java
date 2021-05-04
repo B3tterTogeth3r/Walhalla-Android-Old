@@ -38,7 +38,6 @@ import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
 import de.walhalla.app.dialog.ChangeSemesterDialog;
 import de.walhalla.app.interfaces.AddNewSemesterListener;
-import de.walhalla.app.models.Event;
 import de.walhalla.app.models.Person;
 import de.walhalla.app.models.Semester;
 import de.walhalla.app.utils.Variables;
@@ -52,7 +51,6 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
     public static ArrayList<Object> eventsList = new ArrayList<>();
     public static ArrayList<Object> greetingList = new ArrayList<>();
     public static ArrayList<Object> notesList = new ArrayList<>();
-    public static ArrayList<Object> message = new ArrayList<>();
     public static ArrayList<Drawable> imagesAktive = new ArrayList<>();
     public static ArrayList<Drawable> imagesAH = new ArrayList<>();
     private int downloadProgress = 0;
@@ -122,24 +120,35 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
             dialog.show();
         });
         toolbar.setTitle(R.string.menu_new_semester);
-        toolbar.setOnMenuItemClickListener(item -> false);
+        toolbar.setOnMenuItemClickListener(item -> {
+            Snackbar.make(MainActivity.parentLayout, R.string.not_all_created, Snackbar.LENGTH_LONG).show();
+            return false;
+        });
         progressBar.setProgress(downloadProgress);
         semesterBT.setClickable(true);
         semesterBT.setOnClickListener(this);
     }
 
     private void uploadAll() {
-        Snackbar.make(MainActivity.parentLayout, R.string.toast_still_in_dev, Snackbar.LENGTH_LONG).show();
-        //Upload Chargen
+        //Snackbar.make(MainActivity.parentLayout, R.string.toast_still_in_dev, Snackbar.LENGTH_LONG).show();
 
+        //Upload Greeting and notes
+        Semester sem = semester;
+        sem.setGreeting(greetingList);
+        sem.setNotes(notesList);
+        Variables.Firebase.FIRESTORE.collection("Semester")
+                .document(String.valueOf(semester.getID()))
+                .set(sem);
+
+        //Upload Chargen
         int size = chargenList.size();
         for (int i = 0; i < size; i++) {
             //TODO Check if image got changed in the first place to avoid duplicate data
             //Set image_path if an image got selected
-            if(imagesAktive.get(i) != null){
+            if (imagesAktive.get(i) != null) {
                 String name = "Charge_" + i + "_sem_" + semester.getID() + ".jpg";
                 //Upload image
-                Bitmap bitmap = ((BitmapDrawable)imagesAktive.get(i)).getBitmap();
+                Bitmap bitmap = ((BitmapDrawable) imagesAktive.get(i)).getBitmap();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
                 byte[] data = baos.toByteArray();
@@ -147,7 +156,7 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
                 UploadTask uploadTask = imageRef.putBytes(data);
                 uploadTask.addOnFailureListener(e -> Log.d(TAG, "Image available: upload error", e))
                         .addOnSuccessListener(taskSnapshot -> Log.d(TAG, Objects.requireNonNull(Objects.requireNonNull(taskSnapshot.getMetadata()).getName())));
-                ((Person)chargenList.get(i)).setPicture_path("/pictures/" + name);
+                ((Person) chargenList.get(i)).setPicture_path("/pictures/" + name);
             }
             Variables.Firebase.FIRESTORE.collection("Semester")
                     .document(String.valueOf(semester.getID()))
@@ -158,10 +167,10 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
         for (int i = 0; i < size; i++) {
             //TODO Check if image got changed in the first place to avoid duplicate data
             //Set image_path if an image got selected
-            if(imagesAH.get(i) != null){
+            if (imagesAH.get(i) != null) {
                 String name = "Phil_Charge_" + i + "_sem_" + semester.getID() + ".jpg";
                 //Upload image
-                Bitmap bitmap = ((BitmapDrawable)imagesAH.get(i)).getBitmap();
+                Bitmap bitmap = ((BitmapDrawable) imagesAH.get(i)).getBitmap();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
                 byte[] data = baos.toByteArray();
@@ -169,7 +178,7 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
                 UploadTask uploadTask = imageRef.putBytes(data);
                 uploadTask.addOnFailureListener(e -> Log.d(TAG, "Image available: upload error", e))
                         .addOnSuccessListener(taskSnapshot -> Log.d(TAG, Objects.requireNonNull(Objects.requireNonNull(taskSnapshot.getMetadata()).getName())));
-                ((Person)philChargenList.get(i)).setPicture_path("/pictures/" + name);
+                ((Person) philChargenList.get(i)).setPicture_path("/pictures/" + name);
             }
         }
         //Upload Phil Chargen
@@ -198,13 +207,6 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
                 .collection("Chargen_Phil")
                 .document("hw")
                 .set(philChargenList.get(4), SetOptions.merge());
-        //Upload Greeting and notes
-        Semester sem = semester;
-        sem.setGreeting(greetingList);
-        sem.setNotes(notesList);
-        Variables.Firebase.FIRESTORE.collection("Semester")
-                .document(String.valueOf(semester.getID()))
-                .set(sem, SetOptions.merge());
     }
 
     @Override
@@ -226,7 +228,7 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
             ChargenDialog.display(getChildFragmentManager(), ChargenDialog.kinds[1], philChargenList, this);
         } else if (events.equals(v)) {
             Log.d(TAG, "Add new (multiple) events.");
-            Snackbar.make(requireView(), R.string.toast_still_in_dev, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(MainActivity.parentLayout, R.string.toast_still_in_dev, Snackbar.LENGTH_LONG).show();
             //EventsDialog.display(getChildFragmentManager(), null, this);
         } else if (messageBT.equals(v)) {
             Log.d(TAG, "Add a new Messages with the link to the pdf on the website.");
@@ -241,7 +243,8 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
     public void semesterDone(@NotNull Semester semester) {
         Log.d(TAG, "The chosen semester is the " + semester.getLong());
         NewSemesterDialog.semester = semester;
-        //TODO Write the selected semester somewhere
+        //Write the selected semester into the toolbar
+        toolbar.setSubtitle(semester.getLong());
         //Get available data, if there is any for that semester.
         TableLayout layout = requireView().findViewById(R.id.new_semester_table_layout);
         for (int i = 0; i < layout.getChildCount(); i++) {
@@ -259,7 +262,7 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
                     .collection("Semester")
                     .document(String.valueOf(semester_id))
                     .collection("Chargen")
-                    //.limit(5)
+                    .limit(5)
                     .get()
                     .addOnFailureListener(e -> Log.e(TAG, "an error occurred", e))
                     .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -272,87 +275,93 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
                                 }
                             }
                         }
-                        downloadProgress = downloadProgress + 25;
+                        downloadProgress += 25;
                         progressBar.setProgress(downloadProgress);
                         Log.d(TAG, downloadProgress + "; chargen done");
                         downloadCompleteListener();
                     });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Log.d(TAG, "start Phil chargen");
-        Variables.Firebase.FIRESTORE
-                .collection("Semester")
-                .document(String.valueOf(semester_id))
-                .collection("Chargen_Phil")
-                .limit(5)
-                .orderBy("id")
-                .get()
-                .addOnFailureListener(e -> Log.e(TAG, "an error occurred", e))
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    NewSemesterDialog.philChargenList = new ArrayList<>();
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+            Log.d(TAG, "start Phil chargen");
+            Variables.Firebase.FIRESTORE
+                    .collection("Semester")
+                    .document(String.valueOf(semester_id))
+                    .collection("Chargen_Phil")
+                    .limit(5)
+                    .orderBy("id")
+                    .get()
+                    .addOnFailureListener(e -> Log.e(TAG, "an error occurred", e))
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        NewSemesterDialog.philChargenList = new ArrayList<>();
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                try {
+                                    NewSemesterDialog.philChargenList.add(snapshot.toObject(Person.class));
+                                } catch (Exception ignored) {
+                                }
+                            }
+                        }
+                        downloadProgress += 25;
+                        progressBar.setProgress(downloadProgress);
+                        Log.d(TAG, downloadProgress + "; Phil chargen done");
+                        downloadCompleteListener();
+                    });
+
+            Log.d(TAG, "Start Greeting");
+            Variables.Firebase.FIRESTORE
+                    .collection("Semester")
+                    .document(String.valueOf(semester_id))
+                    .get()
+                    .addOnFailureListener(e -> Log.e(TAG, "an error occurred", e))
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
                             try {
-                                NewSemesterDialog.philChargenList.add(snapshot.toObject(Person.class));
+                                NewSemesterDialog.greetingList.clear();
+                                NewSemesterDialog.greetingList = (ArrayList<Object>) documentSnapshot.get("greeting");
                             } catch (Exception ignored) {
                             }
                         }
-                    }
-                    downloadProgress = downloadProgress + 25;
-                    progressBar.setProgress(downloadProgress);
-                    Log.d(TAG, downloadProgress + "; Phil chargen done");
-                    downloadCompleteListener();
-                });
+                        downloadProgress += 25;
+                        progressBar.setProgress(downloadProgress);
+                        Log.d(TAG, downloadProgress + "; Greeting done");
+                        downloadCompleteListener();
+                    });
 
-        Log.d(TAG, "Start Greeting");
-        Variables.Firebase.FIRESTORE
-                .collection("Semester")
-                .document(String.valueOf(semester_id))
-                .get()
-                .addOnFailureListener(e -> Log.e(TAG, "an error occurred", e))
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        try {
-                            NewSemesterDialog.greetingList.clear();
-                            NewSemesterDialog.greetingList = (ArrayList<Object>) documentSnapshot.get("greeting");
-                        } catch (Exception ignored) {
+            Log.d(TAG, "Start notes");
+            Variables.Firebase.FIRESTORE
+                    .collection("Semester")
+                    .document(String.valueOf(semester_id))
+                    .get()
+                    .addOnFailureListener(e -> Log.e(TAG, "an error occurred", e))
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            try {
+                                NewSemesterDialog.notesList = (ArrayList<Object>) documentSnapshot.get("notes");
+                            } catch (Exception ignored) {
+                            }
                         }
-                    }
-                    downloadProgress = downloadProgress + 25;
-                    progressBar.setProgress(downloadProgress);
-                    Log.d(TAG, downloadProgress + "; Greeting done");
-                    downloadCompleteListener();
-                });
-
-        Log.d(TAG, "Start notes");
-        Variables.Firebase.FIRESTORE
-                .collection("Semester")
-                .document(String.valueOf(semester_id))
-                .get()
-                .addOnFailureListener(e -> Log.e(TAG, "an error occurred", e))
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        try {
-                            NewSemesterDialog.notesList = (ArrayList<Object>) documentSnapshot.get("notes");
-                        } catch (Exception ignored) {
-                        }
-                    }
-                    downloadProgress = downloadProgress + 25;
-                    progressBar.setProgress(downloadProgress);
-                    Log.d(TAG, downloadProgress + "; notes done");
-                    downloadCompleteListener();
-                });
+                        downloadProgress += 25;
+                        progressBar.setProgress(downloadProgress);
+                        Log.d(TAG, downloadProgress + "; notes done");
+                        downloadCompleteListener();
+                    });
+        } catch (Exception e) {
+            this.dismiss();
+            e.printStackTrace();
+        }
     }
 
     private void downloadCompleteListener() {
         if (downloadProgress == 100) {
+            //Make layout enabled
             TableLayout layout = requireView().findViewById(R.id.new_semester_table_layout);
             for (int i = 0; i < layout.getChildCount(); i++) {
                 View child = layout.getChildAt(i);
                 child.setEnabled(true);
             }
+
+            //reset the progress
+            downloadProgress = 0;
             progressBar.setVisibility(View.GONE);
+
             //Activate own button
             chargen.setClickable(true);
             chargen.setOnClickListener(this);
@@ -385,21 +394,6 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
 
         //Open Greeting site
         GreetingDialog.display(getChildFragmentManager(), greetingList, this);
-    }
-
-    /**
-     * Disabled right now because it is easier to add new events in the program fragment
-     *
-     * @param eventsList list of events to upload on save.
-     */
-    @Override
-    public void eventsDone(@NotNull ArrayList<Event> eventsList) {
-        //Activate next button
-        //events.setClickable(true);
-        //events.setOnClickListener(this);
-
-        //Open events dialog
-        //EventsDialog.display(getChildFragmentManager(), null, this);
     }
 
     @Override
@@ -436,11 +430,5 @@ public class NewSemesterDialog extends DialogFragment implements View.OnClickLis
             }
             return true;
         });
-    }
-
-    @Override
-    public void messageDone(@Nullable ArrayList<Object> message) {
-        //Open message dialog
-        //MessageDialog.display(getChildFragmentManager(), message, this);
     }
 }

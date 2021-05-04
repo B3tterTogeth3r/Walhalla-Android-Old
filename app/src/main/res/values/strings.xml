@@ -392,4 +392,6 @@
     <string name="greeting_first_line">Liebe Bundesbrüder, werte Kartellbrüder, verehrte Damen und liebe Leser,</string>
     <string name="charge_add_error_no_senior">Mindestens der Senior muss gesetzt werden.</string>
     <string name="profile_major_3">Studium/Abschluss</string>
+    <string name="not_all_created">Es wurden nicht alle Daten ausgefüllt.</string>
+    <string name="select_note">Einen Hinweis auswählen</string>
 </resources>

@@ -103,11 +103,14 @@ public class Fragment extends CustomFragment {
         title.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
         notes.addView(title);
         for (int i = 0; i < size; i++) {
-            title = new TextView(getContext());
-            title.setText(text.get(i).toString());
-            title.setPadding(4, 4, 4, 16);
-            title.setTextAppearance(R.style.TextAppearance_AppCompat_Body1);
-            notes.addView(title);
+            try {
+                title = new TextView(getContext());
+                title.setText(text.get(i).toString());
+                title.setPadding(4, 4, 4, 16);
+                title.setTextAppearance(R.style.TextAppearance_AppCompat_Body1);
+                notes.addView(title);
+            } catch (Exception ignored) {
+            }
         }
     }
 

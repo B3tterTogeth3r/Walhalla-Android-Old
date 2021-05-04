@@ -37,6 +37,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import de.walhalla.app.dialog.LoginDialog;
@@ -407,8 +409,8 @@ public class MainActivity extends AppCompatActivity implements
                         .gravity(Gravity.TOP)
                         .animated(false)
                         .modal(true)
-                        .dismissOnInsideTouch(true)
                         .dismissOnInsideTouch(false)
+                        .dismissOnOutsideTouch(true)
                         .transparentOverlay(true)
                         .build();
 
@@ -487,12 +489,10 @@ public class MainActivity extends AppCompatActivity implements
      * @param url the link the browser will open
      */
     @Override
-    public void browser(@Nullable String url) {
-        if (url == null) {
-            url = Variables.Walhalla.WEBSITE;
-        }
-        if (!url.startsWith("http://") && !url.startsWith("https://"))
+    public void browser(@NotNull String url) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
             url = "http://" + url;
+        }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(browserIntent);
     }

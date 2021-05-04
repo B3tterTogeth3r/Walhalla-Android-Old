@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +26,14 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
 import de.walhalla.app.interfaces.AddNewSemesterListener;
+import de.walhalla.app.utils.Variables;
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 
 public class NotesDialog extends DialogFragment implements View.OnClickListener {
     private static final String TAG = "ChargenDialog";
@@ -39,11 +43,12 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
     private ImageButton add;
     private Toolbar toolbar;
     private LayoutInflater layoutInflater;
+    private ArrayList<String> items;
 
     public NotesDialog(AddNewSemesterListener addNewSemesterListener, ArrayList<Object> notes) {
         this.addNewSemesterListener = addNewSemesterListener;
         if (notes != null && notes.size() != 0) {
-            this.notes = notes;
+            this.notes = new ArrayList<>((ArrayList<Object>) notes.clone());
         } else {
             this.notes = new ArrayList<>();
         }
@@ -67,6 +72,31 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             Objects.requireNonNull(DIALOG.getWindow()).setLayout(width, height);
             DIALOG.getWindow().setWindowAnimations(R.style.AppTheme_Slide);
+            //Download usual notes
+            Variables.Firebase.FIRESTORE
+                    .collection("Kind")
+                    .document("Notes")
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                            try {
+                                List<String> list = (List<String>) task.getResult().get("usual");
+                                if (list != null) {
+                                    items = new ArrayList<>(list);
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "onComplete: parsing failed", e);
+                                DIALOG.dismiss();
+                            }
+                        } else {
+                            Log.e(TAG, "onComplete: download incomplete");
+                            DIALOG.dismiss();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "onFailure: download failed", e);
+                        DIALOG.dismiss();
+                    });
         }
     }
 
@@ -93,7 +123,6 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //do stuff
         viewLayout.removeAllViewsInLayout();
 
         toolbar.setNavigationOnClickListener(v -> {
@@ -110,7 +139,8 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_send) {
                 Log.d(TAG, "send");
-                //Format content
+                //Format content by removing null elements
+                notes.removeIf(Objects::isNull);
                 addNewSemesterListener.notesDone(notes);
                 this.dismiss();
             }
@@ -119,19 +149,65 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
         add.setOnClickListener(this);
         if (notes != null && notes.size() != 0) {
             int size = notes.size();
+            Log.d(TAG, "onViewCreated: " + size);
             for (int i = 0; i < size; i++) {
-                if (notes.get(i).toString().length() != 0) {
-                    addView(((String) notes.get(i)));
+                try {
+                    if (notes.get(i).toString().length() != 0) {
+                        addView(((String) notes.get(i)));
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "onViewCreated: @ position " + i);
                 }
             }
         }
     }
 
     @Override
+    @SuppressLint("InflateParams")
     public void onClick(@NotNull View v) {
         if (v.getId() == add.getId()) {
             Log.d(TAG, "add clicked");
-            addView(null);
+            View noteSelector = getLayoutInflater().inflate(R.layout.note_selector, null);
+            SimpleTooltip tooltip = new SimpleTooltip.Builder(getContext())
+                    .contentView(noteSelector, 0)
+                    .anchorView(add)
+                    .showArrow(false)
+                    .gravity(Gravity.END)
+                    .animated(false)
+                    .modal(true)
+                    .dismissOnInsideTouch(false)
+                    .dismissOnOutsideTouch(true)
+                    .transparentOverlay(true)
+                    .build();
+            TextView newNote = tooltip.findViewById(R.id.notes_new);
+            newNote.setClickable(true);
+            newNote.setOnClickListener(v1 -> {
+                Log.d(TAG, "onClick: newNote");
+                addView(null);
+                tooltip.dismiss();
+            });
+            TextView selectNote = tooltip.findViewById(R.id.notes_select);
+            selectNote.setClickable(true);
+            selectNote.setOnClickListener(v2 -> {
+                Log.d(TAG, "onClick: selectNote");
+                try {
+                    int size = items.size();
+                    CharSequence[] list = new CharSequence[size];
+                    for (int i = 0; i < size; i++) {
+                        list[i] = items.get(i);
+                    }
+                    AlertDialog selectorDialog = new AlertDialog.Builder(getContext())
+                            .setTitle(R.string.select_note)
+                            .setItems(list, (dialog, which) -> addView(list[which].toString()))
+                            .setNegativeButton(R.string.abort, ((dialog, which) -> dialog.dismiss()))
+                            .create();
+                    tooltip.dismiss();
+                    selectorDialog.show();
+                } catch (Exception e) {
+                    Log.e(TAG, "onClick: selectorDialog could not start", e);
+                }
+            });
+            tooltip.show();
         }
         viewLayout.invalidate();
     }
@@ -140,8 +216,6 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
     private void addView(@Nullable String existingNote) {
         View view = layoutInflater.inflate(R.layout.new_notes_row, null);
         viewLayout.addView(view);
-        int index = notes.size();
-        notes.add(null);
         final String[] note = new String[1];
         note[0] = "";
         TextView content = view.findViewById(R.id.new_notes_row_text);
@@ -152,6 +226,7 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
         ImageButton save = view.findViewById(R.id.new_notes_row_add);
         ImageButton abort = view.findViewById(R.id.new_notes_row_abort);
         if (existingNote != null && existingNote.length() != 0) {
+            Log.d(TAG, "addView: " + existingNote);
             note[0] = existingNote;
             content.setText(note[0]);
             inputLayout.setVisibility(View.GONE);
@@ -160,19 +235,28 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
             content.setVisibility(View.VISIBLE);
             edit.setVisibility(View.VISIBLE);
             remove.setVisibility(View.VISIBLE);
+            if (!notes.contains(note[0])) {
+                notes.add(note[0]);
+            }
         }
         remove.setOnClickListener(v1 -> {
             try {
-                notes.remove(index);
-            } catch (Exception ignored) {
+                notes.remove(note[0]);
+            } catch (Exception e) {
+                Log.d(TAG, "addView() called with: existingNote = [" + existingNote + "]", e);
             }
             viewLayout.removeView(view);
             viewLayout.invalidate();
         });
         save.setOnClickListener(v2 -> {
-            if (input.getText().toString().length() >= 20) {
+            if (input.getText() != null && input.getText().toString().length() >= 20) {
                 note[0] = input.getText().toString();
-                notes.set(index, note[0]);
+                int index = notes.indexOf(note[0]);
+                if (index != -1) {
+                    notes.set(index, note[0]);
+                } else {
+                    notes.add(note[0]);
+                }
                 content.setText(note[0]);
                 inputLayout.setVisibility(View.GONE);
                 save.setVisibility(View.GONE);
@@ -195,12 +279,18 @@ public class NotesDialog extends DialogFragment implements View.OnClickListener 
             remove.setVisibility(View.GONE);
         });
         abort.setOnClickListener(v4 -> {
-            inputLayout.setVisibility(View.GONE);
-            save.setVisibility(View.GONE);
-            abort.setVisibility(View.GONE);
-            content.setVisibility(View.VISIBLE);
-            edit.setVisibility(View.VISIBLE);
-            remove.setVisibility(View.VISIBLE);
+            if (input.getText() != null && input.getText().toString().length() >= 20) {
+                inputLayout.setVisibility(View.GONE);
+                save.setVisibility(View.GONE);
+                abort.setVisibility(View.GONE);
+                content.setVisibility(View.VISIBLE);
+                edit.setVisibility(View.VISIBLE);
+                remove.setVisibility(View.VISIBLE);
+            } else {
+                viewLayout.removeView(view);
+                viewLayout.invalidate();
+            }
         });
+        notes.removeIf(Objects::isNull);
     }
 }

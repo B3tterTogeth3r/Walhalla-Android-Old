@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import de.walhalla.app.R;
-import de.walhalla.app.firebase.Firebase;
 import de.walhalla.app.fragments.CustomFragment;
 import de.walhalla.app.utils.Variables;
 
@@ -40,6 +39,7 @@ public class BoardFragment extends CustomFragment {
 
 
     public BoardFragment() {
+        //TODO CONTENT ON THIS PAGE IS AWFUL!!!
     }
 
     @Nullable
@@ -114,7 +114,6 @@ public class BoardFragment extends CustomFragment {
         StorageReference image = FirebaseStorage.getInstance().getReference(image_name);
         image.getBytes(Variables.ONE_MEGABYTE).addOnSuccessListener(bytes -> {
             Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            //TODO diashow.setImageBitmap(Firebase.addWatermark(bmp));
             Variables.Firebase.FIRESTORE.collection("Data")
                     .whereEqualTo("name", image_name)
                     .get()

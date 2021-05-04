@@ -113,7 +113,7 @@ public class GreetingDialog extends DialogFragment {
                 //Format content
                 String content = this.content.getText().toString();
                 ArrayList<Object> contentList = new ArrayList<>();
-                //TODO Add first line
+                //Add first line
                 String firstLine = getString(R.string.greeting_first_line);
                 contentList.add(firstLine);
                 contentList.addAll(Arrays.asList(content.split("\n")));

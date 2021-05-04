@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.google.firebase.firestore.DocumentReference;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -155,10 +154,9 @@ public class Sites {
                 }
             }
 
-
             parentLayout.addView(layout);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(layout.getLayoutParams());
-            layoutParams.setMargins(0,8,0,8);
+            layoutParams.setMargins(0, 8, 0, 8);
             layout.setLayoutParams(layoutParams);
         } catch (Exception e) {
             Log.d(TAG, "Site isn't active anymore so there is a NullPointerException at some reference.");
@@ -166,7 +164,7 @@ public class Sites {
     }
 
     public interface start {
-        void browser(@Nullable String url);
+        void browser(String url);
 
         void email();
     }
