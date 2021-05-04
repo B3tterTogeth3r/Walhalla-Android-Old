@@ -10,6 +10,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -40,6 +41,7 @@ public class Diashow implements View.OnClickListener, StopDiashowListener, Pictu
     private ImageButton diashow_right, diashow_left;
     private ArrayList<String> picture_names;
     private String threadName;
+    private ProgressBar progressBar;
 
     public Diashow(Context context) {
         this.context = context;
@@ -74,6 +76,7 @@ public class Diashow implements View.OnClickListener, StopDiashowListener, Pictu
         diashow_right = layout.findViewById(R.id.diashow_next);
         diashow = layout.findViewById(R.id.diashow_image);
         diashow_description = layout.findViewById(R.id.diashow_description);
+        progressBar = layout.findViewById(R.id.diashow_progressBar);
 
         diashow_right.setClickable(false);
         diashow_left.setClickable(false);
@@ -111,7 +114,7 @@ public class Diashow implements View.OnClickListener, StopDiashowListener, Pictu
      */
     private void startSwitchTimer() {
         threadAlive = true;
-        Thread thread = new Thread(ImageDownload.diashowTimer(this, picture_names, threadName));
+        Thread thread = new Thread();//ImageDownload.diashowTimer(this, picture_names, threadName));
         thread.setName(threadName);
         threads.add(thread);
         //TODO How to stop multiple diashow elements inside one fragment? While there is a problem, no automatic diashow should start.
@@ -131,12 +134,11 @@ public class Diashow implements View.OnClickListener, StopDiashowListener, Pictu
     }
 
     private void downloadImage(String image_name) {
-        Thread downloader = new Thread(new ImageDownload(this, image_name, true, true));
-        downloader.start();
+        new ImageDownload(this, image_name, true, true).execute();
     }
 
     @Override
-    public void stopDiashow() {
+    public synchronized void stopDiashow() {
         //Stop the automatic new images
         for (Thread thread : threads) {
             if (thread.isAlive() | threadAlive) {
@@ -180,8 +182,6 @@ public class Diashow implements View.OnClickListener, StopDiashowListener, Pictu
 
     @Override
     public void nextImage() {
-        diashow_right.setClickable(false);
-        diashow_left.setClickable(false);
         Log.d(TAG, "nextImage: got activated");
         if (picture_names != null && picture_names.size() != 0) {
             if (diashow_position.incrementAndGet() > picture_names.size() - 1) {
@@ -193,14 +193,23 @@ public class Diashow implements View.OnClickListener, StopDiashowListener, Pictu
 
     @Override
     public void previousImage() {
-        diashow_right.setClickable(false);
-        diashow_left.setClickable(false);
         Log.d(TAG, "previousImage: listener got activated");
         if (picture_names != null && picture_names.size() != 0) {
             if (diashow_position.decrementAndGet() < 0) {
                 diashow_position.set(picture_names.size() - 1);
             }
             downloadImage(picture_names.get(diashow_position.get()));
+        }
+    }
+
+    @Override
+    public void setProgressBar(int progress) {
+        Log.d(TAG, "setProgressBar: " + progress);
+        if (progress > 100) {
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(progress, true);
+        } else {
+            progressBar.setVisibility(View.GONE);
         }
     }
 }

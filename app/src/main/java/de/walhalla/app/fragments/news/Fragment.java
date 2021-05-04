@@ -150,7 +150,7 @@ public class Fragment extends CustomFragment {
             }
             //Get image, if anyone is set, and set it
             if (image != null && !image.isEmpty()) {
-                new Thread(new ImageDownload(newsImage::setImageBitmap, n.getImage(), true)).start();
+                new ImageDownload(newsImage::setImageBitmap, n.getImage(), true).execute();
                 newsImage.setClickable(false);
                 newsImage.setVisibility(View.VISIBLE);
                 newsImage.setScaleType(ImageView.ScaleType.FIT_CENTER);

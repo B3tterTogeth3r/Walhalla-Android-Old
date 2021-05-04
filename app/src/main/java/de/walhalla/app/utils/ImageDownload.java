@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -14,14 +15,11 @@ import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
 import de.walhalla.app.App;
 import de.walhalla.app.R;
-import de.walhalla.app.fragments.Diashow;
 import de.walhalla.app.interfaces.PictureListener;
 
-public class ImageDownload implements Runnable {
+public class ImageDownload extends AsyncTask<Void, Integer, Void> {
     private static final String TAG = "ImageDownload";
     private final PictureListener listener;
     private final String reference;
@@ -49,28 +47,8 @@ public class ImageDownload implements Runnable {
         this.loadDescription = false;
     }
 
-    public static Runnable diashowTimer(PictureListener listener, ArrayList<String> picture_names, String threadName) {
-        return () -> {
-            while (Diashow.threadAlive) {
-                for (int i = 0; i < 20; i++) {
-                    try {
-                        //noinspection BusyWait
-                        Thread.sleep(1000);
-                    } catch (Exception ignored) {
-                    }
-                    Log.d(TAG, "startSwitchTimer: " + i);
-                }
-                if (Diashow.threadAlive && picture_names != null) {
-                    listener.nextImage();
-                    //pictureListener.nextImage();
-                }
-            }
-            Log.d(TAG, "startSwitchTimer: " + threadName + " has ended.");
-        };
-    }
-
     @Override
-    public void run() {
+    protected Void doInBackground(Void... voids) {
         if (listener != null) {
             StorageReference image = FirebaseStorage.getInstance().getReference(reference);
             image.getBytes(Variables.ONE_MEGABYTE)
@@ -91,6 +69,7 @@ public class ImageDownload implements Runnable {
         } else {
             Log.d(TAG, "run: no listener available");
         }
+        return null;
     }
 
     private void loadImageDescription() {
@@ -155,5 +134,10 @@ public class ImageDownload implements Runnable {
         canvas.drawBitmap(watermark, matrix, paint);
 
         return bmp;
+    }
+
+    @Override
+    protected void onProgressUpdate(@NotNull Integer... values) {
+        listener.setProgressBar(values[0]);
     }
 }

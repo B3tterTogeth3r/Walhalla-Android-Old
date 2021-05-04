@@ -27,7 +27,6 @@ import java.util.ArrayList;
 
 import de.walhalla.app.App;
 import de.walhalla.app.R;
-import de.walhalla.app.firebase.Firebase;
 import de.walhalla.app.fragments.CustomFragment;
 import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.models.Person;
@@ -196,7 +195,7 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
             //Download the profile picture if the person has one
             if (person.getPicture_path() != null) {
                 final ImageView pictureFinal = picture;
-                new Thread(new ImageDownload(pictureFinal::setImageBitmap, person.getPicture_path(), true)).start();
+                new ImageDownload(pictureFinal::setImageBitmap, person.getPicture_path(), true).execute();
             }
         } catch (Exception e) {
             Log.d(TAG, "No person filled that position", e);

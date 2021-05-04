@@ -195,7 +195,7 @@ public class Fragment extends CustomFragment implements ChosenSemesterListener {
                 Log.d(TAG, "fillPerson: " + person.getPicture_path());
                 Log.d(TAG, "fillPerson: " + picture.getId());
                 final ImageView pictureFinal = picture;
-                new Thread(new ImageDownload(pictureFinal::setImageBitmap, person.getPicture_path())).start();
+                new ImageDownload(pictureFinal::setImageBitmap, person.getPicture_path()).execute();
             }
         } catch (Exception e) {
             Log.d(TAG, "No person filled that position", e);

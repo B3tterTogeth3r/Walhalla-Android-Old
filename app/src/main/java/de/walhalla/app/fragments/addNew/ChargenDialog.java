@@ -200,7 +200,7 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
                 Log.d(TAG, "send");
                 //send content
                 boolean allGood = true;
-                if(chargen.get(0) == null){
+                if (chargen.get(0) == null) {
                     allGood = false;
                 }
                 if (allGood) {
@@ -233,32 +233,32 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
             try {
                 p = (Person) chargen.get(0);
                 seniorTV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> seniorIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> seniorIV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(1);
                 conseniorTV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> conseniorIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> conseniorIV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(2);
                 fuxmajorTV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> fuxmajorIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> fuxmajorIV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
                 p = (Person) chargen.get(3);
                 scriptorTV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> scriptorIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> scriptorIV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(4);
                 kassierTV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> kassierIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> kassierIV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception ignored) {
             }
         }
@@ -279,35 +279,35 @@ public class ChargenDialog extends DialogFragment implements View.OnClickListene
                 p = (Person) chargen.get(0);
                 p.setId("0");
                 seniorAHTV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> seniorAHIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> seniorAHIV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(1);
                 p.setId("1");
                 scriptorAHTV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> scriptorAHIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> scriptorAHIV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(2);
                 p.setId("2");
                 kassierAHTV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> kassierAHIV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> kassierAHIV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(3);
                 p.setId("3");
                 hv1TV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> hv1IV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> hv1IV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception ignored) {
             }
             try {
                 p = (Person) chargen.get(4);
                 p.setId("4");
                 hv2TV.setText(p.getFullName());
-                new Thread(new ImageDownload(imageBitmap -> hv2IV.setImageBitmap(imageBitmap), p.getPicture_path())).start();
+                new ImageDownload(imageBitmap -> hv2IV.setImageBitmap(imageBitmap), p.getPicture_path()).execute();
             } catch (Exception ignored) {
             }
         }

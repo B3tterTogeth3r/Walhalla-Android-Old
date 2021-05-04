@@ -105,7 +105,7 @@ public class Fragment extends CustomFragment {
             Log.e(TAG, "An error while filling joinedTV", e);
         }
         try {
-            new Thread(new ImageDownload(imageBitmap -> imageView.setImageBitmap(imageBitmap), userData.getPicture_path())).start();
+            new ImageDownload(imageBitmap -> imageView.setImageBitmap(imageBitmap), userData.getPicture_path()).execute();
         } catch (Exception e) {
             Log.e(TAG, "updateUI: Image download error", e);
         }
