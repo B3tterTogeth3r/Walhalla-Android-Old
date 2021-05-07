@@ -43,6 +43,7 @@ import java.util.ArrayList;
 
 import de.walhalla.app.dialog.LoginDialog;
 import de.walhalla.app.firebase.CustomAuthListener;
+import de.walhalla.app.firebase.Firebase;
 import de.walhalla.app.fragments.BalanceFragment;
 import de.walhalla.app.fragments.Sites;
 import de.walhalla.app.fragments.addNew.NewSemesterDialog;
@@ -261,9 +262,9 @@ public class MainActivity extends AppCompatActivity implements
         moreMenu.add(1, R.string.menu_more_frat_organisation, 1, R.string.menu_more_frat_organisation);
 
         Menu menuEnd = menu.addSubMenu(R.string.menu_other);
-        /*menuEnd.add(0, R.string.menu_settings, 0, R.string.menu_settings)
+        menuEnd.add(0, R.string.menu_settings, 0, R.string.menu_settings)
                 .setIcon(R.drawable.ic_settings)
-                .setCheckable(false);*/
+                .setCheckable(false);
         menuEnd.add(0, R.string.menu_donate, 0, R.string.menu_donate)
                 .setCheckable(false)
                 .setIcon(R.drawable.ic_donate);
@@ -299,6 +300,8 @@ public class MainActivity extends AppCompatActivity implements
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new Fragment()).commit();
                 Variables.Firebase.AUTHENTICATION.signOut();
+                Firebase.Messaging.UnsubscribeTopic(Firebase.Messaging.TOPIC_INTERNAL);
+
                 User.logOut();
                 Snackbar.make(parentLayout, R.string.login_logout_successful, Snackbar.LENGTH_LONG)
                         .setAction(R.string.close, v -> {
@@ -351,7 +354,8 @@ public class MainActivity extends AppCompatActivity implements
                         new de.walhalla.app.fragments.chargen_phil.Fragment()).commit();
                 break;
             case R.string.menu_settings:
-                Toast.makeText(this, R.string.menu_settings, Toast.LENGTH_SHORT).show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new de.walhalla.app.fragments.settings.Fragment()).commit();
                 break;
             case R.string.menu_register:
                 Toast.makeText(this, R.string.menu_register, Toast.LENGTH_SHORT).show();
@@ -436,7 +440,7 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 });
                 web.setOnClickListener(v -> {
-                    browser(null);
+                    browser("");
                     socialMedia.dismiss();
                 });
                 mail.setOnClickListener(v -> {
@@ -490,11 +494,15 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void browser(@NotNull String url) {
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            url = "http://" + url;
+        if (url.length() != 0) {
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "http://" + url;
+            }
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(browserIntent);
+        } else {
+            Log.e(TAG, "browser: no link given");
         }
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(browserIntent);
     }
 
     /**

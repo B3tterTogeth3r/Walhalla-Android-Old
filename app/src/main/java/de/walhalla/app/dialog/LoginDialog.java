@@ -57,6 +57,7 @@ import java.util.Objects;
 import de.walhalla.app.App;
 import de.walhalla.app.R;
 import de.walhalla.app.User;
+import de.walhalla.app.firebase.Firebase;
 import de.walhalla.app.interfaces.ChosenSemesterListener;
 import de.walhalla.app.interfaces.PasswordCheck;
 import de.walhalla.app.models.Person;
@@ -521,6 +522,7 @@ public class LoginDialog extends DialogFragment implements View.OnClickListener,
                             //CustomFragment.authChange.onAuthChange();
                             //Find.PersonByUID(user.getUid(), email);
                             Log.d("Test", User.getData().getFullName());
+                            Firebase.Messaging.SubscribeTopic(Firebase.Messaging.TOPIC_INTERNAL);
                         }
                         dismiss();
                     }

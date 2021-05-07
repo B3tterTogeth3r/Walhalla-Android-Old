@@ -11,8 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,13 +39,14 @@ import java.util.Objects;
 import de.walhalla.app.MainActivity;
 import de.walhalla.app.R;
 import de.walhalla.app.models.News;
+import de.walhalla.app.utils.ImageDownload;
 import de.walhalla.app.utils.Variables;
 
 import static android.app.Activity.RESULT_OK;
 
 public class Dialog extends DialogFragment implements View.OnClickListener {
     private static final String TAG = "NewsDialog";
-    private TextView title, content;
+    private EditText title, content;
     private View view;
     private ImageButton image;
     private Button links, send;
@@ -52,15 +54,28 @@ public class Dialog extends DialogFragment implements View.OnClickListener {
     private Toolbar toolbar;
     private Uri selectedImage;
     private boolean internal = false;
+    private News news;
 
     public Dialog() {
     }
 
-    public static void display(FragmentManager fragmentManager) {
-        try {
-            Dialog dialog = new Dialog();
-            dialog.show(fragmentManager, TAG);
-        } catch (Exception ignored) {
+    public Dialog(News news) {
+        this.news = news;
+    }
+
+    public static void display(FragmentManager fragmentManager, @Nullable News news) {
+        if (news == null) {
+            try {
+                Dialog dialog = new Dialog();
+                dialog.show(fragmentManager, TAG);
+            } catch (Exception ignored) {
+            }
+        } else {
+            try {
+                Dialog dialog = new Dialog(news);
+                dialog.show(fragmentManager, TAG);
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -91,13 +106,74 @@ public class Dialog extends DialogFragment implements View.OnClickListener {
                     .setMessage(R.string.program_abort_sure)
                     .setPositiveButton(R.string.yes, (dialog, which) -> sendDraft())
                     .setNegativeButton(R.string.no, (dialog, which) -> dismiss());
-            draftSaver.show();
+            if (news == null)
+                draftSaver.show();
+            else
+                dismiss();
         });
-        toolbar.setTitle(R.string.messages_new_head);
+        if (news != null) {
+            toolbar.setTitle(R.string.messages_new_head);
+            title.setText(news.getTitle());
+            StringBuilder contentText = new StringBuilder();
+            for (String s : news.getContent()) {
+                contentText.append(s).append("\n");
+            }
+            int length = contentText.length();
+            contentText.delete(length - 1, length);
+            content.setText(contentText.toString());
+            if (news.getImage() != null) {
+                final ImageButton IB = image;
+                new ImageDownload(IB::setImageBitmap, news.getImage()).execute();
+            }
+            toolbar.inflateMenu(R.menu.delete);
+            toolbar.setOnMenuItemClickListener(item -> {
+                try {
+                    //Delete Message
+                    delete(news);
+                    return true;
+                } catch (Exception ignored) {
+                    return false;
+                }
+            });
+        } else {
+            toolbar.setTitle(R.string.messages_edit_head);
+        }
         image.setOnClickListener(this);
         send.setOnClickListener(this);
         switchCompat.setOnClickListener(this);
         links.setOnClickListener(this);
+    }
+
+    private void delete(@NotNull News news) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Diese Mitteilung löschen?")
+                .setMessage(news.getTitle())
+                .setNegativeButton(R.string.abort, (dialog, which) -> {
+                    dialog.dismiss();
+                    Toast.makeText(getContext(), R.string.abort, Toast.LENGTH_LONG).show();
+                })
+                .setPositiveButton(R.string.delete, (dialog, which) ->
+                        Variables.Firebase.FIRESTORE
+                                .collection("News")
+                                .document(news.getId())
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    Objects.requireNonNull(getDialog()).dismiss();
+                                    Snackbar.make(MainActivity.parentLayout, "Mitteilung erfolgreich gelöscht", Snackbar.LENGTH_LONG).show();
+                                    Log.d(TAG, "delete: successful");
+                                })
+                                .addOnFailureListener(e -> {
+                                    dismiss();
+                                    Log.e(TAG, "delete: deleting a message did not work.", e);
+                                    Snackbar.make(MainActivity.parentLayout, "Mitteilung konnte nicht gelöscht werden", Snackbar.LENGTH_LONG).show();
+                                })
+                                .addOnCanceledListener(() -> {
+                                    dismiss();
+                                    Log.e(TAG, "delete: deleting a message got canceled");
+                                    Snackbar.make(MainActivity.parentLayout, "Mitteilung konnte nicht gelöscht werden", Snackbar.LENGTH_LONG).show();
+                                })
+                );
+        builder.create().show();
     }
 
     private void sendDraft() {
@@ -128,6 +204,12 @@ public class Dialog extends DialogFragment implements View.OnClickListener {
     }
 
     @Override
+    public void onStop() {
+        toolbar.getMenu().clear();
+        super.onStop();
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_FullScreenDialog);
@@ -139,14 +221,36 @@ public class Dialog extends DialogFragment implements View.OnClickListener {
             sendPublic();
         } else if (v.getId() == links.getId()) {
             Snackbar.make(view, R.string.toast_still_in_dev, Snackbar.LENGTH_SHORT).show();
-            Map<String, Object> links = new HashMap<>();
-            if(links.size() != 0) {
+            Map<String, Object> links;
+            if (news == null) {
+                links = new HashMap<>();
+            } else {
+                links = news.getLink();
+            }
+            if (links.size() == 0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                View dialogView = getLayoutInflater().inflate(R.layout.dialog_links, null);
                 builder.setTitle(R.string.messages_add_link)
-                        .setView(R.layout.dialog_links)
-                        .setNeutralButton(R.string.abort, null) //Discard input
-                        .setNegativeButton(R.string.add_more, null) //Save data and open dialog again
-                        .setPositiveButton(R.string.send, null); //Save data, toast amount of links
+                        .setView(dialogView)
+                        .setNeutralButton(R.string.abort, (dialog, which) -> {
+                            links.clear();
+                            dialog.dismiss();
+                        }) //Discard input
+                        .setNegativeButton(R.string.add_more, (dialog, which) -> {//Save data and open dialog again
+                            String title = ((EditText) dialogView.findViewById(R.id.link_name)).getText().toString();
+                            String url = ((EditText) dialogView.findViewById(R.id.link_url)).getText().toString();
+                            links.put(title, url);
+                            news.setLink(links);
+                            builder.show();
+                            dialog.dismiss();
+                        })
+                        .setPositiveButton(R.string.save, (dialog, which) -> {//Save data, toast amount of links
+                            String title = ((EditText) dialogView.findViewById(R.id.link_name)).getText().toString();
+                            String url = ((EditText) dialogView.findViewById(R.id.link_url)).getText().toString();
+                            links.put(title, url);
+                            news.setLink(links);
+                            dialog.dismiss();
+                        });
                 builder.show();
             }
         } else if (v.getId() == switchCompat.getId()) {
@@ -209,10 +313,18 @@ public class Dialog extends DialogFragment implements View.OnClickListener {
                         .addOnSuccessListener(taskSnapshot -> Log.d(TAG, Objects.requireNonNull(Objects.requireNonNull(taskSnapshot.getMetadata()).getName())));
                 news.setImage("/pictures/" + imageName);
             }
-            Variables.Firebase.FIRESTORE
-                    .collection("News")
-                    .add(news)
-                    .addOnSuccessListener(documentReference -> Snackbar.make(MainActivity.parentLayout, R.string.upload_complete, Snackbar.LENGTH_LONG).show());
+            if (this.news == null) {
+                Variables.Firebase.FIRESTORE
+                        .collection("News")
+                        .add(news)
+                        .addOnSuccessListener(documentReference -> Snackbar.make(MainActivity.parentLayout, R.string.upload_complete, Snackbar.LENGTH_LONG).show());
+            } else {
+                Variables.Firebase.FIRESTORE
+                        .collection("News")
+                        .document(this.news.getId())
+                        .update(this.news.toMap())
+                        .addOnSuccessListener(documentReference -> Snackbar.make(MainActivity.parentLayout, R.string.upload_complete, Snackbar.LENGTH_LONG).show());
+            }
         }
     }
 

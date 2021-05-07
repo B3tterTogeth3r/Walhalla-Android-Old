@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +29,6 @@ public class StartActivity extends AppCompatActivity implements DownloadDoneList
     private static final String TAG = "StartActivity";
     private static final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     public static DownloadDoneListener listener;
-    //TODO activate all the necessary change listeners for public accessible pages
 
     @Override
     public void onDone() {
@@ -45,6 +45,26 @@ public class StartActivity extends AppCompatActivity implements DownloadDoneList
         //setContentView(R.layout.splash_screen);
         listener = this;
         Log.i(TAG, "StartActivity should show the shield.");
+
+        /* Retrieve current registration token */
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    // Get new FCM registration token
+                    String token = task.getResult();
+
+                    // Log and toast
+                    String msg = getString(R.string.msg_token_fmt) + " " + token;
+                    Log.d(TAG, msg);
+                    //Toast.makeText(App.getContext(), msg, Toast.LENGTH_SHORT).show();
+
+                    /* Set default notification channel */
+                    Firebase.Messaging.SubscribeTopic(Firebase.Messaging.TOPIC_DEFAULT);
+                });
 
         /* Ask for CAMERA permission */
         int hasCameraPermission = checkSelfPermission(android.Manifest.permission.CAMERA);
@@ -94,11 +114,11 @@ public class StartActivity extends AppCompatActivity implements DownloadDoneList
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission Granted
                 Toast.makeText(App.getContext(), "CAMERA allowed", Toast.LENGTH_SHORT)
-                        .show();
+                        .show();/*
             } else {
-                // Permission Denied
+                 Permission Denied
                 Toast.makeText(App.getContext(), "CAMERA Denied", Toast.LENGTH_SHORT)
-                        .show();
+                        .show();*/
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);

@@ -86,6 +86,7 @@ public class Fragment extends CustomFragment {
             try {
                 News n = snapshot.toObject(News.class);
                 if (n != null) {
+                    n.setId(snapshot.getId());
                     newsList.add(n);
                     //Order list descending by date.
                     try {
@@ -94,13 +95,14 @@ public class Fragment extends CustomFragment {
                     }
                 }
             } catch (Exception e) {
-                Log.d(TAG, "formatResult:parse:error", e);
+                Log.d(TAG, "formatResult: parse: error", e);
             }
         }
         //Display news-feed
         displayNews();
     }
 
+    @SuppressWarnings("UnnecessaryLocalVariable")
     @SuppressLint("InflateParams")
     private void displayNews() {
         layout.removeAllViewsInLayout();
@@ -150,10 +152,18 @@ public class Fragment extends CustomFragment {
             }
             //Get image, if anyone is set, and set it
             if (image != null && !image.isEmpty()) {
-                new ImageDownload(newsImage::setImageBitmap, n.getImage(), true).execute();
-                newsImage.setClickable(false);
-                newsImage.setVisibility(View.VISIBLE);
-                newsImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                final ImageButton IV = newsImage;
+                final News news = n;
+                new ImageDownload(IV::setImageBitmap, news.getImage(), true).execute();
+                IV.setClickable(false);
+                IV.setVisibility(View.VISIBLE);
+                IV.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            }
+            if (User.hasCharge()) {
+                item.setOnLongClickListener(v -> {
+                    Dialog.display(getParentFragmentManager(), n);
+                    return false;
+                });
             }
             layout.addView(item);
         }
@@ -202,7 +212,7 @@ public class Fragment extends CustomFragment {
                 try {
                     if (item.getItemId() == R.id.action_add) {
                         //Open a full screen dialog like the login one
-                        Dialog.display(getParentFragmentManager());
+                        Dialog.display(getParentFragmentManager(), null);
                     } else if (item.getItemId() == R.id.action_draft) {
                         changeBooleans(true, false);
                     } else if (item.getItemId() == R.id.action_internal) {

@@ -6,6 +6,7 @@
     <string name="backgroundImage" translatable="false">BackgroundImage</string>
 
     <string name="maps_api_key_2">AIzaSyBkZmfoEvjUrG1ujh_MLMsaVuSxdpv1_Wg</string>
+    <string name="msg_token_fmt" translatable="false">fbm</string>
 
     <string name="save">Speichern</string>
     <string name="later">Später</string>
@@ -18,7 +19,6 @@
     <string name="choose_picture">Bild auswählen</string>
     <string name="exit_app_via_back">Nochmaliges Tippen beendet die App.</string>
     <string name="go_back">Zurück</string>
-    <string name="msg_token_fmt" translatable="false">fbm</string>
     <string name="semester" translatable="false">Semester</string>
     <string name="delete">Löschen</string>
     <string name="upload_no_change_necessary">Keine Veränderungen gefunden.</string>
@@ -394,4 +394,12 @@
     <string name="profile_major_3">Studium/Abschluss</string>
     <string name="not_all_created">Es wurden nicht alle Daten ausgefüllt.</string>
     <string name="select_note">Einen Hinweis auswählen</string>
+    <string name="fcm_message">Neue Mitteilung</string>
+    <string name="msg_subscribe_failed">Speichern fehlgeschlagen</string>
+    <string name="msg_subscribed">Erfolgreich gespeichert</string>
+    <string name="settings_subscribe_public">Öffentliche Mitteilungen bekommen:</string>
+    <string name="settings_subscribe_internal">Interne Mitteilungen bekommen:</string>
+    <string name="msg_unsubscribed">Abmeldung gespeichert</string>
+    <string name="msg_unsubscribe_failed">Abmeldung fehlgeschlagen</string>
+    <string name="messages_edit_head">Mitteilung bearbeiten</string>
 </resources>

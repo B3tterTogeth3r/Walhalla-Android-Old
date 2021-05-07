@@ -5,16 +5,10 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.firestore.Exclude;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import de.walhalla.app.utils.Variables;
 
 @IgnoreExtraProperties
 public class News implements Cloneable {
@@ -31,7 +25,7 @@ public class News implements Cloneable {
     private Timestamp time;
     private Map<String, Object> link;
     private String title, image;
-
+    private String id;
 
     public News() {
     }
@@ -44,6 +38,14 @@ public class News implements Cloneable {
         this.link = link;
         this.title = title;
         this.image = image;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public ArrayList<String> getContent() {

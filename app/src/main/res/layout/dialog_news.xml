@@ -107,6 +107,7 @@
             android:id="@+id/news_links"
             android:layout_marginTop="10dp"
             style="@style/History.Button"
+            android:padding="16dp"
             android:layout_gravity="center"
             android:text="@string/messages_add_link" />
 
